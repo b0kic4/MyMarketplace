@@ -19,6 +19,7 @@
   "dependencies": {
     "@trpc/client": "^10.45.0",
     "@trpc/server": "^10.45.0",
+    "faker": "^6.6.6",
     "zod": "^3.22.4"
   }
 }
