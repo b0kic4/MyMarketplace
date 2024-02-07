@@ -43,14 +43,12 @@ export class ProductService {
   }
 
   generateFakeProducts(count: number): Prisma.ProductCreateInput[] {
-    Logger.log('Called');
     return Array(count)
       .fill(null)
       .map(() => this.generateFakeProduct());
   }
 
   async generateAndStoreFakeProducts(count: number): Promise<void> {
-    Logger.log('generateAndStoreFakeProducts called');
     const fakeProducts = this.generateFakeProducts(count);
     try {
       await this.prisma.product.createMany({

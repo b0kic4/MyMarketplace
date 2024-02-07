@@ -8,6 +8,6 @@ async function bootstrap() {
   app.enableCors();
   const trpc = app.get(TrpcRouter);
   trpc.applyMiddleware(app);
-  await app.listen(3002);
+  await app.listen(3001);
 }
 bootstrap();
