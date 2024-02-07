@@ -5,10 +5,17 @@ import { ConfigModule } from '@nestjs/config';
 import { TrpcModule } from './trpc/trpc.module';
 import { ProductModule } from './faker-product/product.module';
 import { UsersModule } from './users/users.module';
-import { ProductsModule } from './products/products.module';
+import { PrismaService } from './prisma-service/prisma.service';
+import { AuthModule } from './auth/auth.module';
 @Module({
-  imports: [ConfigModule.forRoot(), TrpcModule, ProductModule, UsersModule, ProductsModule],
+  imports: [
+    ConfigModule.forRoot(),
+    TrpcModule,
+    ProductModule,
+    UsersModule,
+    AuthModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { faker } from '@faker-js/faker';
-import { Prisma, Product } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { Logger } from '@nestjs/common';
 
