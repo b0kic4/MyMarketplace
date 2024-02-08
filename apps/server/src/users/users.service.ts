@@ -3,6 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { hash } from 'bcrypt';
+import clerkClient from '@clerk/clerk-sdk-node';
+import { myClerk } from '@server/clerk.config';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
@@ -33,8 +35,10 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    const userList = await myClerk.users.getUserList();
+    console.log(userList);
+    return userList;
   }
   async findById(id: number) {
     try {
