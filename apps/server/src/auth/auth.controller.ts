@@ -10,8 +10,6 @@ import { Request as ExpressRequest } from 'express';
 import { CreateUserDto } from '@server/users/dto/create-user.dto';
 import { UsersService } from '@server/users/users.service';
 import { AuthService } from './auth.service';
-import { LoginDto } from './dto/auth.dto';
-import { RefreshJwtGuard } from './guards/refresh.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -26,14 +24,5 @@ export class AuthController {
   }
 
   @Post('login')
-  async login(@Body() dto: LoginDto) {
-    console.log('auth controller login');
-    return await this.authService.login(dto);
-  }
-
-  @UseGuards(RefreshJwtGuard)
-  @Post('refresh')
-  async refreshToken(@Request() req: ExpressRequest) {
-    return await this.authService.refreshToken(req.user);
-  }
+  async login() {}
 }

@@ -37,7 +37,6 @@ export class UsersService {
 
   async findAll() {
     const userList = await myClerk.users.getUserList();
-    console.log(userList);
     return userList;
   }
   async findById(id: number) {

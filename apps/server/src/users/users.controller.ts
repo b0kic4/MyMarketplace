@@ -11,7 +11,6 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { JwtGuard } from '@server/auth/guards/jwt.guard';
 
 @Controller('user')
 export class UsersController {
@@ -26,7 +25,6 @@ export class UsersController {
   findAll() {
     return this.usersService.findAll();
   }
-  @UseGuards(JwtGuard)
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return await this.usersService.findById(id);
