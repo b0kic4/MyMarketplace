@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['log', 'debug', 'error', 'warn'],
+    cors: true,
   });
   app.enableCors();
 
@@ -18,6 +19,6 @@ async function bootstrap() {
   );
   const trpc = app.get(TrpcRouter);
   trpc.applyMiddleware(app);
-  await app.listen(3001);
+  await app.listen(4000);
 }
 bootstrap();

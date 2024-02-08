@@ -7,32 +7,14 @@ import { CardContent, Card } from "@/components/ui/card";
 import { LuStore } from "react-icons/lu";
 import Image from "next/image";
 import Navbar from "./components/Navbar";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { FaSearchengin } from "react-icons/fa";
-import { IoMenu } from "react-icons/io5";
-import { FaMountain } from "react-icons/fa";
+
 import { Button } from "@/components/ui/button";
 import { HomeIcon } from "@radix-ui/react-icons";
 import { Input } from "@/components/ui/input";
-
+import AuthButtons from "./components/AuthButtons";
+import axios from "axios";
 export default async function Home() {
   // getting hello from the nest successfully
 
@@ -40,57 +22,7 @@ export default async function Home() {
 
   return (
     <>
-      <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button className="lg:hidden" size="icon" variant="outline">
-              <IoMenu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left">
-            <Link href="#">
-              <FaMountain className="h-6 w-6" />
-              <span className="sr-only">Acme Inc</span>
-            </Link>
-            <div className="grid gap-2 py-6">
-              <Link
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
-              >
-                Home
-              </Link>
-              <Link
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
-              >
-                Products
-              </Link>
-              <Link
-                className="flex w-full items-center py-2 text-lg font-semibold"
-                href="#"
-              >
-                Categories
-              </Link>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Avatar className="h-9 w-9">
-                    <AvatarImage alt="@shadcn" src="/placeholder-avatar.jpg" />
-                    <AvatarFallback>JP</AvatarFallback>
-                    <span className="sr-only">Toggle user menu</span>
-                  </Avatar>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                  <DropdownMenuItem>My Account</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </header>
+      <Navbar />
       <div className="bg-gray-50/90 border-t border-b border-gray-200 dark:border-gray-800">
         <div className="container flex flex-col items-center justify-center h-[600px] px-4 space-y-2 md:px-6 lg:space-y-4 xl:space-y-6">
           <nav className="flex flex-row items-center space-x-4">
@@ -102,20 +34,7 @@ export default async function Home() {
               <span className="sr-only">Home</span>
             </Link>
             <div className="flex-1" />
-            <div className="flex items-center space-x-4">
-              <Link
-                className="font-medium underline transition-colors hover:text-gray-900 dark:hover:text-gray-50"
-                href="#"
-              >
-                Sign Up
-              </Link>
-              <Link
-                className="font-medium underline transition-colors hover:text-gray-900 dark:hover:text-gray-50"
-                href="#"
-              >
-                Log In
-              </Link>
-            </div>
+            <AuthButtons />
           </nav>
           <div className="flex flex-col items-center justify-center space-y-2 text-center">
             <h1 className="text-4xl font-extrabold tracking-tighter sm:text-6xl lg:text-7xl">
@@ -158,7 +77,7 @@ export default async function Home() {
         <div className="grid gap-6 px-4 py-12 md:px-6 lg:py-12 lg:grid-cols-2 xl:grid-cols-3">
           <div className="flex flex-col gap-2">
             <Link className="font-semibold" href="#">
-              <img
+              <Image
                 alt="Product 1"
                 className="aspect-[4/3] object-cover rounded-lg"
                 height="200"
@@ -171,7 +90,7 @@ export default async function Home() {
             </Link>
             <p className="text-sm font-medium/none">by</p>
             <Link className="text-sm font-medium/none" href="#">
-              <img
+              <Image
                 alt="Avatar"
                 className="rounded-full object-cover inline-block"
                 height="24"
@@ -187,7 +106,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col gap-2">
             <Link className="font-semibold" href="#">
-              <img
+              <Image
                 alt="Product 2"
                 className="aspect-[4/3] object-cover rounded-lg"
                 height="200"
@@ -198,7 +117,7 @@ export default async function Home() {
             </Link>
             <p className="text-sm font-medium/none">by</p>
             <Link className="text-sm font-medium/none" href="#">
-              <img
+              <Image
                 alt="Avatar"
                 className="rounded-full object-cover inline-block"
                 height="24"
@@ -214,7 +133,7 @@ export default async function Home() {
           </div>
           <div className="flex flex-col gap-2">
             <Link className="font-semibold" href="#">
-              <img
+              <Image
                 alt="Product 3"
                 className="aspect-[4/3] object-cover rounded-lg"
                 height="200"
@@ -225,7 +144,7 @@ export default async function Home() {
             </Link>
             <p className="text-sm font-medium/none">by</p>
             <Link className="text-sm font-medium/none" href="#">
-              <img
+              <Image
                 alt="Avatar"
                 className="rounded-full object-cover inline-block"
                 height="24"
@@ -246,7 +165,7 @@ export default async function Home() {
           <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
             <div className="flex flex-col gap-2">
               <Link className="font-semibold" href="#">
-                <img
+                <Image
                   alt="Product 4"
                   className="aspect-video object-cover rounded-lg"
                   height="266"
@@ -257,7 +176,7 @@ export default async function Home() {
               </Link>
               <p className="text-sm font-medium/none">by</p>
               <Link className="text-sm font-medium/none" href="#">
-                <img
+                <Image
                   alt="Avatar"
                   className="rounded-full object-cover inline-block"
                   height="24"
@@ -273,7 +192,7 @@ export default async function Home() {
             </div>
             <div className="flex flex-col gap-2">
               <Link className="font-semibold" href="#">
-                <img
+                <Image
                   alt="Product 5"
                   className="aspect-video object-cover rounded-lg"
                   height="266"
@@ -286,7 +205,7 @@ export default async function Home() {
               </Link>
               <p className="text-sm font-medium/none">by</p>
               <Link className="text-sm font-medium/none" href="#">
-                <img
+                <Image
                   alt="Avatar"
                   className="rounded-full object-cover inline-block"
                   height="24"
@@ -302,7 +221,7 @@ export default async function Home() {
             </div>
             <div className="flex flex-col gap-2">
               <Link className="font-semibold" href="#">
-                <img
+                <Image
                   alt="Product 6"
                   className="aspect-video object-cover rounded-lg"
                   height="266"
@@ -313,7 +232,7 @@ export default async function Home() {
               </Link>
               <p className="text-sm font-medium/none">by</p>
               <Link className="text-sm font-medium/none" href="#">
-                <img
+                <Image
                   alt="Avatar"
                   className="rounded-full object-cover inline-block"
                   height="24"

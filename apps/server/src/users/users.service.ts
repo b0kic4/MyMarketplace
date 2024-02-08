@@ -6,7 +6,6 @@ import { hash } from 'bcrypt';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
-
   async create(createUserDto: CreateUserDto) {
     try {
       const user = await this.prisma.user.findFirst({
@@ -50,9 +49,24 @@ export class UsersService {
     }
   }
 
-  async findByEmail(email: string): Promise<any> {
+  async findByEmail(email: string, username: string): Promise<any> {
+    console.log('this is console log for the route - findByEmail');
+    if (email && !username)
+      return await this.prisma.user.findFirst({
+        where: {
+          email: email,
+        },
+      });
+
+    if (!email && username)
+      return await this.prisma.user.findFirst({
+        where: {
+          username: username,
+        },
+      });
     return await this.prisma.user.findFirst({
       where: {
+        username: username,
         email: email,
       },
     });

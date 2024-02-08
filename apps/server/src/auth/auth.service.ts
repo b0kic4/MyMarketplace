@@ -36,7 +36,10 @@ export class AuthService {
     };
   }
   async validateUser(dto: LoginDto): Promise<any> {
-    const user: User = await this.userService.findByEmail(dto.email);
+    const user: User = await this.userService.findByEmail(
+      dto.email,
+      dto.username,
+    );
     if (user && (await compare(dto.password, user.password))) {
       const { password, ...result } = user;
       return result;
