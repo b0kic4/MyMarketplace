@@ -6,176 +6,351 @@ import Link from "next/link";
 import { CardContent, Card } from "@/components/ui/card";
 import { LuStore } from "react-icons/lu";
 import Image from "next/image";
+import Navbar from "./components/Navbar";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+import { FaSearchengin } from "react-icons/fa";
+import { IoMenu } from "react-icons/io5";
+import { FaMountain } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import { HomeIcon } from "@radix-ui/react-icons";
+import { Input } from "@/components/ui/input";
+
 export default async function Home() {
   // getting hello from the nest successfully
 
   // const response = await trpc.hello.query({ name: "Boris" });
 
   return (
-    // <div>
-    //  <ClientSide />
-    //   {response}
-    // </div>
-    <div className="flex flex-col min-h-screen">
-      <header className="px-4 lg:px-6 h-14 flex items-center">
-        <Link className="flex items-center justify-center" href="#">
-          <LuStore className="h-6 w-6" />
-          <span className="sr-only">Marketplace</span>
-        </Link>
-        <nav className="ml-auto flex gap-4 sm:gap-6">
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            Home
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            Products
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            Categories
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            About Us
-          </Link>
-          <Link
-            className="text-sm font-medium hover:underline underline-offset-4"
-            href="#"
-          >
-            Contact
-          </Link>
-        </nav>
+    <>
+      <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button className="lg:hidden" size="icon" variant="outline">
+              <IoMenu className="h-6 w-6" />
+              <span className="sr-only">Toggle navigation menu</span>
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="left">
+            <Link href="#">
+              <FaMountain className="h-6 w-6" />
+              <span className="sr-only">Acme Inc</span>
+            </Link>
+            <div className="grid gap-2 py-6">
+              <Link
+                className="flex w-full items-center py-2 text-lg font-semibold"
+                href="#"
+              >
+                Home
+              </Link>
+              <Link
+                className="flex w-full items-center py-2 text-lg font-semibold"
+                href="#"
+              >
+                Products
+              </Link>
+              <Link
+                className="flex w-full items-center py-2 text-lg font-semibold"
+                href="#"
+              >
+                Categories
+              </Link>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Avatar className="h-9 w-9">
+                    <AvatarImage alt="@shadcn" src="/placeholder-avatar.jpg" />
+                    <AvatarFallback>JP</AvatarFallback>
+                    <span className="sr-only">Toggle user menu</span>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem>My Account</DropdownMenuItem>
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </SheetContent>
+        </Sheet>
       </header>
-      <main className="flex-1">
-        <section className="w-full py-6 sm:py-12 md:py-24 lg:py-32 xl:py-48">
-          <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-              <Image
-                alt="Hero"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last lg:aspect-square"
-                height="550"
-                src="/placeholder.svg"
-                width="550"
+      <div className="bg-gray-50/90 border-t border-b border-gray-200 dark:border-gray-800">
+        <div className="container flex flex-col items-center justify-center h-[600px] px-4 space-y-2 md:px-6 lg:space-y-4 xl:space-y-6">
+          <nav className="flex flex-row items-center space-x-4">
+            <Link
+              className="flex items-center space-x-2 text-2xl font-bold"
+              href="#"
+            >
+              <HomeIcon className="w-6 h-6" />
+              <span className="sr-only">Home</span>
+            </Link>
+            <div className="flex-1" />
+            <div className="flex items-center space-x-4">
+              <Link
+                className="font-medium underline transition-colors hover:text-gray-900 dark:hover:text-gray-50"
+                href="#"
+              >
+                Sign Up
+              </Link>
+              <Link
+                className="font-medium underline transition-colors hover:text-gray-900 dark:hover:text-gray-50"
+                href="#"
+              >
+                Log In
+              </Link>
+            </div>
+          </nav>
+          <div className="flex flex-col items-center justify-center space-y-2 text-center">
+            <h1 className="text-4xl font-extrabold tracking-tighter sm:text-6xl lg:text-7xl">
+              Welcome to the Marketplace
+            </h1>
+            <div className="max-w-[700px]">
+              <p className="text-gray-500 md:text-xl dark:text-gray-400">
+                The #1 platform for buying and selling the best products.
+                Discover unique items from trusted sellers.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <section className="grid gap-6 lg:grid-cols-2">
+        <div className="flex flex-col items-center justify-center space-y-4 px-4 py-12 md:px-6 md:py-24 lg:py-32 lg:items-start lg:px-12 xl:px-24">
+          <div className="space-y-4 text-center lg:text-left">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              Discover Our Best Sellers
+            </h2>
+            <p className="max-w-[600px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
+              Shop the most popular products on our platform. These items are
+              loved by our community.
+            </p>
+          </div>
+          <div className="w-full max-w-sm space-y-4">
+            <form className="flex rounded-lg border">
+              <Input
+                className="flex-1 rounded-l-none rounded-r-md"
+                placeholder="Search for items"
+                type="email"
               />
-              <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                    Welcome to the Marketplace
-                  </h1>
-                  <p className="max-w-[600px] text-gray-500 md:text-xl dark:text-gray-400">
-                    Discover the best products from independent sellers around
-                    the world.
-                  </p>
-                </div>
-                <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link
-                    className="inline-flex h-10 items-center justify-center rounded-md bg-gray-900 px-8 text-sm font-medium text-gray-50 shadow transition-colors hover:bg-gray-900/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:bg-gray-50 dark:text-gray-900 dark:hover:bg-gray-50/90 dark:focus-visible:ring-gray-300"
-                    href="/auth/register"
-                  >
-                    Sign Up
-                  </Link>
-                  <Link
-                    className="inline-flex h-10 items-center justify-center rounded-md border border-gray-200 bg-white px-8 text-sm font-medium shadow-sm transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-gray-950 disabled:pointer-events-none disabled:opacity-50 dark:border-gray-800 dark:bg-gray-950 dark:hover:bg-gray-800 dark:hover:text-gray-50 dark:focus-visible:ring-gray-300"
-                    href="/auth/login"
-                  >
-                    Log In
-                  </Link>
-                </div>
-              </div>
-            </div>
+              <Button className="rounded-l-none" type="submit">
+                <FaSearchengin className="w-4 h-4" />
+                <span className="sr-only">Search</span>
+              </Button>
+            </form>
           </div>
-        </section>
-        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100 dark:bg-gray-800">
-          <div className="container px-4 md:px-6">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <div className="inline-block rounded-lg bg-gray-100 px-3 py-1 text-sm dark:bg-gray-800">
-                  Featured Products
-                </div>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Discover Our Best Sellers
-                </h2>
-                <p className="max-w-[900px] text-gray-500 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed dark:text-gray-400">
-                  Explore the most popular products that our customers love and
-                  trust.
+        </div>
+        <div className="grid gap-6 px-4 py-12 md:px-6 lg:py-12 lg:grid-cols-2 xl:grid-cols-3">
+          <div className="flex flex-col gap-2">
+            <Link className="font-semibold" href="#">
+              <img
+                alt="Product 1"
+                className="aspect-[4/3] object-cover rounded-lg"
+                height="200"
+                src="/placeholder.svg"
+                width="300"
+              />
+              <p className="text-sm font-medium/none">
+                Retro Bluetooth Speaker
+              </p>
+            </Link>
+            <p className="text-sm font-medium/none">by</p>
+            <Link className="text-sm font-medium/none" href="#">
+              <img
+                alt="Avatar"
+                className="rounded-full object-cover inline-block"
+                height="24"
+                src="/placeholder.svg"
+                style={{
+                  aspectRatio: "24/24",
+                  objectFit: "cover",
+                }}
+                width="24"
+              />
+              Acme Electronics
+            </Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link className="font-semibold" href="#">
+              <img
+                alt="Product 2"
+                className="aspect-[4/3] object-cover rounded-lg"
+                height="200"
+                src="/placeholder.svg"
+                width="300"
+              />
+              <p className="text-sm font-medium/none">Designer Watch</p>
+            </Link>
+            <p className="text-sm font-medium/none">by</p>
+            <Link className="text-sm font-medium/none" href="#">
+              <img
+                alt="Avatar"
+                className="rounded-full object-cover inline-block"
+                height="24"
+                src="/placeholder.svg"
+                style={{
+                  aspectRatio: "24/24",
+                  objectFit: "cover",
+                }}
+                width="24"
+              />
+              Timeless Treasures
+            </Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Link className="font-semibold" href="#">
+              <img
+                alt="Product 3"
+                className="aspect-[4/3] object-cover rounded-lg"
+                height="200"
+                src="/placeholder.svg"
+                width="300"
+              />
+              <p className="text-sm font-medium/none">Vintage Camera</p>
+            </Link>
+            <p className="text-sm font-medium/none">by</p>
+            <Link className="text-sm font-medium/none" href="#">
+              <img
+                alt="Avatar"
+                className="rounded-full object-cover inline-block"
+                height="24"
+                src="/placeholder.svg"
+                style={{
+                  aspectRatio: "24/24",
+                  objectFit: "cover",
+                }}
+                width="24"
+              />
+              Shutterbug Co.
+            </Link>
+          </div>
+        </div>
+      </section>
+      <div className="border-t border-gray-200 dark:border-gray-800">
+        <div className="container py-12">
+          <div className="grid gap-6 lg:grid-cols-3 lg:gap-12">
+            <div className="flex flex-col gap-2">
+              <Link className="font-semibold" href="#">
+                <img
+                  alt="Product 4"
+                  className="aspect-video object-cover rounded-lg"
+                  height="266"
+                  src="/placeholder.svg"
+                  width="400"
+                />
+                <p className="text-sm font-medium/none">Artisanal Chocolates</p>
+              </Link>
+              <p className="text-sm font-medium/none">by</p>
+              <Link className="text-sm font-medium/none" href="#">
+                <img
+                  alt="Avatar"
+                  className="rounded-full object-cover inline-block"
+                  height="24"
+                  src="/placeholder.svg"
+                  style={{
+                    aspectRatio: "24/24",
+                    objectFit: "cover",
+                  }}
+                  width="24"
+                />
+                Sweet Delights
+              </Link>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Link className="font-semibold" href="#">
+                <img
+                  alt="Product 5"
+                  className="aspect-video object-cover rounded-lg"
+                  height="266"
+                  src="/placeholder.svg"
+                  width="400"
+                />
+                <p className="text-sm font-medium/none">
+                  Leather Messenger Bag
                 </p>
-              </div>
+              </Link>
+              <p className="text-sm font-medium/none">by</p>
+              <Link className="text-sm font-medium/none" href="#">
+                <img
+                  alt="Avatar"
+                  className="rounded-full object-cover inline-block"
+                  height="24"
+                  src="/placeholder.svg"
+                  style={{
+                    aspectRatio: "24/24",
+                    objectFit: "cover",
+                  }}
+                  width="24"
+                />
+                Urban Style Co.
+              </Link>
             </div>
-            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
-              <Card>
-                <CardContent>
-                  <Image
-                    alt="Product Image"
-                    className="mx-auto aspect-square overflow-hidden rounded-xl object-cover object-center sm:w-full"
-                    height="300"
-                    src="/placeholder.svg"
-                    width="300"
-                  />
-                  <h3 className="text-xl font-bold mt-4">Product 1</h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    This is a description of the product.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent>
-                  <Image
-                    alt="Product Image"
-                    className="mx-auto aspect-square overflow-hidden rounded-xl object-cover object-center sm:w-full"
-                    height="300"
-                    src="/placeholder.svg"
-                    width="300"
-                  />
-                  <h3 className="text-xl font-bold mt-4">Product 2</h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    This is a description of the product.
-                  </p>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent>
-                  <Image
-                    alt="Product Image"
-                    className="mx-auto aspect-square overflow-hidden rounded-xl object-cover object-center sm:w-full"
-                    height="300"
-                    src="/placeholder.svg"
-                    width="300"
-                  />
-                  <h3 className="text-xl font-bold mt-4">Product 3</h3>
-                  <p className="text-gray-500 dark:text-gray-400">
-                    This is a description of the product.
-                  </p>
-                </CardContent>
-              </Card>
+            <div className="flex flex-col gap-2">
+              <Link className="font-semibold" href="#">
+                <img
+                  alt="Product 6"
+                  className="aspect-video object-cover rounded-lg"
+                  height="266"
+                  src="/placeholder.svg"
+                  width="400"
+                />
+                <p className="text-sm font-medium/none">Wireless Earbuds</p>
+              </Link>
+              <p className="text-sm font-medium/none">by</p>
+              <Link className="text-sm font-medium/none" href="#">
+                <img
+                  alt="Avatar"
+                  className="rounded-full object-cover inline-block"
+                  height="24"
+                  src="/placeholder.svg"
+                  style={{
+                    aspectRatio: "24/24",
+                    objectFit: "cover",
+                  }}
+                  width="24"
+                />
+                SoundScape Audio
+              </Link>
             </div>
           </div>
-        </section>
-      </main>
-      <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-        <p className="text-xs text-gray-500 dark:text-gray-400">
-          © 2024 Marketplace. All rights reserved.
-        </p>
-        <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Privacy Policy
-          </Link>
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            Terms of Service
-          </Link>
-          <Link className="text-xs hover:underline underline-offset-4" href="#">
-            FAQs
-          </Link>
-        </nav>
-      </footer>
-    </div>
+        </div>
+      </div>
+      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+        <div className="container flex flex-col items-center justify-center space-y-2 text-center md:space-y-4">
+          <div className="space-y-2">
+            <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
+              Join the Marketplace
+            </h2>
+            <p className="mx-auto max-w-[600px] text-gray-500 md:text-xl/relaxed dark:text-gray-400">
+              Sign up to start buying and selling. Access exclusive deals and
+              turn your closet into cash.
+            </p>
+          </div>
+          <div className="w-full max-w-[400px] mx-auto space-y-4">
+            <Input
+              className="p-2"
+              placeholder="Enter your email"
+              type="email"
+            />
+            <Button className="w-full bg-gray-900 text-gray-50">Sign Up</Button>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

@@ -37,9 +37,25 @@ export class UsersService {
   findAll() {
     return `This action returns all users`;
   }
+  async findById(id: number) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: { id: id },
+      });
+      if (!user) throw new ConflictException('User does not exists');
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw new Error('Internal Server Error');
+    }
+  }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findByEmail(email: string): Promise<any> {
+    return await this.prisma.user.findFirst({
+      where: {
+        email: email,
+      },
+    });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
