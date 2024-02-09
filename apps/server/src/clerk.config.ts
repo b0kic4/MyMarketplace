@@ -1,8 +1,7 @@
 // clerk.config.ts
-import Clerk from '@clerk/clerk-sdk-node/esm/instance';
-
+import { Clerk } from '@clerk/backend';
 export const clerkConfig = {
-  apiKey: process.env.CLERK_SECRET_KEY,
+  secreyKey: process.env.CLERK_SECRET_KEY,
 };
 
-export const myClerk = Clerk({ apiKey: clerkConfig.apiKey });
+export const myClerk = Clerk({ secretKey: clerkConfig.secreyKey });
