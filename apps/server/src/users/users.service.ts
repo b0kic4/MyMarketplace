@@ -3,7 +3,6 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { hash } from 'bcrypt';
-import clerkClient from '@clerk/clerk-sdk-node';
 import { myClerk } from '@server/clerk.config';
 @Injectable()
 export class UsersService {

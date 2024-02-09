@@ -2,7 +2,7 @@
 import { Badge } from "@/components/ui/badge";
 import { BarChartIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
-import { FaHome, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaHome, FaInbox, FaShoppingCart, FaUser } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 import {
   CardTitle,
@@ -23,7 +23,7 @@ export default function Sidebar() {
       </div>
       <div className="grid gap-1 text-sm">
         <Link
-          href="/"
+          href="/products"
           className={`flex items-center gap-3 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 ${pathname === "/products" ? "bg-gray-100 dark:bg-gray-800/50" : ""}`}
         >
           <FaHome className="h-4 w-4" />
@@ -52,6 +52,13 @@ export default function Sidebar() {
         >
           <BarChartIcon className="h-4 w-4" />
           Analytics
+        </Link>
+        <Link
+          className={`flex items-center gap-3 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50 ${pathname === "/analytics" ? "bg-gray-100 dark:bg-gray-800/50" : ""}`}
+          href="/inbox"
+        >
+          <FaInbox className="h-4 w-4" />
+          Inbox
         </Link>
       </div>
     </div>

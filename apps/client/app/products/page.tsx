@@ -63,22 +63,6 @@ export default function Page() {
                 </Badge>
               </Button>
             </nav>
-            <div className="mt-auto p-4">
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle>Upgrade to Pro</CardTitle>
-                  <CardDescription>
-                    Unlock all features and get unlimited access to our support
-                    team
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <Button className="w-full" size="sm">
-                    Upgrade
-                  </Button>
-                </CardContent>
-              </Card>
-            </div>
           </div>
           <div className="grid gap-4 md:gap-8 w-full">
             <div className="flex items-center gap-4 md:gap-8">

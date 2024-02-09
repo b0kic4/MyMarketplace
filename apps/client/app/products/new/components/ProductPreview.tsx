@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Images } from "../interfaces";
 import { Button } from "@/components/ui/button";
+import axios from "axios";
 interface Props {
   images: Images[];
   logoIndex: number | null;
@@ -18,6 +19,34 @@ interface Props {
   isChecked: boolean;
 }
 const ProductPreview: React.FC<Props> = (props) => {
+  const url = process.env.NEXT_PUBLIC_NESTJS_SERVER;
+
+  const handlePublish = async () => {
+    // Prepare data to send to the backend
+    const productData = {
+      title: props.title,
+      description: props.description,
+      categoryType: props.categoryType,
+      price: props.price,
+      sizes: props.sizes,
+      colors: props.colors,
+      material: props.material,
+      texture: props.texture,
+      stock: props.stock,
+      shippingInformation: props.shippingInformation,
+      isChecked: props.isChecked,
+    };
+    console.log("data that is being sent: ", productData);
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/products",
+        productData
+      );
+      console.log(response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
       <div className="border border-gray-200 rounded-lg p-4">
@@ -48,11 +77,15 @@ const ProductPreview: React.FC<Props> = (props) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col min-[400px]:flex-row gap-2">
+      <div className="flex mt-2 flex-col min-[400px]:flex-row gap-2">
         <Button variant="ghost" className="ml-auto min-w-[100px]" type="submit">
           Save as Draft
         </Button>
-        <Button className="ml-auto min-w-[100px] text-green-500" type="submit">
+        <Button
+          onClick={handlePublish}
+          className="ml-auto min-w-[100px] text-green-500"
+          type="submit"
+        >
           Publish
         </Button>
       </div>

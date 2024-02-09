@@ -12,14 +12,16 @@ export default function Component() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [categoryType, setCategoryType] = useState<string>("");
-  const [sizes, setSizes] = useState<string[]>([]);
-  const [colors, setColors] = useState<string[]>([]);
+  const [sizes, setSizes] = useState<string[]>([""]);
+  const [colors, setColors] = useState<string[]>([""]);
   const [material, setMaterial] = useState<string>("");
   const [texture, setTexture] = useState<string>("");
   const [stock, setStock] = useState<number>(1);
   const [shippingInformation, setShippingInformation] = useState<string>("");
   const [price, setPrice] = useState<string>("");
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+  const [isChecked, setIsChecked] = useState<boolean>(true);
+
+  // FIX COLOR CHANGE - ADD MENU OPTIONS FOR CHOSING COLORS
 
   const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedImages = Array.from(e.target.files || []);
@@ -52,11 +54,11 @@ export default function Component() {
   };
   const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newSize = e.target.value;
-    setSizes((prevSizes) => [...prevSizes, newSize]);
+    setSizes([newSize]);
   };
   const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
-    setColors((prevColors) => [...prevColors, newColor]);
+    setColors([newColor]); // Replace the entire array with the new color
   };
   const handleMaterialChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMaterial(e.target.value);

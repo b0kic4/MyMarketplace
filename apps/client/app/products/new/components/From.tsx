@@ -216,6 +216,7 @@ const Form: React.FC<Props> = (props) => {
             Availability
           </Label>
           <Switch.Root
+            defaultChecked
             className="w-[42px] active:none h-[25px] bg-blackA6 rounded-full relative shadow-[0_1px_5px] shadow-blackA4 focus:shadow-[0_0_0_1px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-default"
             id="airplane-mode"
             onCheckedChange={props.handleSwitchChange}
