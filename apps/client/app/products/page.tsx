@@ -1,7 +1,6 @@
 "use client";
 // https://v0.dev/r/ge7QyM20jYK
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import {
   CardTitle,
@@ -13,14 +12,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FiGrid, FiPackage } from "react-icons/fi";
-import { FaHome, FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
-import { BarChartIcon, ChevronRightIcon } from "@radix-ui/react-icons";
-import Sidebar from "./_components/Sidebar";
+import { FaSearch } from "react-icons/fa";
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 export default function Page() {
-  const pathname = usePathname();
   return (
     <div className="flex w-full min-h-screen">
-      {/* <Sidebar /> */}
       <div className="flex-1 flex flex-col min-h-screen">
         <header className="flex h-14 items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
           <Link className="lg:hidden" href="#">
@@ -41,7 +37,9 @@ export default function Page() {
               </div>
             </form>
           </div>
-          <Button>New Product</Button>
+          <Button>
+            <Link href={"/products/new"}>New Product</Link>
+          </Button>
         </header>
         <main className="flex-1 flex flex-col md:flex-row gap-4 md:gap-8 p-4 md:p-6">
           <div className="hidden border-r bg-gray-100/40 md:block dark:bg-gray-800/40 w-[250px]">
