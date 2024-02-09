@@ -54,21 +54,6 @@ export default function Sidebar() {
           Analytics
         </Link>
       </div>
-      <div className="mt-auto w-full">
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle>Upgrade to Pro</CardTitle>
-            <CardDescription>
-              Unlock all features and get unlimited access to our support team
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button className="w-full" size="sm">
-              Upgrade
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
