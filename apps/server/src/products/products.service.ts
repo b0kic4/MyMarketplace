@@ -34,20 +34,14 @@ export class ProductService {
         throw new ConflictException('Product already exists');
       }
 
-      // Process and upload images to Firebase
-      const processedImages = await this.processAndUploadImages(
-        createProductDto.images,
-      );
-
       // Create the new product with updated image URLs
-      const newProduct = await this.prisma.product.create({
-        data: {
-          ...createProductDto,
-          images: processedImages,
-        },
-      });
-
-      return newProduct;
+      // const newProduct = await this.prisma.product.create({
+      //   data: {
+      //     createProductDto,
+      //   },
+      // });
+      throw new Error('erorr');
+      // return newProduct;
     } catch (error) {
       this.logger.error(error.message, error.stack);
       throw new HttpException(
@@ -55,24 +49,5 @@ export class ProductService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-  }
-
-  private async processAndUploadImages(
-    images: { file: Express.Multer.File; isLogo: boolean }[],
-  ): Promise<string[]> {
-    const processedImageUrls: string[] = [];
-
-    for (const image of images) {
-      if (image.file) {
-        // Upload the image to Firebase and get the URL
-        const imageUrl = await this.firebaseService.uploadImage(
-          image.file,
-          image.isLogo,
-        );
-        // Save the URL and isLogo information to the processedImageUrls array
-        processedImageUrls.push(`${imageUrl},${image.isLogo}`);
-      }
-    }
-    return processedImageUrls;
   }
 }

@@ -24,7 +24,7 @@ model Product {
   id                  Int      @id @default(autoincrement())
   title               String
   description         String
-  images              String[]
+  images              Json
   categoryType        String
   price               String
   sizes               String

@@ -6,7 +6,10 @@ import * as express from 'express';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    cors: true,
+    cors: {
+      origin: true,
+      credentials: true,
+    },
   });
   app.use(express.json({ limit: '50mb' }));
 
@@ -14,11 +17,7 @@ async function bootstrap() {
   app.enableCors();
 
   // Use global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: true,
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   // Set up tRPC router
   const trpc = app.get(TrpcRouter);

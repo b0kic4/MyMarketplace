@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Images } from "../interfaces";
 import { Button } from "@/components/ui/button";
@@ -19,35 +20,42 @@ interface Props {
   isChecked: boolean;
 }
 const ProductPreview: React.FC<Props> = (props) => {
-  const url = process.env.NEXT_PUBLIC_NESTJS_SERVER;
+  const [responseImages, setResponseImages] = useState<string[]>([]);
 
   const handlePublish = async () => {
-    // Prepare data to send to the backend
-    const productData = {
-      title: props.title,
-      description: props.description,
-      categoryType: props.categoryType,
-      price: props.price,
-      images: props.images,
-      sizes: props.sizes,
-      colors: props.colors,
-      material: props.material,
-      texture: props.texture,
-      stock: props.stock,
-      shippingInformation: props.shippingInformation,
-      isChecked: props.isChecked,
-    };
-    console.log("data that is being sent: ", productData);
     try {
-      const response = await axios.post(
-        "http://localhost:4000/products",
-        productData
-      );
+      // Upload images to Firebase Cloud Storage
+      const formData = new FormData();
+
+      // Append product data
+      const productData = {
+        images: props.images.map((image, index) => ({
+          file: image.file,
+          isLogo: index === props.logoIndex,
+        })),
+      };
+
+      formData.append("productData", JSON.stringify(productData));
+
+      // Append each image file
+      props.images.forEach((image, index) => {
+        formData.append(`image_${index}`, image.file);
+      });
+
+      // Send data to the backend using FormData
+      const response = await axios.post("/api/products", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setResponseImages(response.data.imageUrls);
       console.log(response);
     } catch (error) {
       console.error("Error:", error);
     }
   };
+
   return (
     <>
       <div className="border border-gray-200 rounded-lg p-4">
