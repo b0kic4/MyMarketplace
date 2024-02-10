@@ -2,7 +2,7 @@ export class CreateProductDto {
   id: number;
   title: string;
   description: string;
-  images: { file: File; isLogo: boolean }[];
+  images: { file: Express.Multer.File; isLogo: boolean }[];
   categoryType: string;
   price: string;
   sizes: string;

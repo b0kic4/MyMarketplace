@@ -10,7 +10,6 @@ import { PrismaService } from '@server/prisma-service/prisma.service';
 import { FirebaseService } from '@server/firebase.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Product } from '@prisma/client';
-
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -22,6 +21,7 @@ export class ProductService {
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
     try {
+      console.log('received data: ', createProductDto);
       // Check if the product already exists
       const existingProduct = await this.prisma.product.findFirst({
         where: {
@@ -58,7 +58,7 @@ export class ProductService {
   }
 
   private async processAndUploadImages(
-    images: { file: File | null; isLogo: boolean }[],
+    images: { file: Express.Multer.File; isLogo: boolean }[],
   ): Promise<string[]> {
     const processedImageUrls: string[] = [];
 
@@ -67,14 +67,12 @@ export class ProductService {
         // Upload the image to Firebase and get the URL
         const imageUrl = await this.firebaseService.uploadImage(
           image.file,
-          image.file.name,
+          image.isLogo,
         );
-
         // Save the URL and isLogo information to the processedImageUrls array
         processedImageUrls.push(`${imageUrl},${image.isLogo}`);
       }
     }
-
     return processedImageUrls;
   }
 }

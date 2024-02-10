@@ -2,11 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { initializeApp } from 'firebase/app';
 import { getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import sharp from 'sharp';
-import {
-  BlobServiceClient,
-  StorageSharedKeyCredential,
-  AnonymousCredential,
-} from '@azure/storage-blob';
 
 @Injectable()
 export class FirebaseService {
@@ -27,22 +22,22 @@ export class FirebaseService {
     this.storage = getStorage(app);
   }
 
-  async uploadImage(file: Blob, filename: string): Promise<string> {
+  async uploadImage(
+    file: Express.Multer.File,
+    isLogo: boolean,
+  ): Promise<string> {
     try {
-      const fileBuffer = await this.blobToBuffer(file);
+      const storageRef = ref(this.storage, `images/${file.originalname}`);
+      const metadata = { contentType: file.mimetype };
 
-      // Convert the image to WebP format
-      const webpBuffer = await sharp(fileBuffer).webp().toBuffer();
+      // Upload the file to Firebase Cloud Storage
+      await uploadBytes(storageRef, file.buffer, metadata);
 
-      const storageRef = ref(this.storage, `products-images/${filename}`);
-
-      // Upload the WebP file
-      await uploadBytes(storageRef, webpBuffer, { contentType: 'image/webp' });
-
-      // Get the public URL of the uploaded file
+      // Get the download URL
       const url = await getDownloadURL(storageRef);
 
-      return url;
+      // Return the URL
+      return `${url},${isLogo}`;
     } catch (error) {
       console.error('Error uploading image to Firebase:', error);
 
@@ -51,22 +46,6 @@ export class FirebaseService {
       } else {
         throw new Error('Failed to upload image to Firebase');
       }
-    }
-  }
-
-  private async blobToBuffer(blob: Blob): Promise<Buffer> {
-    try {
-      if (blob.arrayBuffer) {
-        const arrayBuffer = await blob.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        return buffer;
-      } else {
-        // If arrayBuffer method is not available, handle it accordingly
-        throw new Error('Blob.arrayBuffer method is not supported');
-      }
-    } catch (error) {
-      console.error('Error converting Blob to Buffer:', error);
-      throw new Error('Failed to convert Blob to Buffer');
     }
   }
 }
