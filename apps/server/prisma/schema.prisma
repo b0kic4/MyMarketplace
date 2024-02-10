@@ -27,8 +27,8 @@ model Product {
   images              String[]
   categoryType        String
   price               String
-  sizes               String[]
-  colors              String[]
+  sizes               String
+  colors              String
   material            String
   texture             String
   stock               Int

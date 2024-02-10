@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Images } from "./interfaces";
 import Form from "./components/From";
 import ProductPreview from "./components/ProductPreview";
+import imageCompression from "browser-image-compression";
 
 export default function Component() {
   const [images, setImages] = useState<Images[]>([]);
@@ -12,8 +13,8 @@ export default function Component() {
   const [title, setTitle] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [categoryType, setCategoryType] = useState<string>("");
-  const [sizes, setSizes] = useState<string[]>([""]);
-  const [colors, setColors] = useState<string[]>([""]);
+  const [sizes, setSizes] = useState<string>("");
+  const [colors, setColors] = useState<string>("");
   const [material, setMaterial] = useState<string>("");
   const [texture, setTexture] = useState<string>("");
   const [stock, setStock] = useState<number>(1);
@@ -23,27 +24,50 @@ export default function Component() {
 
   // FIX COLOR CHANGE - ADD MENU OPTIONS FOR CHOSING COLORS
 
-  const handleImageSelect = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedImages = Array.from(e.target.files || []);
-    const newImages: Images[] = selectedImages.map((file) => ({
-      file,
-      isLogo: false,
-    }));
 
-    setImages([...images, ...newImages]);
+    try {
+      const compressedImages: Images[] = await Promise.all(
+        selectedImages.map(async (file, index) => {
+          // Set compression options
+          const options = {
+            maxSizeMB: 0.35,
+            maxWidthOrHeight: 1920,
+          };
 
-    if (logoIndex === null && newImages.length > 0) {
-      setLogoIndex(0);
+          // Compress the image
+          const compressedFile = await imageCompression(file, options);
+
+          return {
+            file: compressedFile,
+            isLogo: logoIndex === null && index === 0,
+          };
+        })
+      );
+
+      setImages([...images, ...compressedImages]);
+
+      if (logoIndex === null && compressedImages.length > 0) {
+        setLogoIndex(0);
+      }
+    } catch (error) {
+      console.error("Image compression error:", error);
     }
   };
 
   const handleSetLogo = (index: number) => {
+    setImages((prevImages) =>
+      prevImages.map((image, i) => ({
+        ...image,
+        isLogo: i === index,
+      }))
+    );
     setLogoIndex(index);
   };
 
   const handleRemoveImage = (index: number) => {
-    const updatedImages = [...images];
-    updatedImages.splice(index, 1);
+    const updatedImages = images.filter((_, i) => i !== index);
 
     // If removed image is the logo, update the logo index
     if (index === logoIndex) {
@@ -54,11 +78,11 @@ export default function Component() {
   };
   const handleSizeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newSize = e.target.value;
-    setSizes([newSize]);
+    setSizes(newSize);
   };
   const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newColor = e.target.value;
-    setColors([newColor]); // Replace the entire array with the new color
+    setColors(newColor); // Replace the entire array with the new color
   };
   const handleMaterialChange = (e: ChangeEvent<HTMLInputElement>) => {
     setMaterial(e.target.value);

@@ -10,8 +10,8 @@ interface Props {
   description: string;
   categoryType: string;
   price: string;
-  sizes: string[];
-  colors: string[];
+  sizes: string;
+  colors: string;
   material: string;
   texture: string;
   stock: number;
@@ -28,6 +28,7 @@ const ProductPreview: React.FC<Props> = (props) => {
       description: props.description,
       categoryType: props.categoryType,
       price: props.price,
+      images: props.images,
       sizes: props.sizes,
       colors: props.colors,
       material: props.material,
