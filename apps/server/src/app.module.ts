@@ -7,7 +7,6 @@ import { UsersModule } from './users/users.module';
 import { PrismaService } from './prisma-service/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
-import { FirebaseService } from './firebase.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -17,6 +16,6 @@ import { FirebaseService } from './firebase.service';
     ProductsModule,
   ],
   controllers: [AppController],
-  providers: [AppService, PrismaService, FirebaseService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}

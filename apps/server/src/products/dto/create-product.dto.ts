@@ -1,8 +1,14 @@
+import { IsBoolean, IsString } from 'class-validator';
+
+class ImageDto {
+  isLogo: boolean | string;
+  imageUrl: string;
+}
 export class CreateProductDto {
   id: number;
   title: string;
   description: string;
-  images: { file: Express.Multer.File; isLogo: boolean }[];
+  images: { isLogosAndImageUrls: ImageDto[] };
   categoryType: string;
   price: string;
   sizes: string;

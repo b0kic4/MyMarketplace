@@ -1,12 +1,13 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import { Images } from "./interfaces";
 import Form from "./components/From";
 import ProductPreview from "./components/ProductPreview";
 import imageCompression from "browser-image-compression";
-
+import { useUser } from "@clerk/nextjs";
+import axios from "axios";
 export default function Component() {
   const [images, setImages] = useState<Images[]>([]);
   const [logoIndex, setLogoIndex] = useState<number | null>(null);
@@ -21,7 +22,6 @@ export default function Component() {
   const [shippingInformation, setShippingInformation] = useState<string>("");
   const [price, setPrice] = useState<string>("");
   const [isChecked, setIsChecked] = useState<boolean>(true);
-
   // FIX COLOR CHANGE - ADD MENU OPTIONS FOR CHOSING COLORS
 
   const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {

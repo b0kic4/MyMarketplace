@@ -1,12 +1,18 @@
+// CreateUserDto.ts
 import { IsEmail, IsString } from 'class-validator';
+class EmailAddress {
+  emailAddress: string;
+  // You can add other properties if needed
+}
 
 export class CreateUserDto {
-  @IsString()
-  name: string;
-  @IsString()
+  id: string;
   username: string;
-  @IsEmail()
-  email: string;
-  @IsString()
-  password: string;
+  imageUrl: string;
+
+  emailAddress: string;
+
+  emailAddresses: EmailAddress[];
+
+  fullName: string;
 }

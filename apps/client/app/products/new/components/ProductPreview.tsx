@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Images } from "../interfaces";
 import { Button } from "@/components/ui/button";
@@ -19,9 +19,14 @@ interface Props {
   shippingInformation: string;
   isChecked: boolean;
 }
-const ProductPreview: React.FC<Props> = (props) => {
-  const [responseImages, setResponseImages] = useState<string[]>([]);
 
+interface IsLogoAndImageUrl {
+  isLogo: boolean;
+  imageUrl: string;
+}
+
+const ProductPreview: React.FC<Props> = (props) => {
+  const [logoAndImageUrls, setLogoAndImageUrls] = useState<IsLogoAndImageUrl>();
   const handlePublish = async () => {
     try {
       // Upload images to Firebase Cloud Storage
@@ -31,16 +36,26 @@ const ProductPreview: React.FC<Props> = (props) => {
       const productData = {
         images: props.images.map((image, index) => ({
           file: image.file,
-          isLogo: index === props.logoIndex,
+          isLogo: !!(index === props.logoIndex),
         })),
       };
 
       formData.append("productData", JSON.stringify(productData));
 
+      // Append isLogo property separately
+      props.images.forEach((image, index) => {
+        formData.append(
+          `isLogo_${index}`,
+          index === props.logoIndex ? "true" : "false"
+        );
+      });
+
       // Append each image file
       props.images.forEach((image, index) => {
         formData.append(`image_${index}`, image.file);
       });
+
+      console.log("data that is being sent from fontend: ", formData);
 
       // Send data to the backend using FormData
       const response = await axios.post("/api/products", formData, {
@@ -48,14 +63,46 @@ const ProductPreview: React.FC<Props> = (props) => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      setResponseImages(response.data.imageUrls);
-      console.log(response);
+      setLogoAndImageUrls(response.data);
     } catch (error) {
       console.error("Error:", error);
     }
   };
 
+  useEffect(() => {
+    const sendProductData = async () => {
+      const url = process.env.NEXT_PUBLIC_NESTJS_URL;
+      const finalProductData = {
+        title: props.title,
+        description: props.description,
+        categoryType: props.categoryType,
+        images: logoAndImageUrls,
+        price: props.price,
+        sizes: props.sizes,
+        colors: props.colors,
+        material: props.material,
+        texture: props.texture,
+        stock: props.stock,
+        shippingInformation: props.shippingInformation,
+        isChecked: props.isChecked,
+      };
+
+      if (logoAndImageUrls) {
+        try {
+          const response = await axios.post(
+            `${url}/products`,
+            finalProductData
+          );
+          console.log(response);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    // Call the asynchronous function immediately
+    sendProductData();
+  }, [logoAndImageUrls]);
   return (
     <>
       <div className="border border-gray-200 rounded-lg p-4">

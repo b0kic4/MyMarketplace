@@ -17,15 +17,32 @@ import {
   useUser,
 } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
 export default function Navbar() {
+  const user = useUser();
+  const url = process.env.NEXT_PUBLIC_NESTJS_URL;
+  const appendUserToDatabase = async () => {
+    try {
+      const response = await axios.post(`${url}/user`, user.user);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    appendUserToDatabase();
+  }, [user.user?.id]);
+
   const pathName = usePathname();
   const links = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
     { label: "Categories", href: "/categories" },
   ];
-  const user = useUser();
+
   return (
     <header className="flex items-center h-16 px-4 md:px-6 w-full border-b">
       <Popover>

@@ -2,35 +2,33 @@ import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@server/prisma-service/prisma.service';
-import { hash } from 'bcrypt';
 import { myClerk } from '@server/clerk.config';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
     try {
-      const user = await this.prisma.user.findFirst({
+      console.log(createUserDto);
+      const existingUser = await this.prisma.user.findFirst({
         where: {
-          email: createUserDto.email,
+          clerkUserId: createUserDto.id,
         },
       });
-
-      if (user) {
-        throw new ConflictException('User with this email already exists');
-      }
-
-      const newUser = await this.prisma.user.create({
+      if (existingUser) return;
+      const primaryEmailAddress =
+        createUserDto.emailAddresses?.[0]?.emailAddress || '';
+      const appendedUser = await this.prisma.user.create({
         data: {
-          ...createUserDto,
-          password: await hash(createUserDto.password, 10),
+          email: primaryEmailAddress,
+          clerkUserId: createUserDto.id,
+          fullName: createUserDto.fullName,
+          imageUrl: createUserDto.imageUrl,
+          username: createUserDto.username,
         },
       });
-
-      const { password, ...result } = newUser;
-      return result;
+      console.log(appendedUser);
     } catch (error) {
-      console.error('Prisma Error:', error);
-      throw new Error('Internal Server Error');
+      console.log(error);
     }
   }
 
