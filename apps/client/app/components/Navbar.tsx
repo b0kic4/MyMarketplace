@@ -8,16 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { IoMenu } from "react-icons/io5";
 import { FaMountain } from "react-icons/fa";
-import {
-  currentUser,
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 
 export default function Navbar() {
@@ -25,8 +18,7 @@ export default function Navbar() {
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const appendUserToDatabase = async () => {
     try {
-      const response = await axios.post(`${url}/user`, user.user);
-      console.log(response);
+      await axios.post(`${url}/user`, user.user);
     } catch (error) {
       console.log(error);
     }

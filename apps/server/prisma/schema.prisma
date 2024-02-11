@@ -37,6 +37,7 @@ model Product {
   stock               Int
   shippingInformation String
   isChecked           Boolean
+  isUsed              Boolean
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   userId              Int

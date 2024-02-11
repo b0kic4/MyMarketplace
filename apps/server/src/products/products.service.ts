@@ -32,6 +32,7 @@ export class ProductService {
         shippingInformation,
         isChecked,
         userId,
+        isUsed,
       } = createProductDto;
       const prismaUser = await this.prisma.user.findFirst({
         where: {
@@ -60,12 +61,29 @@ export class ProductService {
             })),
           },
           userId: prismaUser?.id,
+          isUsed,
         },
       });
 
       return newProduct;
     } catch (error) {
       this.logger.error(error.message, error.stack);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async getProducts() {
+    try {
+      const products = await this.prisma.product.findMany({
+        include: {
+          images: true,
+        },
+      });
+      return products;
+    } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,

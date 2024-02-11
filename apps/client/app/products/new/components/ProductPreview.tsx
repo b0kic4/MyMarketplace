@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import Spinner from "@client/app/components/Loading";
 interface Props {
   images: Images[];
   logoIndex: number | null;
@@ -31,10 +33,28 @@ interface IsLogoAndImageUrl {
 
 const ProductPreview: React.FC<Props> = (props) => {
   const user = useUser();
+  const router = useRouter();
   const [logoAndImageUrls, setLogoAndImageUrls] = useState<IsLogoAndImageUrl>();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
+      if (
+        props.title === "" ||
+        props.description === "" ||
+        props.categoryType === "" ||
+        props.price === "" ||
+        props.sizes === "" ||
+        props.colors === "" ||
+        props.material === "" ||
+        props.texture === "" ||
+        props.shippingInformation === ""
+      ) {
+        return toast.error("Please provide valid form values!", {
+          position: "top-left",
+          theme: "dark",
+        });
+      }
       // Upload images to Firebase Cloud Storage
       const formData = new FormData();
 
@@ -61,15 +81,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         formData.append(`image_${index}`, image.file);
       });
 
-      console.log("data that is being sent from fontend: ", formData);
-
       // Send data to the backend using FormData
-      if (props.hasErrors) {
-        toast.error("Please provide valid form values", {
-          position: "top-left",
-          theme: "dark",
-        });
-      }
       const response = await axios.post("/api/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -98,17 +110,37 @@ const ProductPreview: React.FC<Props> = (props) => {
         shippingInformation: props.shippingInformation,
         isChecked: props.isChecked,
         userId: user.user?.id,
+        isUsed: props.isUsed,
       };
 
-      if (logoAndImageUrls) {
+      if (logoAndImageUrls && !props.hasErrors) {
         try {
+          setIsLoading(true);
           const response = await axios.post(
             `${url}/products`,
             finalProductData
           );
-          console.log(response);
-        } catch (error) {
-          console.error(error);
+          console.log("response status: ", response.status);
+          if (response.status === 201) {
+            toast.success("Product has been successfully created!", {
+              position: "top-right",
+              theme: "dark",
+            });
+            router.push("/products");
+          } else {
+            toast.error("Image property is missing!", {
+              position: "top-left",
+              theme: "dark",
+            });
+          }
+        } catch (error: any) {
+          toast.error(error.message, {
+            position: "top-left",
+            theme: "dark",
+          });
+          setIsLoading(false);
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -151,13 +183,17 @@ const ProductPreview: React.FC<Props> = (props) => {
         <Button variant="ghost" className="ml-auto min-w-[100px]" type="submit">
           Save as Draft
         </Button>
-        <Button
-          onClick={handlePublish}
-          className="ml-auto min-w-[100px] text-green-500"
-          type="submit"
-        >
-          Publish
-        </Button>
+        {!isLoading ? (
+          <Button
+            onClick={handlePublish}
+            className="ml-auto min-w-[100px] text-green-500"
+            type="submit"
+          >
+            Publish
+          </Button>
+        ) : (
+          <Spinner />
+        )}
       </div>
     </>
   );

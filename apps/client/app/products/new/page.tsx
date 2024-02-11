@@ -1,9 +1,10 @@
 "use client";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, Suspense, useState } from "react";
 import { Images } from "./interfaces";
 import Form from "./components/Form";
 import ProductPreview from "./components/ProductPreview";
 import imageCompression from "browser-image-compression";
+import Spinner from "@client/app/components/Loading";
 export default function Component() {
   // State Hooks
   const [images, setImages] = useState<Images[]>([]);
@@ -33,10 +34,11 @@ export default function Component() {
   const [stockError, setStockError] = useState<string>("");
   const [categoryTypeError, setCategoryTypeError] = useState<string>("");
   const [descriptionError, setDescriptionError] = useState<string>("");
+  const [hasErrors, setHasErrors] = useState<boolean>(false);
+
+  // Event Handlers
   const handleImageSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const selectedImages = Array.from(e.target.files || []);
-
-    // Event Handlers
 
     try {
       const compressedImages: Images[] = await Promise.all(
@@ -98,7 +100,7 @@ export default function Component() {
     }
 
     setSizeError(sizeError);
-    setHasErrors(true);
+    setHasErrors(!!sizeError);
   };
 
   const handleColorChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -112,7 +114,7 @@ export default function Component() {
     }
 
     setColorError(colorError);
-    setHasErrors(true);
+    setHasErrors(!!colorError);
   };
 
   const handleMaterialChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -130,7 +132,7 @@ export default function Component() {
     }
 
     setMaterialError(materialError);
-    setHasErrors(true);
+    setHasErrors(!!materialError);
   };
 
   const handleTextureChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +149,7 @@ export default function Component() {
     }
 
     setTextureError(textureError);
-    setHasErrors(true);
+    setHasErrors(!!textureError);
   };
 
   const handleStockChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -161,7 +163,7 @@ export default function Component() {
     }
 
     setStockError(stockError);
-    setHasErrors(true);
+    setHasErrors(!!stockError);
   };
   const handleShippingInformationChange = (
     e: ChangeEvent<HTMLTextAreaElement>
@@ -180,7 +182,7 @@ export default function Component() {
     }
 
     setShippingInformationError(shippingInformationError);
-    setHasErrors(true);
+    setHasErrors(!!shippingInformationError);
   };
 
   const handleTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -194,7 +196,7 @@ export default function Component() {
     }
 
     setTitleError(titleError);
-    setHasErrors(true);
+    setHasErrors(!!titleError);
   };
   const handleCategoryTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newCategoryType = e.target.value;
@@ -212,7 +214,7 @@ export default function Component() {
 
     // Pass the error to the state
     setCategoryTypeError(categoryTypeError);
-    setHasErrors(true);
+    setHasErrors(!!categoryTypeError);
   };
   const handleDescriptionChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newDescription = e.target.value;
@@ -230,19 +232,18 @@ export default function Component() {
 
     // Pass the error to the state
     setDescriptionError(descriptionError);
-    setHasErrors(true);
+    setHasErrors(!!descriptionError);
   };
   const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newPrice = parseInt(e.target.value, 10);
     let priceErrorProvided = "";
     if (!isNaN(newPrice)) {
-      setStock(newPrice);
       setPrice(e.target.value);
     } else {
       priceErrorProvided = "Please provide a valid stock value";
     }
     setPriceError(priceErrorProvided);
-    setHasErrors(true);
+    setHasErrors(!!priceErrorProvided);
   };
   const handleSwitchChange = (
     newCheckedState: boolean | ((prevState: boolean) => boolean)
@@ -257,61 +258,63 @@ export default function Component() {
 
   // Check for errors
 
-  const [hasErrors, setHasErrors] = useState<boolean>(false);
-
   return (
     <div className="grid md:grid-cols-2 gap-6 items-start max-w-3xl px-4 mx-auto py-6">
       <div className="md:col-span-1">
-        <Form
-          images={images}
-          setImages={setImages}
-          logoIndex={logoIndex}
-          setLogoIndex={setLogoIndex}
-          handleSetLogo={handleSetLogo}
-          handleRemoveImage={handleRemoveImage}
-          handleSizeChange={handleSizeChange}
-          handleColorChange={handleColorChange}
-          handleMaterialChange={handleMaterialChange}
-          handleTextureChange={handleTextureChange}
-          handleShippingInformationChange={handleShippingInformationChange}
-          handleTitleChange={handleTitleChange}
-          handleCategoryTypeChange={handleCategoryTypeChange}
-          handlePriceChange={handlePriceChange}
-          handleDescriptionChange={handleDescriptionChange}
-          handleStockChange={handleStockChange}
-          handleSwitchChange={handleSwitchChange}
-          handleConditionChange={handleConditionChange}
-          handleImageSelect={handleImageSelect}
-          colorError={colorError}
-          materialError={materialError}
-          priceError={priceError}
-          shippingInformationError={shippingInformationError}
-          sizeError={sizeError}
-          stockError={stockError}
-          textureError={textureError}
-          titleError={titleError}
-          categoryTypeError={categoryTypeError}
-          descriptionError={descriptionError}
-        />
+        <Suspense fallback={<Spinner />}>
+          <Form
+            images={images}
+            setImages={setImages}
+            logoIndex={logoIndex}
+            setLogoIndex={setLogoIndex}
+            handleSetLogo={handleSetLogo}
+            handleRemoveImage={handleRemoveImage}
+            handleSizeChange={handleSizeChange}
+            handleColorChange={handleColorChange}
+            handleMaterialChange={handleMaterialChange}
+            handleTextureChange={handleTextureChange}
+            handleShippingInformationChange={handleShippingInformationChange}
+            handleTitleChange={handleTitleChange}
+            handleCategoryTypeChange={handleCategoryTypeChange}
+            handlePriceChange={handlePriceChange}
+            handleDescriptionChange={handleDescriptionChange}
+            handleStockChange={handleStockChange}
+            handleSwitchChange={handleSwitchChange}
+            handleConditionChange={handleConditionChange}
+            handleImageSelect={handleImageSelect}
+            colorError={colorError}
+            materialError={materialError}
+            priceError={priceError}
+            shippingInformationError={shippingInformationError}
+            sizeError={sizeError}
+            stockError={stockError}
+            textureError={textureError}
+            titleError={titleError}
+            categoryTypeError={categoryTypeError}
+            descriptionError={descriptionError}
+          />
+        </Suspense>
       </div>
       <div className="md:col-span-1">
-        <ProductPreview
-          isUsed={isUsed}
-          images={images}
-          logoIndex={logoIndex}
-          title={title}
-          description={description}
-          categoryType={categoryType}
-          price={price}
-          sizes={sizes}
-          colors={colors}
-          material={material}
-          texture={texture}
-          stock={stock}
-          shippingInformation={shippingInformation}
-          isChecked={isChecked}
-          hasErrors={hasErrors}
-        />
+        <Suspense fallback={<Spinner />}>
+          <ProductPreview
+            isUsed={isUsed}
+            images={images}
+            logoIndex={logoIndex}
+            title={title}
+            description={description}
+            categoryType={categoryType}
+            price={price}
+            sizes={sizes}
+            colors={colors}
+            material={material}
+            texture={texture}
+            stock={stock}
+            shippingInformation={shippingInformation}
+            isChecked={isChecked}
+            hasErrors={hasErrors}
+          />
+        </Suspense>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Body, ConflictException, Controller, Post } from '@nestjs/common';
+import { Body, ConflictException, Controller, Get, Post } from '@nestjs/common';
 import {
   ApiResponse,
   ApiTags,
@@ -30,5 +30,9 @@ export class ProductController {
     }
 
     return this.productService.create(createProductDto);
+  }
+  @Get()
+  async getProducts() {
+    return this.productService.getProducts();
   }
 }

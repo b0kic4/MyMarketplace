@@ -12,7 +12,9 @@ export default function ProductsLayout({
   const showSidebar =
     pathname.startsWith("/products/orders") ||
     pathname.startsWith("/products") ||
-    pathname.startsWith("/products/analytics");
+    pathname.startsWith("/products/my-products") ||
+    pathname.startsWith(`/products/:id`) ||
+    pathname.startsWith(`/products/used-products`);
   return (
     <div className="flex w-full min-h-screen">
       {showSidebar && <Sidebar />}

@@ -19,4 +19,5 @@ export class CreateProductDto {
   shippingInformation: string;
   isChecked: boolean;
   userId: string;
+  isUsed: boolean;
 }

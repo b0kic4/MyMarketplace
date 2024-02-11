@@ -48,7 +48,6 @@ export class UsersService {
   }
 
   async findByEmail(email: string, username: string): Promise<any> {
-    console.log('this is console log for the route - findByEmail');
     if (email && !username)
       return await this.prisma.user.findFirst({
         where: {
