@@ -1,0 +1,25 @@
+{
+  "name": "marketplace",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "workspaces": [
+    "apps/client",
+    "apps/server"
+  ],
+  "scripts": {
+    "//": "use npm run --filter server build or dev or production",
+    "dev": "npm run dev:client & npm run dev:server",
+    "dev:client": "cd apps/client && npm run dev",
+    "dev:server": "cd apps/server && npm run dev",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@trpc/client": "^10.45.0",
+    "@trpc/server": "^10.45.0",
+    "faker": "^6.6.6",
+    "zod": "^3.22.4"
+  }
+}
