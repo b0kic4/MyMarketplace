@@ -5,6 +5,7 @@ import { Images } from "../interfaces";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import { useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 interface Props {
   images: Images[];
   logoIndex: number | null;
@@ -19,6 +20,8 @@ interface Props {
   stock: number;
   shippingInformation: string;
   isChecked: boolean;
+  isUsed: boolean;
+  hasErrors: boolean;
 }
 
 interface IsLogoAndImageUrl {
@@ -29,6 +32,7 @@ interface IsLogoAndImageUrl {
 const ProductPreview: React.FC<Props> = (props) => {
   const user = useUser();
   const [logoAndImageUrls, setLogoAndImageUrls] = useState<IsLogoAndImageUrl>();
+  // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
       // Upload images to Firebase Cloud Storage
@@ -60,6 +64,12 @@ const ProductPreview: React.FC<Props> = (props) => {
       console.log("data that is being sent from fontend: ", formData);
 
       // Send data to the backend using FormData
+      if (props.hasErrors) {
+        toast.error("Please provide valid form values", {
+          position: "top-left",
+          theme: "dark",
+        });
+      }
       const response = await axios.post("/api/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -133,6 +143,7 @@ const ProductPreview: React.FC<Props> = (props) => {
             <p>
               Availability: {props.isChecked ? "Available" : "Out of Stock"}
             </p>
+            <p>Condition: {props.isUsed ? "Used" : "New"}</p>
           </div>
         </div>
       </div>

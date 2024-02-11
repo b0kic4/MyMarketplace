@@ -3,10 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import Navbar from "./components/Navbar";
+import { ToastContainer } from "./components/ToastContainer";
 const inter = Inter({ subsets: ["latin"] });
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
-  title: "CartClick",
+  title: "MyMarketplace",
   // description: "",
 };
 
@@ -18,7 +19,10 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en">
-        <body className={inter.className}>{children}</body>
+        <body className={inter.className}>
+          {children}
+          <ToastContainer />
+        </body>
       </html>
     </ClerkProvider>
   );

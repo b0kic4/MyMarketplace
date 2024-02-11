@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import Sidebar from "./_components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import Navbar from "../components/Navbar";
 export default function ProductsLayout({
   children,

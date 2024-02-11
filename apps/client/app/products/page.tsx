@@ -2,18 +2,12 @@
 // https://v0.dev/r/ge7QyM20jYK
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  Card,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FiGrid, FiPackage } from "react-icons/fi";
 import { FaSearch } from "react-icons/fa";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
+import Image from "next/image";
 export default function Page() {
   return (
     <div className="flex w-full min-h-screen">
@@ -62,6 +56,12 @@ export default function Page() {
                   4
                 </Badge>
               </Button>
+              <Button className="w-full text-left font-medium" variant="ghost">
+                My Products
+                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                  1
+                </Badge>
+              </Button>
             </nav>
           </div>
           <div className="grid gap-4 md:gap-8 w-full">
@@ -82,7 +82,7 @@ export default function Page() {
                 <Link className="absolute inset-0 z-10" href="#">
                   <span className="sr-only">View</span>
                 </Link>
-                <img
+                <Image
                   alt="Cover image"
                   className="rounded-lg object-cover w-full aspect-square group-hover:opacity-50 transition-opacity"
                   height={200}
@@ -124,7 +124,7 @@ export default function Page() {
                 <Link className="absolute inset-0 z-10" href="#">
                   <span className="sr-only">View</span>
                 </Link>
-                <img
+                <Image
                   alt="Cover image"
                   className="rounded-lg object-cover w-full aspect-square group-hover:opacity-50 transition-opacity"
                   height={200}

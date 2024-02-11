@@ -4,15 +4,7 @@ import { BarChartIcon } from "@radix-ui/react-icons";
 import Link from "next/link";
 import { FaHome, FaInbox, FaShoppingCart, FaUser } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
-import {
-  CardTitle,
-  CardDescription,
-  CardHeader,
-  CardContent,
-  Card,
-} from "@/components/ui/card";
 import { usePathname } from "next/navigation";
-import { Button } from "@/components/ui/button";
 export default function Sidebar() {
   const pathname = usePathname();
   return (

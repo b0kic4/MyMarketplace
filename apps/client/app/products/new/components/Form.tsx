@@ -33,6 +33,19 @@ interface Props {
     newCheckedState: boolean | ((prevState: boolean) => boolean)
   ) => void;
   handleImageSelect: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleConditionChange: (
+    newCheckedState: boolean | ((prevState: boolean) => boolean)
+  ) => void;
+  sizeError: string;
+  colorError: string;
+  materialError: string;
+  textureError: string;
+  shippingInformationError: string;
+  titleError: string;
+  priceError: string;
+  stockError: string;
+  categoryTypeError: string;
+  descriptionError: string;
 }
 
 const Form: React.FC<Props> = (props) => {
@@ -50,6 +63,9 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleTitleChange}
             required
           />
+          {props.titleError && (
+            <p className="text-red-500 text-sm mt-1">{props.titleError}</p>
+          )}
         </div>
         <div>
           <Label className="text-sm" htmlFor="description">
@@ -61,6 +77,11 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleDescriptionChange}
             required
           />
+          {props.descriptionError && (
+            <p className="text-red-500 text-sm mt-1">
+              {props.descriptionError}
+            </p>
+          )}
         </div>
         <div>
           <Label className="text-sm" htmlFor="category">
@@ -73,6 +94,11 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleCategoryTypeChange}
             required
           />
+          {props.categoryTypeError && (
+            <p className="text-red-500 text-sm mt-1">
+              {props.categoryTypeError}
+            </p>
+          )}
         </div>
         <div>
           <div>
@@ -93,7 +119,7 @@ const Form: React.FC<Props> = (props) => {
                 className="border border-dashed border-gray-200 rounded-lg p-4 flex items-center justify-center cursor-pointer"
                 htmlFor="images"
               >
-                <ImageIcon className="w-6 h-6 fill-muted" />
+                <ImageIcon className="w-6 h-6 fill-muted mr-1" />
                 <span className="text-sm text-gray-500">Upload</span>
               </label>
               {props.images.map((image, index) => (
@@ -139,6 +165,9 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleSizeChange}
             required
           />
+          {props.sizeError && (
+            <p className="text-red-500 text-sm mt-1">{props.sizeError}</p>
+          )}
         </div>
         <div>
           <Label className="text-sm" htmlFor="color">
@@ -151,6 +180,9 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleColorChange}
             required
           />
+          {props.colorError && (
+            <p className="text-red-500 text-sm mt-1">{props.colorError}</p>
+          )}
         </div>
         <div>
           <Label className="text-sm" htmlFor="material">
@@ -162,7 +194,11 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleMaterialChange}
             placeholder="Enter the primary material"
           />
+          {props.materialError && (
+            <p className="text-red-500 text-sm mt-1">{props.materialError}</p>
+          )}
         </div>
+
         <div>
           <Label className="text-sm" htmlFor="texture">
             Texture
@@ -173,6 +209,9 @@ const Form: React.FC<Props> = (props) => {
             onChange={props.handleTextureChange}
             placeholder="Enter the texture"
           />
+          {props.textureError && (
+            <p className="text-red-500 text-sm mt-1">{props.textureError}</p>
+          )}
         </div>
       </div>
       <div className="grid gap-4">
@@ -183,10 +222,14 @@ const Form: React.FC<Props> = (props) => {
           <Input
             id="price"
             className="h-10"
+            type="number"
             placeholder="Enter the price"
             onChange={props.handlePriceChange}
             required
           />
+          {props.priceError && (
+            <p className="text-red-500 text-sm mt-1">{props.priceError}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <Label className="text-sm" htmlFor="quantity">
@@ -195,10 +238,14 @@ const Form: React.FC<Props> = (props) => {
           <Input
             id="quantity"
             className="h-10"
+            type="number"
             onChange={props.handleStockChange}
             placeholder="Enter the available quantity"
             required
           />
+          {props.stockError && (
+            <p className="text-red-500 text-sm mt-1">{props.stockError}</p>
+          )}
         </div>
         <div className="grid gap-2">
           <Label className="text-sm" htmlFor="shipping">
@@ -210,6 +257,11 @@ const Form: React.FC<Props> = (props) => {
             placeholder="Enter shipping information"
             required
           />
+          {props.shippingInformationError && (
+            <p className="text-red-500 text-sm mt-1">
+              {props.shippingInformationError}
+            </p>
+          )}
         </div>
         <div className="flex items-center gap-2">
           <Label className="text-sm" htmlFor="availability">
@@ -220,6 +272,18 @@ const Form: React.FC<Props> = (props) => {
             className="w-[42px] active:none h-[25px] bg-blackA6 rounded-full relative shadow-[0_1px_5px] shadow-blackA4 focus:shadow-[0_0_0_1px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-default"
             id="airplane-mode"
             onCheckedChange={props.handleSwitchChange}
+          >
+            <Switch.Thumb className="block w-[21px] active:none h-[21px] bg-white rounded-full shadow-[0_1px_3px] shadow-blackA4 transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
+          </Switch.Root>
+        </div>
+        <div className="flex items-center gap-2">
+          <Label className="text-sm" htmlFor="condition">
+            Condition
+          </Label>
+          <Switch.Root
+            className="w-[42px] active:none h-[25px] bg-blackA6 rounded-full relative shadow-[0_1px_5px] shadow-blackA4 focus:shadow-[0_0_0_1px] focus:shadow-black data-[state=checked]:bg-black outline-none cursor-default"
+            id="condition"
+            onCheckedChange={props.handleConditionChange}
           >
             <Switch.Thumb className="block w-[21px] active:none h-[21px] bg-white rounded-full shadow-[0_1px_3px] shadow-blackA4 transition-transform duration-100 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[19px]" />
           </Switch.Root>

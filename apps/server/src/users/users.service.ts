@@ -3,13 +3,11 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { myClerk } from '@server/clerk.config';
-import { clients, sessions } from '@clerk/clerk-sdk-node';
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
     try {
-      console.log(createUserDto);
       const existingUser = await this.prisma.user.findFirst({
         where: {
           clerkUserId: createUserDto.id,
@@ -27,7 +25,6 @@ export class UsersService {
           username: createUserDto.username,
         },
       });
-      console.log(appendedUser);
     } catch (error) {
       console.log(error);
     }
