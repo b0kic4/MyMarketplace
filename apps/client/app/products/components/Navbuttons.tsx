@@ -1,10 +1,18 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import React from "react";
-import { FaClock, FaDollarSign } from "react-icons/fa";
+import { FaBookmark, FaClock, FaDollarSign } from "react-icons/fa";
 import { FiGrid, FiPackage } from "react-icons/fi";
+import { Badge } from "@/components/ui/badge";
+interface NavbuttonsProps {
+  onFilterAll: () => void;
+  onFilterNewArrivals: () => void;
+  onFilterUsedItems: () => void;
+  onFilterSaved: () => void;
+  handleFilterMyProducts: () => void;
+}
 
-const Navbuttons = () => {
+const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
   return (
     <>
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
@@ -13,11 +21,10 @@ const Navbuttons = () => {
           <Button
             className="border-gray-200 dark:border-gray-800"
             variant="outline"
+            onClick={props.onFilterAll}
           >
-            <Link className="flex" href={"/products"}>
-              <FiGrid className="h-4 w-4 mr-2" />
-              All Products
-            </Link>
+            <FiGrid className="h-4 w-4 mr-2" />
+            All Products
           </Button>
         </div>
       </div>
@@ -25,29 +32,34 @@ const Navbuttons = () => {
         <Button
           className="border-gray-200 dark:border-gray-800"
           variant="outline"
+          onClick={props.onFilterNewArrivals}
         >
-          <Link className="flex" href={"/products/new-arrivals"}>
-            <FaClock className="h-4 w-4 mr-2" />
-            New Arrivals
-          </Link>
+          <FaClock className="h-4 w-4 mr-2" />
+          New Arrivals
         </Button>
         <Button
           className="border-gray-200 dark:border-gray-800"
           variant="outline"
+          onClick={props.onFilterUsedItems}
         >
-          <Link className="flex" href={"/products/used-products"}>
-            <FaDollarSign className="h-4 w-4 mr-2" />
-            Used Items
-          </Link>
+          <FaDollarSign className="h-4 w-4 mr-2" />
+          Used Items
         </Button>
         <Button
           className="border-gray-200 dark:border-gray-800"
           variant="outline"
+          onClick={props.handleFilterMyProducts}
         >
-          <Link className="flex" href={"/products/my-products"}>
-            <FiPackage className="h-4 w-4 mr-2" />
-            My Products
-          </Link>
+          <FiPackage className="h-4 w-4 mr-2" />
+          My Products
+        </Button>
+        <Button
+          className="border-gray-200 dark:border-gray-800"
+          variant="outline"
+          onClick={props.onFilterSaved}
+        >
+          <FaBookmark className="h-4 w-4 mr-2" />
+          Saved
         </Button>
       </div>
     </>

@@ -198,21 +198,23 @@ export default function Component() {
     setTitleError(titleError);
     setHasErrors(!!titleError);
   };
-  const handleCategoryTypeChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newCategoryType = e.target.value;
+  const handleCategoryTypeChange = (
+    newCategoryType: string | ChangeEvent<HTMLInputElement>
+  ) => {
     let categoryTypeError = "";
 
     if (
-      (newCategoryType.length >= 3 && newCategoryType.length < 30) ||
+      (typeof newCategoryType === "string" &&
+        newCategoryType.length > 0 &&
+        newCategoryType.length < 50) ||
       newCategoryType === ""
     ) {
-      setCategoryType(newCategoryType);
+      setCategoryType(newCategoryType as string);
     } else {
       categoryTypeError =
-        "Category must be at least 3 characters long and less than 30 characters";
+        "Category must be at least 1 characters long and less than 30 characters";
     }
 
-    // Pass the error to the state
     setCategoryTypeError(categoryTypeError);
     setHasErrors(!!categoryTypeError);
   };

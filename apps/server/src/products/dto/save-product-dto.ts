@@ -2,9 +2,10 @@ class ImageDto {
   isLogo: boolean | string;
   imageUrl: string;
 }
-export class CreateProductDto {
+export class SaveProductDto {
   id: number;
   title: string;
+  productId?: number;
   description: string;
   images: { isLogosAndImageUrls: ImageDto[] };
   categoryType: string;

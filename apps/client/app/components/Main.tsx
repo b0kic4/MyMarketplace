@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { ProductImage, Products } from "../products/new/interfaces";
 import Spinner from "./Loading";
+import Link from "next/link";
 
 export default function Main() {
   const [products, setProducts] = useState<Products[]>([]);
@@ -67,36 +68,40 @@ export default function Main() {
               {!isLoading ? (
                 products.slice(0, 4).map((product) => (
                   <Card key={product.id}>
-                    <CardContent className="p-4">
-                      <div className="grid w-full grid-cols-1 items-start gap-4">
-                        {product.images.map((image: ProductImage) =>
-                          image.isLogo === true || image.isLogo === "true" ? (
-                            <Image
-                              key={image.id}
-                              alt={product.title}
-                              className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
-                              height={300}
-                              src={image.imageUrl || "/placeholder.svg"}
-                              width={300}
-                            />
-                          ) : null
-                        )}
-                        <div className="space-y-2">
-                          <h3 className="text-xl font-bold">{product.title}</h3>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {product.description}
-                          </p>
+                    <Link href={`/products/${product.id}`}>
+                      <CardContent className="p-4">
+                        <div className="grid w-full grid-cols-1 items-start gap-4">
+                          {product.images.map((image: ProductImage) =>
+                            image.isLogo === true || image.isLogo === "true" ? (
+                              <Image
+                                key={image.id}
+                                alt={product.title}
+                                className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                                height={300}
+                                src={image.imageUrl || "/placeholder.svg"}
+                                width={300}
+                              />
+                            ) : null
+                          )}
+                          <div className="space-y-2">
+                            <h3 className="text-xl font-bold">
+                              {product.title}
+                            </h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {product.description}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex items-center justify-between p-4">
-                      <span className="text-xl font-bold">
-                        ${product.price}
-                      </span>
-                      <Button size="sm" variant="outline">
-                        View Details
-                      </Button>
-                    </CardFooter>
+                      </CardContent>
+                      <CardFooter className="flex items-center justify-between p-4">
+                        <span className="text-xl font-bold">
+                          ${product.price}
+                        </span>
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                      </CardFooter>
+                    </Link>
                   </Card>
                 ))
               ) : (

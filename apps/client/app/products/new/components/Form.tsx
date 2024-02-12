@@ -10,6 +10,16 @@ import {
   DrawingPinFilledIcon,
 } from "@radix-ui/react-icons";
 import { Images } from "../interfaces";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { parentCategories } from "./categories";
+import { Button } from "@/components/ui/button";
 interface Props {
   images: Images[];
   setImages: React.Dispatch<React.SetStateAction<Images[]>>;
@@ -26,7 +36,7 @@ interface Props {
     e: ChangeEvent<HTMLTextAreaElement>
   ) => void;
   handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  handleCategoryTypeChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleCategoryTypeChange: (e: ChangeEvent<HTMLInputElement> | string) => void;
   handleDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   handlePriceChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSwitchChange: (
@@ -83,17 +93,33 @@ const Form: React.FC<Props> = (props) => {
             </p>
           )}
         </div>
-        <div>
+        <div className="flex items-center gap-2">
           <Label className="text-sm" htmlFor="category">
             Category/Type
           </Label>
-          <Input
-            id="category"
-            className="h-10"
-            placeholder="Enter the category"
-            onChange={props.handleCategoryTypeChange}
-            required
-          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">Open</Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuSeparator />
+            <DropdownMenuContent className="bg-white p-2 text-xl w-56">
+              <DropdownMenuLabel>Choose</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {parentCategories.map((category) => (
+                <>
+                  <DropdownMenuItem
+                    className="text-base"
+                    key={category}
+                    onSelect={() => props.handleCategoryTypeChange(category)}
+                  >
+                    {category}
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                </>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {props.categoryTypeError && (
             <p className="text-red-500 text-sm mt-1">
               {props.categoryTypeError}

@@ -39,6 +39,7 @@ const ProductPreview: React.FC<Props> = (props) => {
   // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
+      setIsLoading(true);
       if (
         props.title === "" ||
         props.description === "" ||
@@ -89,7 +90,10 @@ const ProductPreview: React.FC<Props> = (props) => {
       });
       setLogoAndImageUrls(response.data);
     } catch (error) {
+      setIsLoading(false);
       console.error("Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -180,17 +184,23 @@ const ProductPreview: React.FC<Props> = (props) => {
         </div>
       </div>
       <div className="flex mt-2 flex-col min-[400px]:flex-row gap-2">
-        <Button variant="ghost" className="ml-auto min-w-[100px]" type="submit">
-          Save as Draft
-        </Button>
         {!isLoading ? (
-          <Button
-            onClick={handlePublish}
-            className="ml-auto min-w-[100px] text-green-500"
-            type="submit"
-          >
-            Publish
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              className="ml-auto min-w-[100px]"
+              type="submit"
+            >
+              Save as Draft
+            </Button>
+            <Button
+              onClick={handlePublish}
+              className="ml-auto min-w-[100px] text-green-500"
+              type="submit"
+            >
+              Publish
+            </Button>
+          </div>
         ) : (
           <Spinner />
         )}

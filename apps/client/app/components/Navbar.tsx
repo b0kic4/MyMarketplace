@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { IoMenu } from "react-icons/io5";
-import { FaMountain } from "react-icons/fa";
+import { FaMountain, FaShoppingCart } from "react-icons/fa";
 import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
@@ -88,10 +88,17 @@ export default function Navbar() {
         </nav>
       </div>
       <div className="ml-auto flex items-center gap-4">
-        <SignedIn>
-          {user && user.user?.username}
-          <UserButton />
-        </SignedIn>
+        <div>
+          <Button>
+            <FaShoppingCart />
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <SignedIn>
+            {user && user.user?.username}
+            <UserButton />
+          </SignedIn>
+        </div>
       </div>
     </header>
   );
