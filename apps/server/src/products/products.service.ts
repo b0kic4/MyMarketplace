@@ -177,4 +177,24 @@ export class ProductService {
       );
     }
   }
+  async findById(id: number): Promise<Product> {
+    try {
+      const product = await this.prisma.product.findUnique({
+        where: { id: id },
+        include: {
+          images: true,
+          user: true,
+        },
+      });
+      if (!product) {
+        throw new ConflictException('Product not found');
+      }
+      return product;
+    } catch (error) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

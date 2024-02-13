@@ -88,11 +88,6 @@ export default function Navbar() {
         </nav>
       </div>
       <div className="ml-auto flex items-center gap-4">
-        <div>
-          <Button>
-            <FaShoppingCart />
-          </Button>
-        </div>
         <div className="flex items-center gap-2">
           <SignedIn>
             {user && user.user?.username}

@@ -10,73 +10,62 @@ import axios from "axios";
 import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { FaBookmark, FaRegBookmark } from "react-icons/fa";
+import { FaBookmark, FaRegBookmark, FaShoppingCart } from "react-icons/fa";
 import Spinner from "../components/Loading";
 import { toast } from "react-toastify";
+import Listingtext from "./components/Listingtext";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
-  const [initialProducts, setInitialProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
   const [filter, setFilter] = useState<string>("all");
+  const [countAllProducts, setCountAllProducts] = useState<number>();
+  const [countUsedItems, setCountUsedItems] = useState<number>();
+  const [countMyProducts, setCountMyProducts] = useState<number>();
+  const [countNewArrivals, setCountNewArrivals] = useState<number>();
+  const [coundSavedProducts, setCountSavedProducts] = useState<number>();
 
+  // data fetching
   const getProducts = async () => {
     try {
       setLoading(true);
       const response = await axios.get(`${url}/products`);
       const prod = response.data;
-      setInitialProducts(prod);
-      switch (filter) {
-        case "all": {
-          const shuffledProducts = response.data.sort(
-            () => Math.random() - 0.5
-          );
-          setProducts(shuffledProducts);
-          break;
-        }
-        case "newArrivals": {
-          const oneWeekAgo = new Date();
-          oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-          const filteredProducts = initialProducts.filter((product) => {
-            return new Date(product.createdAt) >= oneWeekAgo;
-          });
+      // count length of all the products
+      setCountAllProducts(prod.length);
 
-          setProducts(filteredProducts);
-          break;
-        }
-        case "usedItems": {
-          const filteredProducts = initialProducts.filter((product) => {
-            return product.isUsed === true;
-          });
-          setProducts(filteredProducts);
-          break;
-        }
-        case "my-products": {
-          const filteredProducts = initialProducts.filter((product) => {
-            return product.user.clerkUserId === user.user?.id;
-          });
-          setProducts(filteredProducts);
-          break;
-        }
-        case "saved-products": {
-          const filteredProduct = initialProducts.filter((product) => {
-            return product.savedByUsers.find(
-              (u) => u.clerkUserId === user.user?.id
-            );
-          });
-          setProducts(filteredProduct);
-          break;
-        }
-        default: {
-          const shuffledProducts = response.data.sort(
-            () => Math.random() - 0.5
-          );
-          setProducts(shuffledProducts);
-          break;
-        }
-      }
+      // count of new arrivals products
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+      const filteredNewProducts = prod.filter((product: Products) => {
+        return new Date(product.createdAt) >= oneWeekAgo;
+      });
+      setCountNewArrivals(filteredNewProducts.length);
+
+      // count of used products
+      const filteredUsedProducts = prod.filter((product: Products) => {
+        return product.isUsed === true;
+      });
+      setCountUsedItems(filteredUsedProducts.length);
+
+      // count of saved Products
+      const filteredBookmarkedProdcuts = prod.filter((product: Products) => {
+        return product.savedByUsers.find(
+          (u) => u.clerkUserId === user.user?.id
+        );
+      });
+      setCountSavedProducts(filteredBookmarkedProdcuts.length);
+
+      // count my products
+      const filteredMyProducts = prod.filter((product: Products) => {
+        return product.user.clerkUserId === user.user?.id;
+      });
+      setCountMyProducts(filteredMyProducts.length);
+
+      // Apply filtering based on the current state
+      applyFilter(prod);
     } catch (error) {
       setLoading(false);
       console.log(error);
@@ -85,10 +74,58 @@ export default function Page() {
     }
   };
 
+  const applyFilter = (data: Products[]) => {
+    switch (filter) {
+      case "all": {
+        const shuffledProducts = data.sort(() => Math.random() - 0.5);
+        setProducts(shuffledProducts);
+        break;
+      }
+      case "newArrivals": {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const filteredProducts = data.filter((product) => {
+          return new Date(product.createdAt) >= oneWeekAgo;
+        });
+        setProducts(filteredProducts);
+        break;
+      }
+      case "usedItems": {
+        const filteredProducts = data.filter((product) => {
+          return product.isUsed === true;
+        });
+        setProducts(filteredProducts);
+        break;
+      }
+      case "my-products": {
+        const filteredProducts = data.filter((product) => {
+          return product.user.clerkUserId === user.user?.id;
+        });
+        setProducts(filteredProducts);
+        break;
+      }
+      case "saved-products": {
+        const filteredProduct = data.filter((product) => {
+          return product.savedByUsers.find(
+            (u) => u.clerkUserId === user.user?.id
+          );
+        });
+        setProducts(filteredProduct);
+        break;
+      }
+      default: {
+        const shuffledProducts = data.sort(() => Math.random() - 0.5);
+        setProducts(shuffledProducts);
+        break;
+      }
+    }
+  };
+
   useEffect(() => {
     getProducts();
-    console.log("products: ", products);
   }, [user.user?.id, filter]);
+
+  // ... rest of your code
 
   const handleFilterAll = () => setFilter("all");
   const handleFilterNewArrivals = () => setFilter("newArrivals");
@@ -143,15 +180,24 @@ export default function Page() {
   return (
     <div className="flex w-full min-h-screen">
       <div className="flex-1 flex flex-col min-h-screen">
+        {/* Headerbar for searching products */}
         <Headerbar />
         <section className="grid gap-6 md:gap-8 p-4 md:p-6">
+          {/* All products new arriavls etc... buttons */}
           <Navbuttons
             onFilterAll={handleFilterAll}
             onFilterNewArrivals={handleFilterNewArrivals}
             onFilterUsedItems={handleFilterUsedItems}
             onFilterSaved={handleFilterSaved}
             handleFilterMyProducts={handleFilterMyProducts}
+            countAllProducts={countAllProducts}
+            countUsedItems={countUsedItems}
+            countNewArrivals={countNewArrivals}
+            countSavedProducts={coundSavedProducts}
+            countMyProducts={countMyProducts}
           />
+          {/* Listing products text  */}
+          <Listingtext filter={filter} />
           <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             {!isLoading ? (
               products.map((product) => (
@@ -187,15 +233,20 @@ export default function Page() {
                           {product.user.username}
                         </p>
                       </div>
+                      <div className="flex">
+                        <Link href={`/products/${product.id}`}>
+                          <Button size="sm" variant="outline">
+                            View Details
+                          </Button>
+                        </Link>
+                      </div>
                     </div>
                   </CardContent>
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
                       <Button size="sm" variant="outline">
-                        <Link href={`/products/${product.id}`}>
-                          View Details
-                        </Link>
+                        Add to Cart
                       </Button>
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id

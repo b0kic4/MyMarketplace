@@ -3,6 +3,7 @@ import {
   ConflictException,
   Controller,
   Get,
+  Param,
   Post,
   Put,
 } from '@nestjs/common';
@@ -70,5 +71,9 @@ export class ProductController {
       throw new ConflictException('Product does not exist');
     }
     return this.productService.removeSavedProduct(saveProductDto);
+  }
+  @Get(':id')
+  async findOne(@Param('id') id: number) {
+    return await this.productService.findById(id);
   }
 }

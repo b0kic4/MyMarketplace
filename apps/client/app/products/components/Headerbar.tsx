@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import React from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { FiPackage, FiPlus } from "react-icons/fi";
 
 const Headerbar = () => {
@@ -26,12 +26,17 @@ const Headerbar = () => {
           </div>
         </form>
       </div>
-      <Button>
-        <Link className="flex items-center gap-2" href={"/products/new"}>
-          <FiPlus className="h-4 w-4" />
-          New Product
-        </Link>
-      </Button>
+      <div className="flex items-center gap-4 justify-center">
+        <Button>
+          <FaShoppingCart />
+        </Button>
+        <Button>
+          <Link className="flex items-center gap-2" href={"/products/new"}>
+            <FiPlus className="h-4 w-4" />
+            New Product
+          </Link>
+        </Button>
+      </div>
     </header>
   );
 };
