@@ -19,9 +19,17 @@ model User {
   fullName      String
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  // Define a one-to-many relationship from User to Product
   products      Product[] @relation("userProducts")
   savedProducts Product[] @relation("savedProducts")
+  cart          Cart?     @relation("userCart")
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  imageUrl  String?
+  isLogo    String?
+  productId Int?
+  product   Product? @relation(fields: [productId], references: [id])
 }
 
 model Product {
@@ -44,12 +52,38 @@ model Product {
   userId              Int
   user                User?    @relation(fields: [userId], references: [id], name: "userProducts")
   savedByUsers        User[]   @relation("savedProducts")
+  productCart         Cart?    @relation("productCart")
+  reviews             Review[]
 }
 
-model Image {
-  id        Int      @id @default(autoincrement())
-  imageUrl  String?
-  isLogo    String?
-  productId Int?
-  product   Product? @relation(fields: [productId], references: [id])
+model Cart {
+  id             Int             @id @default(autoincrement())
+  userId         Int @unique
+  productId      Int @unique
+  purchasedAt    DateTime?
+  deliveredAt    DateTime?
+  quantity       Int             @default(1)
+  user           User            @relation("userCart", fields: [userId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id], "productCart")
+  purchaseStatus PurchaseStatus?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  @@unique([userId, productId], name: "unique_user_product")
+}
+
+
+model Review {
+  id        Int     @id @default(autoincrement())
+  content   String
+  rating    Int
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+}
+
+enum PurchaseStatus {
+  NotPurchased
+  Purchased
+  Delivering
+  Delivered
 }

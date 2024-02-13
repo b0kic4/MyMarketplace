@@ -16,7 +16,8 @@ import {
 import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { SaveProductDto } from './dto/save-product-dto';
-import { Product } from '@prisma/client';
+import { Cart, Product } from '@prisma/client';
+import { AddProdcutToCart } from './dto/add-to-cart-product.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -75,5 +76,13 @@ export class ProductController {
   @Get(':id')
   async findOne(@Param('id') id: number) {
     return await this.productService.findById(id);
+  }
+  @Post('add-to-cart')
+  async addProdcutToCart(
+    @Body() addProdcutToCart: AddProdcutToCart,
+  ): Promise<Cart> {
+    if (!addProdcutToCart)
+      throw new ConflictException('Prodcut does not exists');
+    return await this.productService.addProductToCart(addProdcutToCart);
   }
 }

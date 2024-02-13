@@ -8,8 +8,9 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Product } from '@prisma/client';
+import { Cart, Product, PurchaseStatus } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
+import { AddProdcutToCart } from './dto/add-to-cart-product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -81,6 +82,8 @@ export class ProductService {
           images: true,
           user: true,
           savedByUsers: true,
+          productCart: true,
+          reviews: true,
         },
       });
       return products;
@@ -191,6 +194,56 @@ export class ProductService {
       }
       return product;
     } catch (error) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async addProductToCart(addProdcutToCart: AddProdcutToCart): Promise<Cart> {
+    try {
+      const prodcut = await this.prisma.product.findUnique({
+        where: {
+          id: Number(addProdcutToCart.id),
+        },
+      });
+      if (!prodcut) throw new ConflictException('Product does not exists');
+      const newCart = await this.prisma.cart.create({
+        data: {
+          productId: prodcut.id,
+          userId: Number(addProdcutToCart.userId),
+        },
+      });
+      const updateProduct = await this.prisma.product.update({
+        where: {
+          id: prodcut.id,
+        },
+        data: {
+          productCart: {
+            connect: {
+              id: newCart.id,
+            },
+          },
+        },
+      });
+      const updateCart = await this.prisma.cart.update({
+        where: {
+          id: newCart.id,
+          productId: prodcut.id,
+        },
+        data: {
+          purchaseStatus: {
+            set: PurchaseStatus.NotPurchased,
+          },
+          productId: updateProduct.id,
+          userId: Number(addProdcutToCart.userId),
+        },
+      });
+      console.log('updated Prodcut: ', updateProduct);
+      console.log('updated cart: ', updateCart);
+      return newCart;
+    } catch (error) {
+      console.log(error);
       throw new HttpException(
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,

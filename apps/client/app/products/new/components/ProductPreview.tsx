@@ -162,7 +162,7 @@ const ProductPreview: React.FC<Props> = (props) => {
               className="object-cover w-full h-60"
               height={300}
               width={400}
-              src={URL.createObjectURL(props.images[props.logoIndex].file)}
+              src={URL.createObjectURL(props?.images[props.logoIndex].file)}
             />
           )}
           <div>

@@ -41,7 +41,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
       setProduct(response.data);
     } catch (error: any) {
       setIsLoading(false);
-      toast.error(error.message, {
+      toast.error("Error has occured, please try again", {
         position: "top-left",
         theme: "dark",
       });

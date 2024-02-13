@@ -21,6 +21,20 @@ export interface User {
   updatedAt: string;
 }
 
+export interface Cart {
+  id: number;
+  userId: number;
+  productId: number;
+  purchasedAt: Date;
+  deliveredAt: Date;
+  quantity: number;
+  user: User;
+  product: Products[];
+  purchaseStatus: "NotPurchased" | "Purchased" | "Delivering" | "Delivered";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 export interface Products {
   id: number;
   title: string;
@@ -39,6 +53,7 @@ export interface Products {
   userId: string;
   isUsed: boolean;
   savedByUsers: User[];
+  Cart: Cart;
   createdAt: Date;
   updatedAt: Date;
 }

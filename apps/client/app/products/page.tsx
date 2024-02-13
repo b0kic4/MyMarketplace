@@ -25,6 +25,7 @@ export default function Page() {
   const [countMyProducts, setCountMyProducts] = useState<number>();
   const [countNewArrivals, setCountNewArrivals] = useState<number>();
   const [coundSavedProducts, setCountSavedProducts] = useState<number>();
+  const [countCartProducts, setCoundCartProducts] = useState<number>();
 
   // data fetching
   const getProducts = async () => {
@@ -64,6 +65,16 @@ export default function Page() {
       });
       setCountMyProducts(filteredMyProducts.length);
 
+      // count cart products
+      const filteredCartProducts = prod.filter(
+        (product: Products) => console.log(product)
+        // product?.Cart.product.find((prodcut) => {
+        //   console.log("product carts: ", prodcut),
+        //     prodcut.user.clerkUserId === user.user?.id;
+        // })
+      );
+      console.log("cart prodcuts: ", filteredCartProducts);
+      setCoundCartProducts(filteredCartProducts.length);
       // Apply filtering based on the current state
       applyFilter(prod);
     } catch (error) {
@@ -105,12 +116,21 @@ export default function Page() {
         break;
       }
       case "saved-products": {
-        const filteredProduct = data.filter((product) => {
+        const filteredProducts = data.filter((product) => {
           return product.savedByUsers.find(
             (u) => u.clerkUserId === user.user?.id
           );
         });
-        setProducts(filteredProduct);
+        setProducts(filteredProducts);
+        break;
+      }
+      case "cart": {
+        const filteredProdcuts = data.filter((product) => {
+          return product?.Cart.product.find((product) => {
+            product.user.clerkUserId === user.user?.id;
+          });
+        });
+        setProducts(filteredProdcuts);
         break;
       }
       default: {
@@ -133,6 +153,7 @@ export default function Page() {
   const handleFilterUsedItems = () => setFilter("usedItems");
   const handleFilterMyProducts = () => setFilter("my-products");
   const handleFilterSaved = () => setFilter("saved-products");
+  const handleFilterCart = () => setFilter("cart");
 
   const handleSaveProduct = async (productId: number) => {
     try {
@@ -170,9 +191,32 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
-      toast.error(error.message, {
+      toast.error("Removing bookmarked product failed", {
         position: "top-left",
         theme: "dark",
+      });
+    }
+  };
+
+  const handleAddToCart = async (productId: number) => {
+    try {
+      const foundProdcut = products.find((product) => product.id === productId);
+      const response = await axios.post(
+        `${url}/products/add-to-cart`,
+        foundProdcut
+      );
+      console.log(response);
+      if (response.status === 201) {
+        toast.success("Product added to cart successfully", {
+          position: "top-right",
+          theme: "dark",
+        });
+        getProducts();
+      }
+    } catch (error) {
+      toast.error("Adding to cart failed", {
+        theme: "dark",
+        position: "top-left",
       });
     }
   };
@@ -189,12 +233,14 @@ export default function Page() {
             onFilterNewArrivals={handleFilterNewArrivals}
             onFilterUsedItems={handleFilterUsedItems}
             onFilterSaved={handleFilterSaved}
+            handleFilterCart={handleFilterCart}
             handleFilterMyProducts={handleFilterMyProducts}
             countAllProducts={countAllProducts}
             countUsedItems={countUsedItems}
             countNewArrivals={countNewArrivals}
             countSavedProducts={coundSavedProducts}
             countMyProducts={countMyProducts}
+            countCartProducts={countCartProducts}
           />
           {/* Listing products text  */}
           <Listingtext filter={filter} />
@@ -235,7 +281,7 @@ export default function Page() {
                         {product.user.username}
                       </p>
                     </div>
-                    <div className="flex">
+                    <div className="flex py-1">
                       <Link href={`/products/${product.id}`}>
                         <Button size="sm" variant="outline">
                           View Details
@@ -246,7 +292,12 @@ export default function Page() {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <Button
+                        key={product.id}
+                        onClick={() => handleAddToCart(product.id)}
+                        size="sm"
+                        variant="outline"
+                      >
                         Add to Cart
                       </Button>
                       {product.savedByUsers.some(

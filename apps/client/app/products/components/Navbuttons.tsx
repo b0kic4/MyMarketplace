@@ -10,16 +10,20 @@ import {
 import { FiGrid, FiPackage } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
 interface NavbuttonsProps {
+  // handlers
   onFilterAll: () => void;
   onFilterNewArrivals: () => void;
   onFilterUsedItems: () => void;
   onFilterSaved: () => void;
   handleFilterMyProducts: () => void;
+  handleFilterCart: () => void;
+  // values
   countAllProducts: number | undefined;
   countUsedItems: number | undefined;
   countNewArrivals: number | undefined;
   countSavedProducts: number | undefined;
   countMyProducts: number | undefined;
+  countCartProducts: number | undefined;
 }
 
 const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
@@ -88,19 +92,17 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
               {props.countSavedProducts}
             </Badge>
           </Button>
-          <Link href={"/products/my-cart"}>
-            <Button
-              className="border-gray-200 gap-2 dark:border-gray-800"
-              variant="outline"
-              onClick={props.handleFilterMyProducts}
-            >
-              <FaShoppingCart />
-              Cart
-              <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                {props.countMyProducts}
-              </Badge>
-            </Button>
-          </Link>
+          <Button
+            className="border-gray-200 gap-2 dark:border-gray-800"
+            variant="outline"
+            onClick={props.handleFilterCart}
+          >
+            <FaShoppingCart />
+            Cart
+            <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+              {props.countCartProducts}
+            </Badge>
+          </Button>
         </div>
       </div>
     </div>
