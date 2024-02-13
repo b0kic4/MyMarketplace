@@ -8,15 +8,11 @@ import { FiPackage, FiPlus } from "react-icons/fi";
 const Headerbar = () => {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
-      <Link className="lg:hidden" href="#">
-        <FiPackage className="h-6 w-6" />
-        <span className="sr-only">Home</span>
-      </Link>
       <div className="w-full flex-1">
         <form>
           <div className="flex items-center">
             <Input
-              className="w-1/3 h-10 rounded-l-lg"
+              className="w-1/2 h-10 rounded-l-lg"
               placeholder="Search for products..."
               type="search"
             />
@@ -27,9 +23,6 @@ const Headerbar = () => {
         </form>
       </div>
       <div className="flex items-center gap-4 justify-center">
-        <Button>
-          <FaShoppingCart />
-        </Button>
         <Button>
           <Link className="flex items-center gap-2" href={"/products/new"}>
             <FiPlus className="h-4 w-4" />

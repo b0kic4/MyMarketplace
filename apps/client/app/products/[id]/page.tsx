@@ -38,7 +38,6 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
     try {
       setIsLoading(true);
       const response = await axios.get(`${url}/products/${productId}`);
-      console.log(response.data);
       setProduct(response.data);
     } catch (error: any) {
       setIsLoading(false);
@@ -46,7 +45,6 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
         position: "top-left",
         theme: "dark",
       });
-      console.log(error);
     } finally {
       setIsLoading(false);
     }

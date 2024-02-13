@@ -178,8 +178,8 @@ export default function Page() {
   };
 
   return (
-    <div className="flex w-full min-h-screen">
-      <div className="flex-1 flex flex-col min-h-screen">
+    <div className="flex flex-1 min-h-screen min-w-full">
+      <div className="flex-1 flex w-full flex-col min-h-screen">
         {/* Headerbar for searching products */}
         <Headerbar />
         <section className="grid gap-6 md:gap-8 p-4 md:p-6">
@@ -198,48 +198,49 @@ export default function Page() {
           />
           {/* Listing products text  */}
           <Listingtext filter={filter} />
-          <div className="grid sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
             {!isLoading ? (
               products.map((product) => (
-                <Card className="p-1">
+                <Card className="p-1" key={product.id}>
                   <CardContent className="p-4">
-                    <div className="grid w-full grid-cols-1 items-start gap-4">
-                      {product.images.map((image: ProductImage) =>
-                        image.isLogo === true || image.isLogo === "true" ? (
-                          <Image
-                            key={image.id}
-                            alt={product.title}
-                            className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
-                            height={500}
-                            src={image.imageUrl || "/placeholder.svg"}
-                            width={500}
-                          />
-                        ) : null
+                    <Link href={`/products/${product.id}`}>
+                      {product.images.map(
+                        (image: ProductImage, index: number) =>
+                          image.isLogo === true || image.isLogo === "true" ? (
+                            <Image
+                              key={index}
+                              alt={product.title}
+                              className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                              height={500}
+                              src={image.imageUrl || "/placeholder.svg"}
+                              width={500}
+                            />
+                          ) : null
                       )}
-                      <div className="flex flex-col space-y-2">
-                        <h3 className="text-xl font-bold">{product.title}</h3>
+                    </Link>
+                    <div className="flex flex-col space-y-2">
+                      <h3 className="text-xl font-bold">{product.title}</h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {product.description}
+                      </p>
+                      <div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                          {product.description}
-                        </p>
-                        <div>
-                          <p className="text-sm text-gray-500 dark:text-gray-400">
-                            Category: {product.categoryType}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex gap-1">
-                        <p className="text-gray-500">by:</p>
-                        <p className="text-gray-700 font-semibold">
-                          {product.user.username}
+                          Category: {product.categoryType}
                         </p>
                       </div>
-                      <div className="flex">
-                        <Link href={`/products/${product.id}`}>
-                          <Button size="sm" variant="outline">
-                            View Details
-                          </Button>
-                        </Link>
-                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <p className="text-gray-500">by:</p>
+                      <p className="text-gray-700 font-semibold">
+                        {product.user.username}
+                      </p>
+                    </div>
+                    <div className="flex">
+                      <Link href={`/products/${product.id}`}>
+                        <Button size="sm" variant="outline">
+                          View Details
+                        </Button>
+                      </Link>
                     </div>
                   </CardContent>
                   <CardFooter className="flex items-center justify-between p-4">
@@ -252,7 +253,6 @@ export default function Page() {
                         (u) => u.clerkUserId === user.user?.id
                       ) ? (
                         <Button
-                          key={product.id}
                           onClick={() => handleRemoveSavedProduct(product.id)}
                           size="sm"
                           variant="outline"
@@ -261,7 +261,6 @@ export default function Page() {
                         </Button>
                       ) : (
                         <Button
-                          key={product.id}
                           onClick={() => handleSaveProduct(product.id)}
                           size="sm"
                           variant="outline"
