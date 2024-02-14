@@ -58,7 +58,10 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   return (
     <div className="grid gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
       <div className="flex flex-col gap-2 items-start">
-        <Link className="text-base flex items-center gap-2" href="/products">
+        <Link
+          className="text-base flex font-bold items-center gap-2"
+          href="/products"
+        >
           <FaLongArrowAltLeft className="w-6 h-6" />
           Back to Products
         </Link>

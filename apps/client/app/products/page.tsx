@@ -28,7 +28,6 @@ export default function Page() {
   const [coundSavedProducts, setCountSavedProducts] = useState<number>();
   const [countCartProducts, setCountCartProducts] = useState<number>();
   const [cart, setCart] = useState<Cart>();
-
   // data fetching
   const getProducts = async () => {
     try {
@@ -204,7 +203,6 @@ export default function Page() {
         `${url}/products/add-to-cart`,
         foundProdcut
       );
-      console.log(response);
       if (response.status === 201) {
         toast.success("Product added to cart successfully", {
           position: "top-right",

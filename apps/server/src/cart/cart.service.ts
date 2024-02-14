@@ -40,7 +40,6 @@ export class CartService {
           user: true,
         },
       });
-      console.log('cart: ', cart);
       if (!cart) throw new ConflictException('Cart not found');
       return cart;
     } catch (error) {

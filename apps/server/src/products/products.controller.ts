@@ -85,4 +85,12 @@ export class ProductController {
       throw new ConflictException('Prodcut does not exists');
     return await this.productService.addProductToCart(addProdcutToCart);
   }
+  // change prodcut quantity
+  @Post('update-quantity')
+  async updateQuantity(
+    @Body('id') productId: number,
+    @Body('quantity') quantity: number,
+  ) {
+    return this.productService.updateQuantity(productId, quantity);
+  }
 }

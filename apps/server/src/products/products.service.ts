@@ -238,7 +238,7 @@ export class ProductService {
         },
       });
       if (cartProduct) {
-        const updateCartProduct = await this.prisma.cartProduct.update({
+        await this.prisma.cartProduct.update({
           where: {
             id: cartProduct.id,
             productId: prodcut.id,
@@ -259,6 +259,59 @@ export class ProductService {
         existingCartPorduct = createNewCartProduct;
       }
       return existingCart;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async updateQuantity(productId: number, quantity: number) {
+    try {
+      console.log('productId: ', productId);
+      console.log('quantity: ', quantity);
+      const findProdcut = await this.prisma.cartProduct.findUnique({
+        where: {
+          id: productId,
+        },
+      });
+
+      console.log(findProdcut);
+      if (!findProdcut) {
+        throw new Error('Cart Prodcut not found');
+      }
+      let quantityValue;
+      if (findProdcut?.quantity < quantity) {
+        quantityValue = quantity - findProdcut.quantity;
+        const updateProduct = await this.prisma.cartProduct.update({
+          where: {
+            id: productId,
+          },
+          data: {
+            purchaseStatus: 'NotPurchased',
+            quantity: {
+              increment: quantityValue,
+            },
+          },
+        });
+        console.log(updateProduct);
+        return updateProduct;
+      } else if (findProdcut.quantity > quantity) {
+        quantityValue = findProdcut.quantity - quantity;
+        const updateProduct = await this.prisma.cartProduct.update({
+          where: {
+            id: productId,
+          },
+          data: {
+            quantity: {
+              decrement: quantityValue,
+            },
+          },
+        });
+        console.log('quantity decremented: ', updateProduct);
+        return updateProduct;
+      }
     } catch (error) {
       console.log(error);
       throw new HttpException(
