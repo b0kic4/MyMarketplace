@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { FiGrid, FiPackage } from "react-icons/fi";
 import { Badge } from "@/components/ui/badge";
+import { Cart } from "../cart-products-interface";
 interface NavbuttonsProps {
   // handlers
   onFilterAll: () => void;
@@ -16,7 +17,6 @@ interface NavbuttonsProps {
   onFilterUsedItems: () => void;
   onFilterSaved: () => void;
   handleFilterMyProducts: () => void;
-  handleFilterCart: () => void;
   // values
   countAllProducts: number | undefined;
   countUsedItems: number | undefined;
@@ -24,6 +24,7 @@ interface NavbuttonsProps {
   countSavedProducts: number | undefined;
   countMyProducts: number | undefined;
   countCartProducts: number | undefined;
+  cart: Cart | undefined;
 }
 
 const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
@@ -92,17 +93,23 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
               {props.countSavedProducts}
             </Badge>
           </Button>
-          <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
-            variant="outline"
-            onClick={props.handleFilterCart}
+          <Link
+            href={{
+              pathname: "/products/cart",
+              query: { data: JSON.stringify(props.cart) },
+            }}
           >
-            <FaShoppingCart />
-            Cart
-            <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-              {props.countCartProducts}
-            </Badge>
-          </Button>
+            <Button
+              className="border-gray-200 gap-2 dark:border-gray-800"
+              variant="outline"
+            >
+              <FaShoppingCart />
+              Cart
+              <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                {props.countCartProducts}
+              </Badge>
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

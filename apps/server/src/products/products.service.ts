@@ -82,7 +82,7 @@ export class ProductService {
           images: true,
           user: true,
           savedByUsers: true,
-          productCart: true,
+          cart: true,
           reviews: true,
         },
       });
@@ -202,46 +202,63 @@ export class ProductService {
   }
   async addProductToCart(addProdcutToCart: AddProdcutToCart): Promise<Cart> {
     try {
+      // finding the product that is provided
       const prodcut = await this.prisma.product.findUnique({
         where: {
           id: Number(addProdcutToCart.id),
         },
       });
       if (!prodcut) throw new ConflictException('Product does not exists');
-      const newCart = await this.prisma.cart.create({
-        data: {
-          productId: prodcut.id,
+      const cart = await this.prisma.cart.findFirst({
+        where: {
           userId: Number(addProdcutToCart.userId),
         },
       });
-      const updateProduct = await this.prisma.product.update({
+
+      let existingCart;
+
+      if (cart) {
+        existingCart = cart;
+      } else {
+        const newCart = await this.prisma.cart.create({
+          data: {
+            productId: prodcut.id,
+            userId: Number(addProdcutToCart.userId),
+          },
+        });
+
+        existingCart = newCart;
+      }
+      let existingCartPorduct;
+      // create cart product when functionality is called
+      const cartProduct = await this.prisma.cartProduct.findFirst({
         where: {
-          id: prodcut.id,
+          cartId: existingCart.id,
+          productId: prodcut.id,
         },
-        data: {
-          productCart: {
-            connect: {
-              id: newCart.id,
+      });
+      if (cartProduct) {
+        const updateCartProduct = await this.prisma.cartProduct.update({
+          where: {
+            id: cartProduct.id,
+            productId: prodcut.id,
+          },
+          data: {
+            quantity: {
+              increment: 1,
             },
           },
-        },
-      });
-      const updateCart = await this.prisma.cart.update({
-        where: {
-          id: newCart.id,
-          productId: prodcut.id,
-        },
-        data: {
-          purchaseStatus: {
-            set: PurchaseStatus.NotPurchased,
+        });
+      } else {
+        const createNewCartProduct = await this.prisma.cartProduct.create({
+          data: {
+            cartId: existingCart.id,
+            productId: prodcut.id,
           },
-          productId: updateProduct.id,
-          userId: Number(addProdcutToCart.userId),
-        },
-      });
-      console.log('updated Prodcut: ', updateProduct);
-      console.log('updated cart: ', updateCart);
-      return newCart;
+        });
+        existingCartPorduct = createNewCartProduct;
+      }
+      return existingCart;
     } catch (error) {
       console.log(error);
       throw new HttpException(

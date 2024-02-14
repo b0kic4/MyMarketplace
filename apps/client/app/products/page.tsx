@@ -14,6 +14,7 @@ import { FaBookmark, FaRegBookmark, FaShoppingCart } from "react-icons/fa";
 import Spinner from "../components/Loading";
 import { toast } from "react-toastify";
 import Listingtext from "./components/Listingtext";
+import { CartProduct, Cart, Product } from "./cart-products-interface";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
@@ -25,7 +26,8 @@ export default function Page() {
   const [countMyProducts, setCountMyProducts] = useState<number>();
   const [countNewArrivals, setCountNewArrivals] = useState<number>();
   const [coundSavedProducts, setCountSavedProducts] = useState<number>();
-  const [countCartProducts, setCoundCartProducts] = useState<number>();
+  const [countCartProducts, setCountCartProducts] = useState<number>();
+  const [cart, setCart] = useState<Cart>();
 
   // data fetching
   const getProducts = async () => {
@@ -65,16 +67,6 @@ export default function Page() {
       });
       setCountMyProducts(filteredMyProducts.length);
 
-      // count cart products
-      const filteredCartProducts = prod.filter(
-        (product: Products) => console.log(product)
-        // product?.Cart.product.find((prodcut) => {
-        //   console.log("product carts: ", prodcut),
-        //     prodcut.user.clerkUserId === user.user?.id;
-        // })
-      );
-      console.log("cart prodcuts: ", filteredCartProducts);
-      setCoundCartProducts(filteredCartProducts.length);
       // Apply filtering based on the current state
       applyFilter(prod);
     } catch (error) {
@@ -82,6 +74,20 @@ export default function Page() {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getCart = async () => {
+    try {
+      const response = await axios.get(`${url}/cart`, {
+        params: {
+          userId: user.user?.id,
+        },
+      });
+      setCart(response.data);
+      setCountCartProducts(cart?.products.length);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -124,15 +130,6 @@ export default function Page() {
         setProducts(filteredProducts);
         break;
       }
-      case "cart": {
-        const filteredProdcuts = data.filter((product) => {
-          return product?.Cart.product.find((product) => {
-            product.user.clerkUserId === user.user?.id;
-          });
-        });
-        setProducts(filteredProdcuts);
-        break;
-      }
       default: {
         const shuffledProducts = data.sort(() => Math.random() - 0.5);
         setProducts(shuffledProducts);
@@ -143,9 +140,12 @@ export default function Page() {
 
   useEffect(() => {
     getProducts();
+    getCart();
   }, [user.user?.id, filter]);
 
-  // ... rest of your code
+  useEffect(() => {
+    setCountCartProducts(cart?.products.length);
+  }, [cart]);
 
   const handleFilterAll = () => setFilter("all");
   const handleFilterNewArrivals = () => setFilter("newArrivals");
@@ -153,7 +153,6 @@ export default function Page() {
   const handleFilterUsedItems = () => setFilter("usedItems");
   const handleFilterMyProducts = () => setFilter("my-products");
   const handleFilterSaved = () => setFilter("saved-products");
-  const handleFilterCart = () => setFilter("cart");
 
   const handleSaveProduct = async (productId: number) => {
     try {
@@ -211,7 +210,7 @@ export default function Page() {
           position: "top-right",
           theme: "dark",
         });
-        getProducts();
+        getCart();
       }
     } catch (error) {
       toast.error("Adding to cart failed", {
@@ -233,7 +232,6 @@ export default function Page() {
             onFilterNewArrivals={handleFilterNewArrivals}
             onFilterUsedItems={handleFilterUsedItems}
             onFilterSaved={handleFilterSaved}
-            handleFilterCart={handleFilterCart}
             handleFilterMyProducts={handleFilterMyProducts}
             countAllProducts={countAllProducts}
             countUsedItems={countUsedItems}
@@ -241,6 +239,7 @@ export default function Page() {
             countSavedProducts={coundSavedProducts}
             countMyProducts={countMyProducts}
             countCartProducts={countCartProducts}
+            cart={cart}
           />
           {/* Listing products text  */}
           <Listingtext filter={filter} />

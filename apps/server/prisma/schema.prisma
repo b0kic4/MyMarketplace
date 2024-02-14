@@ -21,6 +21,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   products      Product[] @relation("userProducts")
   savedProducts Product[] @relation("savedProducts")
+  cartId        Int?
   cart          Cart?     @relation("userCart")
 }
 
@@ -33,7 +34,7 @@ model Image {
 }
 
 model Product {
-  id                  Int      @id @default(autoincrement())
+  id                  Int           @id @default(autoincrement())
   title               String
   description         String
   images              Image[]
@@ -47,31 +48,43 @@ model Product {
   shippingInformation String
   isChecked           Boolean
   isUsed              Boolean
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
   userId              Int
-  user                User?    @relation(fields: [userId], references: [id], name: "userProducts")
-  savedByUsers        User[]   @relation("savedProducts")
-  productCart         Cart?    @relation("productCart")
+  user                User?         @relation(fields: [userId], references: [id], name: "userProducts")
+  savedByUsers        User[]        @relation("savedProducts")
+  cart                CartProduct[]
   reviews             Review[]
 }
 
 model Cart {
+  id          Int           @id @default(autoincrement())
+  userId      Int           @unique
+  productId   Int
+  purchasedAt DateTime?
+  deliveredAt DateTime?
+  quantity    Int           @default(1)
+  user        User?         @relation("userCart", fields: [userId], references: [id])
+  products    CartProduct[] @relation
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([userId, productId], name: "idx_user_product")
+}
+
+model CartProduct {
   id             Int             @id @default(autoincrement())
-  userId         Int @unique
-  productId      Int @unique
-  purchasedAt    DateTime?
-  deliveredAt    DateTime?
+  cartId         Int
+  productId      Int
   quantity       Int             @default(1)
-  user           User            @relation("userCart", fields: [userId], references: [id])
-  product        Product         @relation(fields: [productId], references: [id], "productCart")
   purchaseStatus PurchaseStatus?
+  cart           Cart            @relation(fields: [cartId], references: [id])
+  product        Product         @relation(fields: [productId], references: [id])
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 
-  @@unique([userId, productId], name: "unique_user_product")
+  @@index([cartId, productId], name: "idx_cart_product")
 }
-
 
 model Review {
   id        Int     @id @default(autoincrement())
