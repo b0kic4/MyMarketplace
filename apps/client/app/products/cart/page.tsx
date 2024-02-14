@@ -1,3 +1,4 @@
+// Import statements
 "use client";
 import { useSearchParams } from "next/navigation";
 import {
@@ -11,92 +12,123 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TrashIcon } from "@radix-ui/react-icons";
+import {
+  Cart,
+  CartProduct,
+  Product,
+  ProductImage,
+} from "../cart-products-interface";
+import Image from "next/image";
+import { useState } from "react";
+
+// Component
 export default function Component() {
   const searchParams = useSearchParams();
   const data = searchParams.get("data");
-  const cart = data ? JSON.parse(data) : null;
-  console.log("cart: ", cart);
-  //   const { data } = router.query;
+  const [cart, setCart] = useState<Cart | null>(data ? JSON.parse(data) : null);
 
-  //   // Check if data exists and convert it to a string if it's an array
-  //   const cartData = data ? (Array.isArray(data) ? data[0] : data) : null;
+  const handleQuantityChange = (cartProductId: number, newQuantity: number) => {
+    if (cart) {
+      const updatedCart = {
+        ...cart,
+        products: cart.products.map((cartProduct) =>
+          cartProduct.id === cartProductId
+            ? { ...cartProduct, quantity: newQuantity }
+            : cartProduct
+        ),
+      };
 
-  //   console.log(cartData);
+      setCart(updatedCart);
+      // You might want to update your backend or storage with the new cart information
+      // (e.g., using an API call or other appropriate method)
+    }
+  };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-col md:flex-row md:items-center md:gap-4">
-        <CardTitle>Shopping Cart</CardTitle>
-        <CardDescription>2 items added</CardDescription>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="divide-y">
-          <div className="flex items-center gap-4 p-4">
-            <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
-              <img
-                alt="Thumbnail"
-                className="aspect-square object-cover rounded-lg"
-                height="75"
-                src="/placeholder.svg"
-                width="75"
-              />
+    <div className="flex flex-col items-center w-full justify-start h-screen">
+      <Card className="w-full max-w-3xl">
+        <CardHeader className="flex flex-col md:flex-row md:items-center md:gap-4">
+          <CardTitle>Shopping Cart</CardTitle>
+          <CardDescription>2 items added</CardDescription>
+        </CardHeader>
+        <CardContent className="p-0">
+          <div className="divide-y">
+            {Array.isArray(cart?.products) &&
+              cart.products.map((cartProduct: CartProduct) => {
+                const product = cartProduct.product;
+
+                return (
+                  <div
+                    className="flex items-center gap-4 p-4"
+                    key={cartProduct.id}
+                  >
+                    <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
+                      {Array.isArray(product.images) &&
+                        product.images.map(
+                          (image: ProductImage, index: number) => {
+                            return image.isLogo === true ||
+                              image.isLogo === "true" ? (
+                              <Image
+                                key={index}
+                                alt={product.title}
+                                className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                                height={500}
+                                src={image.imageUrl || "/placeholder.svg"}
+                                width={500}
+                              />
+                            ) : null;
+                          }
+                        )}
+                    </div>
+
+                    <div className="flex-1">
+                      <h3 className="font-semibold line-clamp-2">
+                        {product.title}
+                      </h3>
+                      <p className="font-medium">${product.price}</p>
+                      <div className="flex items-center gap-2">
+                        <Label
+                          className="m-0"
+                          htmlFor={`quantity-${cartProduct.id}`}
+                        >
+                          Quantity:
+                        </Label>
+                        <Input
+                          id={`quantity-${cartProduct.id}`}
+                          type="number"
+                          className="w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 xl:w-1/6"
+                          value={cartProduct.quantity}
+                          onChange={(e) =>
+                            handleQuantityChange(
+                              cartProduct.id,
+                              +e.target.value
+                            )
+                          }
+                          min="1"
+                        />
+                      </div>
+                    </div>
+                    <Button className="w-8 h-8" size="icon" variant="outline">
+                      <TrashIcon className="w-4 h-4" />
+                      <span className="sr-only">Remove</span>
+                    </Button>
+                  </div>
+                );
+              })}
+          </div>
+
+          {/* Additional content */}
+          <div className="p-4 flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <p className="font-medium">Subtotal</p>
+              <p className="font-semibold">$79.98</p>
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold line-clamp-2">
-                Product Name that is really long and should be truncated
-              </h3>
-              <p className="font-medium">$49.99</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Quantity: 1
-              </p>
-            </div>
-            <Button className="w-8 h-8" size="icon" variant="outline">
-              <TrashIcon className="w-4 h-4" />
-              <span className="sr-only">Remove</span>
+            <Button className="w-full" size="lg">
+              Proceed to Checkout
             </Button>
           </div>
-          <div className="flex items-center gap-4 p-4">
-            <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
-              <img
-                alt="Thumbnail"
-                className="aspect-square object-cover rounded-lg"
-                height="75"
-                src="/placeholder.svg"
-                width="75"
-              />
-            </div>
-            <div className="flex-1">
-              <h3 className="font-semibold line-clamp-2">
-                Second Product Name
-              </h3>
-              <p className="font-medium">$29.99</p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Quantity: 1
-              </p>
-            </div>
-            <Button className="w-8 h-8" size="icon" variant="outline">
-              <TrashIcon className="w-4 h-4" />
-              <span className="sr-only">Remove</span>
-            </Button>
-          </div>
-        </div>
-        <div className="p-4 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <Label className="m-0" htmlFor="coupon">
-              Coupon code
-            </Label>
-            <Input id="coupon" placeholder="Enter coupon code" />
-            <Button size="sm">Apply</Button>
-          </div>
-          <div className="flex items-center justify-between">
-            <p className="font-medium">Subtotal</p>
-            <p className="font-semibold">$79.98</p>
-          </div>
-          <Button className="w-full" size="lg">
-            Proceed to Checkout
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

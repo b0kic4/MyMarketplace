@@ -46,8 +46,8 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
           </Button>
         </div>
       </div>
-      <div className="sm:flex-row sm:space-x-4 md:flex-col md:space-y-4 p-4 items-center">
-        <div className="flex flex-col gap-4 sm:gap-0 md:space-x-4 sm:flex-row">
+      <div className="flex flex-col gap-4 md:flex-row md:space-x-4 p-4 items-center">
+        <div className="flex flex-col gap-4 sm:flex-row">
           <Button
             className="border-gray-200 gap-2 dark:border-gray-800"
             variant="outline"
@@ -81,7 +81,8 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
               {props.countMyProducts}
             </Badge>
           </Button>
-
+        </div>
+        <div className="flex flex-col gap-4 lg:flex-row lg:space-x-4">
           <Button
             className="border-gray-200 gap-2 dark:border-gray-800"
             variant="outline"

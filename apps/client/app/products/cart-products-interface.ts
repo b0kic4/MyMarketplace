@@ -13,19 +13,18 @@ export interface User {
   cart: Cart | null;
 }
 
-export interface Image {
+export interface ProductImage {
   id: number;
-  imageUrl: string | null;
-  isLogo: string | null;
-  productId: number | null;
-  product: Product | null;
+  imageUrl: string;
+  isLogo: boolean | string;
+  productId: number;
 }
 
 export interface Product {
   id: number;
   title: string;
   description: string;
-  images: Image[];
+  images: ProductImage[];
   categoryType: string;
   price: string;
   sizes: string;
@@ -64,7 +63,7 @@ export interface CartProduct {
   createdAt: string;
   updatedAt: string;
   cart: Cart | null;
-  product: Product[] | null;
+  product: Product[];
 }
 
 export interface Review {

@@ -28,12 +28,19 @@ export class CartService {
           products: {
             include: {
               cart: true,
-              product: true,
+              product: {
+                include: {
+                  images: true,
+                  user: true,
+                  reviews: true,
+                },
+              },
             },
           },
           user: true,
         },
       });
+      console.log('cart: ', cart);
       if (!cart) throw new ConflictException('Cart not found');
       return cart;
     } catch (error) {
