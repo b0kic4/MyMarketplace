@@ -10,7 +10,7 @@ import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { Cart, Product, PurchaseStatus } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
-import { AddProdcutToCart } from './dto/add-to-cart-product.dto';
+import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -200,18 +200,25 @@ export class ProductService {
       );
     }
   }
-  async addProductToCart(addProdcutToCart: AddProdcutToCart): Promise<Cart> {
+  async addProductToCart(addProdcutToCart: AddProductToCartDto): Promise<Cart> {
     try {
+      console.log('dto: ', addProdcutToCart);
       // finding the product that is provided
       const prodcut = await this.prisma.product.findUnique({
         where: {
-          id: Number(addProdcutToCart.id),
+          id: Number(addProdcutToCart.foundProduct.id),
         },
       });
       if (!prodcut) throw new ConflictException('Product does not exists');
+      console.log('userId: ', addProdcutToCart.userId);
+      const user = await this.prisma.user.findFirst({
+        where: {
+          clerkUserId: addProdcutToCart.userId,
+        },
+      });
       const cart = await this.prisma.cart.findFirst({
         where: {
-          userId: Number(addProdcutToCart.userId),
+          userId: Number(user?.id),
         },
       });
 
@@ -223,7 +230,7 @@ export class ProductService {
         const newCart = await this.prisma.cart.create({
           data: {
             productId: prodcut.id,
-            userId: Number(addProdcutToCart.userId),
+            userId: Number(user?.id),
           },
         });
 
@@ -242,6 +249,7 @@ export class ProductService {
           where: {
             id: cartProduct.id,
             productId: prodcut.id,
+            cartId: existingCart.id,
           },
           data: {
             quantity: {
@@ -267,17 +275,27 @@ export class ProductService {
       );
     }
   }
-  async updateQuantity(productId: number, quantity: number) {
+  async updateQuantity(productId: number, quantity: number, userId: string) {
     try {
-      console.log('productId: ', productId);
-      console.log('quantity: ', quantity);
+      const user = await this.prisma.user.findFirst({
+        where: {
+          clerkUserId: userId,
+        },
+      });
+      const foundCart = await this.prisma.cart.findFirst({
+        where: {
+          userId: user?.id,
+        },
+      });
+      if (!foundCart) {
+        throw new ConflictException('Cart does not exist');
+      }
       const findProdcut = await this.prisma.cartProduct.findUnique({
         where: {
           id: productId,
         },
       });
 
-      console.log(findProdcut);
       if (!findProdcut) {
         throw new Error('Cart Prodcut not found');
       }
@@ -287,6 +305,7 @@ export class ProductService {
         const updateProduct = await this.prisma.cartProduct.update({
           where: {
             id: productId,
+            cartId: foundCart.id,
           },
           data: {
             purchaseStatus: 'NotPurchased',
@@ -295,13 +314,13 @@ export class ProductService {
             },
           },
         });
-        console.log(updateProduct);
         return updateProduct;
       } else if (findProdcut.quantity > quantity) {
         quantityValue = findProdcut.quantity - quantity;
         const updateProduct = await this.prisma.cartProduct.update({
           where: {
             id: productId,
+            cartId: foundCart.id,
           },
           data: {
             quantity: {
@@ -309,7 +328,6 @@ export class ProductService {
             },
           },
         });
-        console.log('quantity decremented: ', updateProduct);
         return updateProduct;
       }
     } catch (error) {

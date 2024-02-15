@@ -1,6 +1,6 @@
 // Import statements
 "use client";
-import { useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
   CardTitle,
   CardDescription,
@@ -26,14 +26,12 @@ import axios from "axios";
 import { MdDone } from "react-icons/md";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
-
 // Component
 export default function Component() {
   // params
-  const searchParams = useSearchParams();
-  const data = searchParams.get("data");
-  const [cart, setCart] = useState<Cart | null>(data ? JSON.parse(data) : null);
-
+  // cart
+  const [cart, setCart] = useState<Cart>();
+  const router = useRouter();
   // data fetching loading states
   const [cartProductIds, setCartProductIds] = useState<
     { productId: number; quantity: number }[]
@@ -41,25 +39,12 @@ export default function Component() {
 
   // unsaved changes for cart prodcuts
   const [unSavedChanges, setUnSavedChages] = useState<number[]>([]);
-  const user = useUser();
+
   const [loading, setLoading] = useState<boolean>(false);
   // backend url
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
-
+  const user = useUser();
   // handlers
-  const getCart = async () => {
-    try {
-      const response = await axios.get(`${url}/cart`, {
-        params: {
-          userId: user.user?.id,
-        },
-      });
-      setCart(response.data);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const handleQuantityChange = (cartProductId: number, newQuantity: number) => {
     // Find the product that needs to be updated based on cartProductId
     const productToUpdate = cart?.products.find(
@@ -109,6 +94,26 @@ export default function Component() {
     }
   };
 
+  const getCart = async () => {
+    try {
+      const response = await axios.get(`${url}/cart`, {
+        params: {
+          userId: user.user?.id,
+        },
+      });
+      const responseCart: Cart = response.data;
+      if (responseCart.user.clerkUserId === user.user?.id) {
+        setCart(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getCart();
+  }, [user.user?.id]);
+
   // updating the quantity of the cart items
   const saveChanges = async (productId: number, quantity: number) => {
     // product id is cart product id, not actual product id
@@ -117,6 +122,7 @@ export default function Component() {
       const response = await axios.post(`${url}/products/update-quantity`, {
         id: productId,
         quantity: quantity,
+        userId: user.user?.id,
       });
       console.log(response);
       if (response.status === 201) {
@@ -190,7 +196,20 @@ export default function Component() {
         <Card className="w-full max-w-3xl">
           <CardHeader className="flex flex-col md:flex-row md:items-center md:gap-4">
             <CardTitle>Shopping Cart</CardTitle>
-            <CardDescription>2 items added</CardDescription>
+            <CardDescription>
+              {cart?.products && cart.products.length > 0 ? (
+                <span className="flex gap-2">
+                  {cart.products.length}
+                  {cart.products.length === 1 ? (
+                    <p>item in cart</p>
+                  ) : (
+                    <p>items in cart</p>
+                  )}{" "}
+                </span>
+              ) : (
+                <p> No Items in Cart</p>
+              )}
+            </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">

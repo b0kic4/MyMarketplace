@@ -14,6 +14,7 @@ import Link from "next/link";
 export default function Main() {
   const [products, setProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [appended, setAppended] = useState<boolean>(false);
   const user = useUser();
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const getProducts = async () => {
@@ -30,6 +31,19 @@ export default function Main() {
       setLoading(false);
     }
   };
+
+  const appendUserToDatabase = async () => {
+    try {
+      const response = await axios.post(`${url}/user`, user.user);
+      if (response.status === 201) setAppended(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!appended) appendUserToDatabase();
+  }, [user.user?.id]);
 
   useEffect(() => {
     getProducts();

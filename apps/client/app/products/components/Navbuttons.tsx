@@ -24,7 +24,6 @@ interface NavbuttonsProps {
   countSavedProducts: number | undefined;
   countMyProducts: number | undefined;
   countCartProducts: number | undefined;
-  cart: Cart | undefined;
 }
 
 const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
@@ -94,12 +93,7 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
               {props.countSavedProducts}
             </Badge>
           </Button>
-          <Link
-            href={{
-              pathname: "/products/cart",
-              query: { data: JSON.stringify(props.cart) },
-            }}
-          >
+          <Link href={"/products/cart"}>
             <Button
               className="border-gray-200 gap-2 dark:border-gray-800"
               variant="outline"

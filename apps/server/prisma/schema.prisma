@@ -63,7 +63,6 @@ model Cart {
   productId   Int
   purchasedAt DateTime?
   deliveredAt DateTime?
-  quantity    Int           @default(1)
   user        User?         @relation("userCart", fields: [userId], references: [id])
   products    CartProduct[] @relation
   createdAt   DateTime      @default(now())

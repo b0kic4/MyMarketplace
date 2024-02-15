@@ -83,8 +83,11 @@ export default function Page() {
           userId: user.user?.id,
         },
       });
-      setCart(response.data);
-      setCountCartProducts(cart?.products.length);
+      const responseCart: Cart = response.data;
+      if (responseCart.user.clerkUserId === user.user?.id) {
+        setCart(response.data);
+        setCountCartProducts(cart?.products.length);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -177,6 +180,12 @@ export default function Page() {
   const handleRemoveSavedProduct = async (productId: number) => {
     try {
       const foundProduct = products.find((product) => product.id === productId);
+      if (!foundProduct) {
+        return toast.error("Product not found", {
+          position: "top-left",
+          theme: "dark",
+        });
+      }
       const response = await axios.post(
         `${url}/products/remove-saved-product`,
         foundProduct
@@ -198,11 +207,18 @@ export default function Page() {
 
   const handleAddToCart = async (productId: number) => {
     try {
-      const foundProdcut = products.find((product) => product.id === productId);
-      const response = await axios.post(
-        `${url}/products/add-to-cart`,
-        foundProdcut
-      );
+      const foundProduct = products.find((product) => product.id === productId);
+      if (!foundProduct) {
+        return toast.error("Product not found", {
+          position: "top-left",
+          theme: "dark",
+        });
+      }
+      const data = {
+        foundProduct,
+        userId: user.user?.id,
+      };
+      const response = await axios.post(`${url}/products/add-to-cart`, data);
       if (response.status === 201) {
         toast.success("Product added to cart successfully", {
           position: "top-right",
@@ -237,7 +253,6 @@ export default function Page() {
             countSavedProducts={coundSavedProducts}
             countMyProducts={countMyProducts}
             countCartProducts={countCartProducts}
-            cart={cart}
           />
           {/* Listing products text  */}
           <Listingtext filter={filter} />

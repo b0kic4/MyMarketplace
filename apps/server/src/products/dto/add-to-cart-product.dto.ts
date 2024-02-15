@@ -1,12 +1,10 @@
-class ImageDto {
-  isLogo: boolean | string;
-  imageUrl: string;
-}
-export class AddProdcutToCart {
+import { User } from '@prisma/client';
+
+class ProductDto {
   id: number;
   title: string;
   description: string;
-  images: { isLogosAndImageUrls: ImageDto[] };
+  images: ImageDto[];
   categoryType: string;
   price: string;
   sizes: string;
@@ -14,9 +12,15 @@ export class AddProdcutToCart {
   material: string;
   texture: string;
   stock: number;
-  quantity: number;
-  shippingInformation: string;
-  isChecked: boolean;
-  userId: string;
-  isUsed: boolean;
+  user: User;
+}
+
+export class AddProductToCartDto {
+  foundProduct: ProductDto;
+  userId: string | undefined;
+}
+
+class ImageDto {
+  isLogo: boolean | string;
+  imageUrl: string;
 }

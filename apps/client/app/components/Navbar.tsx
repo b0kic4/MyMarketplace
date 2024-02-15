@@ -10,24 +10,12 @@ import { IoMenu } from "react-icons/io5";
 import { FaMountain, FaShoppingCart } from "react-icons/fa";
 import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Navbar() {
-  const user = useUser();
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
-  const appendUserToDatabase = async () => {
-    try {
-      await axios.post(`${url}/user`, user.user);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    appendUserToDatabase();
-  }, [user.user?.id]);
-
+  const user = useUser();
   const pathName = usePathname();
   const links = [
     { label: "Home", href: "/" },

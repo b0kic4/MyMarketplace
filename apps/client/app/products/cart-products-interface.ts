@@ -52,6 +52,7 @@ export interface Cart {
   createdAt: string;
   updatedAt: string;
   products: CartProduct[];
+  user: User;
 }
 
 export interface CartProduct {

@@ -17,7 +17,7 @@ import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { SaveProductDto } from './dto/save-product-dto';
 import { Cart, Product } from '@prisma/client';
-import { AddProdcutToCart } from './dto/add-to-cart-product.dto';
+import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -79,7 +79,7 @@ export class ProductController {
   }
   @Post('add-to-cart')
   async addProdcutToCart(
-    @Body() addProdcutToCart: AddProdcutToCart,
+    @Body() addProdcutToCart: AddProductToCartDto,
   ): Promise<Cart> {
     if (!addProdcutToCart)
       throw new ConflictException('Prodcut does not exists');
@@ -90,7 +90,8 @@ export class ProductController {
   async updateQuantity(
     @Body('id') productId: number,
     @Body('quantity') quantity: number,
+    @Body('userId') userId: string,
   ) {
-    return this.productService.updateQuantity(productId, quantity);
+    return this.productService.updateQuantity(productId, quantity, userId);
   }
 }
