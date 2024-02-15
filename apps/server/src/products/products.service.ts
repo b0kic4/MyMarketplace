@@ -204,8 +204,6 @@ export class ProductService {
   }
   async addProductToCart(addProdcutToCart: AddProductToCartDto): Promise<Cart> {
     try {
-      console.log('dto: ', addProdcutToCart);
-      console.log('found product: ', addProdcutToCart.foundProduct);
       // finding the product that is provided
       const prodcut = await this.prisma.product.findUnique({
         where: {
@@ -213,7 +211,6 @@ export class ProductService {
         },
       });
       if (!prodcut) throw new ConflictException('Product does not exists');
-      console.log('userId: ', addProdcutToCart.userId);
       const user = await this.prisma.user.findFirst({
         where: {
           clerkUserId: addProdcutToCart.userId,
@@ -343,8 +340,6 @@ export class ProductService {
   }
   async removeProductFromCart(removeFromCart: RemoveProductFromCartDto) {
     try {
-      console.log('dto: ', removeFromCart);
-
       if (!removeFromCart.foundProduct) {
         throw new BadRequestException('Found product is missing');
       }
@@ -352,6 +347,9 @@ export class ProductService {
       const user = await this.prisma.user.findFirst({
         where: {
           clerkUserId: removeFromCart.userId,
+        },
+        include: {
+          cart: true,
         },
       });
       if (!user) throw new ConflictException('user not found');
@@ -366,20 +364,26 @@ export class ProductService {
       if (!product) {
         throw new ConflictException('Product not found in db');
       }
-      const cart = await this.prisma.cart.findFirst({
+      const cart = await this.prisma.cart.findUnique({
         where: {
-          userId: user.id,
+          id: user.cart?.id,
         },
       });
       if (!cart) {
         throw new ConflictException('Cart not found for user');
       }
-      const cartProducts = await this.prisma.cartProduct.findFirst({
+
+      const foundCartProduct = await this.prisma.cartProduct.findFirst({
+        where: {
+          productId: product.id,
+          cartId: cart.id,
+        },
+      });
+      const updateCartProduct = await this.prisma.cartProduct.delete({
         where: {
           cartId: cart.id,
-          product: {
-            id: product.id,
-          },
+          productId: product.id,
+          id: foundCartProduct?.id,
         },
       });
 

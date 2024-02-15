@@ -61,8 +61,6 @@ model Cart {
   id          Int           @id @default(autoincrement())
   userId      Int           @unique
   productId   Int
-  purchasedAt DateTime?
-  deliveredAt DateTime?
   user        User?         @relation("userCart", fields: [userId], references: [id])
   products    CartProduct[] @relation
   createdAt   DateTime      @default(now())

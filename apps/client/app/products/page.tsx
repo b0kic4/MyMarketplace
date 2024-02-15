@@ -245,9 +245,18 @@ export default function Page() {
         `${url}/products/remove-from-cart`,
         data
       );
-      console.log(response);
+      if (response.status === 201) {
+        toast.success("Product removed from cart successfully", {
+          position: "top-right",
+          theme: "dark",
+        });
+        getCart();
+      }
     } catch (error) {
-      console.log(error);
+      toast.error("Error occured while removing product from cart", {
+        position: "top-left",
+        theme: "dark",
+      });
     }
   };
 

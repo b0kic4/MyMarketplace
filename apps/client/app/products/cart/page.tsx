@@ -124,7 +124,6 @@ export default function Component() {
         quantity: quantity,
         userId: user.user?.id,
       });
-      console.log(response);
       if (response.status === 201) {
         toast.success("Quantity updated successfully", {
           position: "top-right",
@@ -141,6 +140,35 @@ export default function Component() {
       console.log(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleRemoveFromCart = async (productId: number) => {
+    try {
+      const productToRemove = cart?.products.find(
+        (cartProduct) => cartProduct.product.id === productId
+      );
+      const foundProduct = productToRemove?.product;
+      const data = {
+        foundProduct,
+        userId: user.user?.id,
+      };
+      const response = await axios.post(
+        `${url}/products/remove-from-cart`,
+        data
+      );
+      if (response.status === 201) {
+        toast.success("Product removed from cart successfully", {
+          position: "top-right",
+          theme: "dark",
+        });
+        getCart();
+      }
+    } catch (error) {
+      toast.error("Error occured while removing product from cart", {
+        position: "top-left",
+        theme: "dark",
+      });
     }
   };
 
@@ -246,6 +274,7 @@ export default function Component() {
                           {product.title}
                         </h3>
                         <p className="font-medium">${product.price}</p>
+                        <p className="text-xs">Stock: {product.stock}</p>
                         <div className="flex items-center gap-2">
                           <Label
                             className="m-0"
@@ -281,7 +310,12 @@ export default function Component() {
                           <span className="sr-only">Apply Changes</span>
                         </Button>
                       )}
-                      <Button className="w-8 h-8" size="icon" variant="outline">
+                      <Button
+                        onClick={() => handleRemoveFromCart(product.id)}
+                        className="w-8 h-8"
+                        size="icon"
+                        variant="outline"
+                      >
                         <TrashIcon className="w-4 h-4" />
                         <span className="sr-only">Remove</span>
                       </Button>
