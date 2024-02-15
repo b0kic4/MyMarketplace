@@ -18,6 +18,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { SaveProductDto } from './dto/save-product-dto';
 import { Cart, Product } from '@prisma/client';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
+import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 
 @ApiTags('products')
 @Controller('products')
@@ -93,5 +94,9 @@ export class ProductController {
     @Body('userId') userId: string,
   ) {
     return this.productService.updateQuantity(productId, quantity, userId);
+  }
+  @Post('remove-from-cart')
+  async removeFromCart(@Body() removeFromCart: RemoveProductFromCartDto) {
+    return this.productService.removeProductFromCart(removeFromCart);
   }
 }

@@ -234,6 +234,33 @@ export default function Page() {
     }
   };
 
+  const handleRemoveFromCart = async (productId: number) => {
+    try {
+      const foundProduct = products.find((product) => product.id === productId);
+      const data = {
+        foundProduct,
+        userId: user.user?.id,
+      };
+      const response = await axios.post(
+        `${url}/products/remove-from-cart`,
+        data
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
+
+  useEffect(() => {
+    const productIds = cart?.products.map((product) => product.product.id) as
+      | number[]
+      | undefined;
+    console.log(productIds);
+    setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+  }, [cart]);
+
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
       <div className="flex-1 flex w-full flex-col min-h-screen">
@@ -304,14 +331,26 @@ export default function Page() {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      <Button
-                        key={product.id}
-                        onClick={() => handleAddToCart(product.id)}
-                        size="sm"
-                        variant="outline"
-                      >
-                        Add to Cart
-                      </Button>
+                      {productIdsInCart.includes(product.id) ? (
+                        <Button
+                          key={product.id}
+                          onClick={() => handleRemoveFromCart(product.id)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Remove from Cart
+                        </Button>
+                      ) : (
+                        <Button
+                          key={product.id}
+                          onClick={() => handleAddToCart(product.id)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Add to Cart
+                        </Button>
+                      )}
+
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id
                       ) ? (

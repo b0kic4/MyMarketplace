@@ -1,5 +1,6 @@
 // Import necessary modules
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
@@ -11,6 +12,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { Cart, Product, PurchaseStatus } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
+import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 @Injectable()
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
@@ -203,6 +205,7 @@ export class ProductService {
   async addProductToCart(addProdcutToCart: AddProductToCartDto): Promise<Cart> {
     try {
       console.log('dto: ', addProdcutToCart);
+      console.log('found product: ', addProdcutToCart.foundProduct);
       // finding the product that is provided
       const prodcut = await this.prisma.product.findUnique({
         where: {
@@ -330,6 +333,57 @@ export class ProductService {
         });
         return updateProduct;
       }
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async removeProductFromCart(removeFromCart: RemoveProductFromCartDto) {
+    try {
+      console.log('dto: ', removeFromCart);
+
+      if (!removeFromCart.foundProduct) {
+        throw new BadRequestException('Found product is missing');
+      }
+
+      const user = await this.prisma.user.findFirst({
+        where: {
+          clerkUserId: removeFromCart.userId,
+        },
+      });
+      if (!user) throw new ConflictException('user not found');
+
+      // remove product id from cart add id of the cart product
+      // remove purchased at etc...
+      const product = await this.prisma.product.findUnique({
+        where: {
+          id: removeFromCart.foundProduct.id,
+        },
+      });
+      if (!product) {
+        throw new ConflictException('Product not found in db');
+      }
+      const cart = await this.prisma.cart.findFirst({
+        where: {
+          userId: user.id,
+        },
+      });
+      if (!cart) {
+        throw new ConflictException('Cart not found for user');
+      }
+      const cartProducts = await this.prisma.cartProduct.findFirst({
+        where: {
+          cartId: cart.id,
+          product: {
+            id: product.id,
+          },
+        },
+      });
+
+      // Rest of your code...
     } catch (error) {
       console.log(error);
       throw new HttpException(

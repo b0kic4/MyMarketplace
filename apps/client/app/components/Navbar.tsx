@@ -17,10 +17,24 @@ export default function Navbar() {
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
   const pathName = usePathname();
+  const [appended, setAppended] = useState<boolean>(false);
   const links = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
   ];
+
+  const appendUserToDatabase = async () => {
+    try {
+      const response = await axios.post(`${url}/user`, user.user);
+      if (response.status === 201) setAppended(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!appended) appendUserToDatabase();
+  }, [user.user?.id]);
 
   return (
     <header className="flex items-center h-16 px-4 md:px-6 w-full border-b">
