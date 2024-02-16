@@ -16,7 +16,7 @@ model User {
   username      String
   email         String
   imageUrl      String
-  fullName      String
+  fullName      String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   products      Product[] @relation("userProducts")
@@ -58,13 +58,13 @@ model Product {
 }
 
 model Cart {
-  id          Int           @id @default(autoincrement())
-  userId      Int           @unique
-  productId   Int
-  user        User?         @relation("userCart", fields: [userId], references: [id])
-  products    CartProduct[] @relation
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id        Int           @id @default(autoincrement())
+  userId    Int           @unique
+  productId Int
+  user      User?         @relation("userCart", fields: [userId], references: [id])
+  products  CartProduct[] @relation
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@index([userId, productId], name: "idx_user_product")
 }

@@ -1,6 +1,5 @@
 // Import statements
 "use client";
-import { useRouter } from "next/navigation";
 import {
   CardTitle,
   CardDescription,
@@ -26,12 +25,12 @@ import axios from "axios";
 import { MdDone } from "react-icons/md";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
+import Spinner from "@client/app/components/Loading";
 // Component
 export default function Component() {
   // params
   // cart
   const [cart, setCart] = useState<Cart>();
-  const router = useRouter();
   // data fetching loading states
   const [cartProductIds, setCartProductIds] = useState<
     { productId: number; quantity: number }[]
@@ -256,14 +255,16 @@ export default function Component() {
                             (image: ProductImage, index: number) => {
                               return image.isLogo === true ||
                                 image.isLogo === "true" ? (
-                                <Image
-                                  key={index}
-                                  alt={product.title}
-                                  className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
-                                  height={500}
-                                  src={image.imageUrl || "/placeholder.svg"}
-                                  width={500}
-                                />
+                                <Link href={`/products/${product.id}`}>
+                                  <Image
+                                    key={index}
+                                    alt={product.title}
+                                    className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                                    height={500}
+                                    src={image.imageUrl || "/placeholder.svg"}
+                                    width={500}
+                                  />
+                                </Link>
                               ) : null;
                             }
                           )}

@@ -19,6 +19,7 @@ export class ProductService {
 
   constructor(private prisma: PrismaService) {}
 
+  // creating product
   async create(createProductDto: CreateProductDto): Promise<Product> {
     try {
       // Access the necessary properties from the DTO
@@ -77,6 +78,8 @@ export class ProductService {
       );
     }
   }
+
+  // getting products
   async getProducts() {
     try {
       const products = await this.prisma.product.findMany({
@@ -97,6 +100,8 @@ export class ProductService {
       );
     }
   }
+
+  // bookmarking product
   async saveProduct(saveProductDto: SaveProductDto) {
     try {
       // Find the product based on the provided id
@@ -156,6 +161,8 @@ export class ProductService {
       );
     }
   }
+
+  // bookmarking product from bookmarked
   async removeSavedProduct(saveProductDto: SaveProductDto): Promise<Product> {
     try {
       const product = await this.prisma.product.update({
@@ -182,6 +189,8 @@ export class ProductService {
       );
     }
   }
+
+  // finding product by provided id
   async findById(id: number): Promise<Product> {
     try {
       const product = await this.prisma.product.findUnique({
@@ -202,6 +211,8 @@ export class ProductService {
       );
     }
   }
+
+  // adding product to cart
   async addProductToCart(addProdcutToCart: AddProductToCartDto): Promise<Cart> {
     try {
       // finding the product that is provided
@@ -275,6 +286,8 @@ export class ProductService {
       );
     }
   }
+
+  // increment or decrementing quantity of cart product
   async updateQuantity(productId: number, quantity: number, userId: string) {
     try {
       const user = await this.prisma.user.findFirst({
@@ -338,6 +351,8 @@ export class ProductService {
       );
     }
   }
+
+  // removing product form cart
   async removeProductFromCart(removeFromCart: RemoveProductFromCartDto) {
     try {
       if (!removeFromCart.foundProduct) {
@@ -379,15 +394,13 @@ export class ProductService {
           cartId: cart.id,
         },
       });
-      const updateCartProduct = await this.prisma.cartProduct.delete({
+      await this.prisma.cartProduct.delete({
         where: {
           cartId: cart.id,
           productId: product.id,
           id: foundCartProduct?.id,
         },
       });
-
-      // Rest of your code...
     } catch (error) {
       console.log(error);
       throw new HttpException(

@@ -14,7 +14,7 @@ import { FaBookmark, FaRegBookmark, FaShoppingCart } from "react-icons/fa";
 import Spinner from "../components/Loading";
 import { toast } from "react-toastify";
 import Listingtext from "./components/Listingtext";
-import { CartProduct, Cart, Product } from "./cart-products-interface";
+import { Cart } from "./cart-products-interface";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
