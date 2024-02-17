@@ -13,6 +13,8 @@ async function bootstrap() {
   });
   app.use(express.json({ limit: '50mb' }));
 
+  const port = process.env.PORT || 5000;
+
   // Enable CORS
   app.enableCors();
 
@@ -24,7 +26,7 @@ async function bootstrap() {
   trpc.applyMiddleware(app);
 
   // Start the application
-  await app.listen(4000);
+  await app.listen(port, '0.0.0.0');
 }
 
 bootstrap();
