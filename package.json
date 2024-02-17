@@ -12,7 +12,7 @@
     "dev": "npm run dev:client & npm run dev:server",
     "start": "npm run start:client & npm run start:server",
     "build": "npm run build:client & npm run build:server",
-    "build:server": "cd apps/server && npm run build && npx prisma generate",
+    "build:server": "cd apps/server && npm run build && prisma generate",
     "build:client": "cd apps/client && npm run build",
     "dev:client": "cd apps/client && npm run dev",
     "dev:server": "cd apps/server && npm run dev",
