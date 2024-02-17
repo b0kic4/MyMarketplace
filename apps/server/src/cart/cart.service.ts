@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { Cart } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
