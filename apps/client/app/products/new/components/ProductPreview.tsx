@@ -81,9 +81,9 @@ const ProductPreview: React.FC<Props> = (props) => {
       props.images.forEach((image, index) => {
         formData.append(`image_${index}`, image.file);
       });
-
+      const url = process.env.NEXT_PUBLIC_PRODUCTION_URL;
       // Send data to the backend using FormData
-      const response = await axios.post("/api/products", formData, {
+      const response = await axios.post(`${url}/api/products`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
