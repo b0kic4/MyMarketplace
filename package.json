@@ -10,8 +10,14 @@
   "scripts": {
     "//": "use npm run --filter server build or dev or production",
     "dev": "npm run dev:client & npm run dev:server",
+    "start": "npm run start:client & npm run start:server",
+    "build": "npm run build:client & npm run build:server",
+    "build:server": "cd apps/server && npm run build",
+    "build:client": "cd apps/client && npm run build",
     "dev:client": "cd apps/client && npm run dev",
     "dev:server": "cd apps/server && npm run dev",
+    "start:client": "cd apps/client && npm start",
+    "start:server": "cd apps/server && npm run start:prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
