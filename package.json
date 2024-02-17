@@ -17,7 +17,7 @@
     "dev:client": "cd apps/client && npm run dev",
     "dev:server": "cd apps/server && npm run dev",
     "start:client": "cd apps/client && npm start",
-    "start:server": "cd apps/server && npm run start:prod",
+    "start:server": "cd apps/server && prisma generate && npm run start:prod",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
