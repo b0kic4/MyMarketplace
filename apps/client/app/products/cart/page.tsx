@@ -51,7 +51,7 @@ export default function Component() {
     );
 
     if (productToUpdate) {
-      const theProduct = productToUpdate?.product;
+      const theProduct = productToUpdate?.product as any;
       const stock = theProduct?.stock || 0;
 
       if (newQuantity < stock) {
@@ -145,7 +145,7 @@ export default function Component() {
   const handleRemoveFromCart = async (productId: number) => {
     try {
       const productToRemove = cart?.products.find(
-        (cartProduct) => cartProduct.product.id === productId
+        (cartProduct: any) => cartProduct.product.id === productId
       );
       const foundProduct = productToRemove?.product;
       const data = {
@@ -180,7 +180,7 @@ export default function Component() {
       if (cartProducts) {
         // Use reduce to sum up the prices of all products
         const totalPrice = cartProducts.reduce((acc, cartProduct) => {
-          const product: Product = cartProduct.product;
+          const product: any = cartProduct.product;
 
           const productPrice = parseFloat(product.price) || 0;
           const itemTotalPrice = productPrice * cartProduct.quantity;
@@ -242,7 +242,7 @@ export default function Component() {
             <div className="divide-y">
               {Array.isArray(cart?.products) &&
                 cart.products.map((cartProduct: CartProduct) => {
-                  const product: Product = cartProduct.product;
+                  const product: any = cartProduct.product;
 
                   return (
                     <div

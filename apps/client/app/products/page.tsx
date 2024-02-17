@@ -263,10 +263,9 @@ export default function Page() {
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
 
   useEffect(() => {
-    const productIds = cart?.products.map((product) => product.product.id) as
-      | number[]
-      | undefined;
-    console.log(productIds);
+    const productIds = cart?.products.map(
+      (product: any) => product.product.id
+    ) as number[] | undefined;
     setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
   }, [cart]);
 
