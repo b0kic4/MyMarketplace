@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import uploadMiddleware from "./uploadMiddleware";
 import { auth } from "@clerk/nextjs";
-
-export const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, Authorization",
-};
-
 export async function POST(req: NextRequest) {
   try {
     const { getToken } = auth();
@@ -24,7 +17,6 @@ export async function POST(req: NextRequest) {
     }
     const formData = await req.formData();
 
-    // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
@@ -32,13 +24,10 @@ export async function POST(req: NextRequest) {
     );
 
     if (imageEntries.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: "No images or isLogo values found in the request",
-        },
-        { headers: corsHeaders }
-      );
+      return NextResponse.json({
+        success: false,
+        error: "No images or isLogo values found in the request",
+      });
     }
 
     // Separate image entries and isLogo entries
@@ -77,30 +66,21 @@ export async function POST(req: NextRequest) {
     const errors = uploadResults.map((result) => result.error).filter(Boolean);
 
     if (success) {
-      return NextResponse.json(
-        {
-          success: true,
-          isLogosAndImageUrls,
-        },
-        { headers: corsHeaders }
-      );
+      return NextResponse.json({
+        success: true,
+        isLogosAndImageUrls,
+      });
     } else {
-      return NextResponse.json(
-        {
-          success: false,
-          errors: errors.length > 0 ? errors : ["Unknown error during upload"],
-        },
-        { headers: corsHeaders }
-      );
+      return NextResponse.json({
+        success: false,
+        errors: errors.length > 0 ? errors : ["Unknown error during upload"],
+      });
     }
   } catch (error) {
     console.error("Error:", error);
-    return NextResponse.json(
-      {
-        success: false,
-        error: "Internal Server Error",
-      },
-      { headers: corsHeaders }
-    );
+    return NextResponse.json({
+      success: false,
+      error: "Internal Server Error",
+    });
   }
 }
