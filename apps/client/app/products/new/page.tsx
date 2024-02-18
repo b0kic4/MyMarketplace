@@ -93,7 +93,7 @@ export default function Component() {
     const newSize = e.target.value;
     let sizeError = "";
 
-    if ((newSize.length > 0 && newSize.length < 20) || newSize === "") {
+    if ((newSize.length > 0 && newSize.length < 100) || newSize === "") {
       setSizes(newSize);
     } else {
       sizeError = "Provide a valid input for sizes (max 20 characters)";
