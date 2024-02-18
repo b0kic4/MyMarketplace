@@ -39,6 +39,7 @@ const ProductPreview: React.FC<Props> = (props) => {
   // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
+      console.log("props: ", props);
       if (props) {
         setIsLoading(true);
         // Upload images to Firebase Cloud Storage
@@ -106,7 +107,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         userId: user.user?.id,
         isUsed: props.isUsed,
       };
-
+      console.log("PROPS USEEFFECT: ", props);
       if (logoAndImageUrls && !props.hasErrors) {
         try {
           setIsLoading(true);
