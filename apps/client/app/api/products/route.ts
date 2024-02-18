@@ -4,18 +4,14 @@ import uploadMiddleware from "./uploadMiddleware";
 export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
-
-    const isFile = (value: unknown): value is File => {
-      return typeof File !== "undefined" && value instanceof File;
-    };
-
+    console.log("form data: ", formData);
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        (isFile(fieldValue) || typeof fieldValue === "string")
+        (fieldValue instanceof File || typeof fieldValue === "string")
     );
-
+    console.log("image entries: ", imageEntries);
     if (imageEntries.length === 0) {
       return NextResponse.json({
         success: false,
@@ -30,20 +26,16 @@ export async function POST(req: NextRequest) {
     const imageFileEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("image_")
     );
-
     // Convert the imageFileEntries and isLogoEntries to arrays
-    const images = imageFileEntries
-      .map(([fieldName, fieldValue]) =>
-        isFile(fieldValue) ? (fieldValue as File) : null
-      )
-      .filter((file): file is File => file !== null && file !== undefined);
-
+    const images = imageFileEntries.map(
+      ([fieldName, fieldValue]) => fieldValue as File
+    );
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
 
-    // console.log("console log images: ", images);
-    // console.log("console log isLogos: ", isLogos);
+    console.log("images: ", images);
+    console.log("isLogos: ", isLogos);
 
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
@@ -56,6 +48,9 @@ export async function POST(req: NextRequest) {
       isLogo,
       imageUrl: uploadResults[index].imageUrl,
     }));
+    console.log("upload results: ", uploadResults);
+    console.log("isLogosAndImageUrls: ", isLogosAndImageUrls);
+
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);

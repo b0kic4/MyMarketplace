@@ -19,19 +19,23 @@ const uploadMiddleware = async (
 ): Promise<UploadMiddlewareResult[]> => {
   const uploadPromises: Promise<UploadMiddlewareResult>[] = [];
 
+  console.log("images: ", images);
+
   for (const file of images) {
     try {
+      console.log("file: ", file);
       const buffer = await file.arrayBuffer();
+      console.log("buffer: ", buffer);
       const imageBuffer = Buffer.from(buffer);
+      console.log("imageBuffer: ", imageBuffer);
       const webpBuffer = await sharp(imageBuffer).toFormat("webp").toBuffer();
-
       const fileName = `${Date.now()}-${file.name}-product-img.webp`;
 
       const storageRef = ref(storage, `image/${fileName}`);
       const metadata = {
         contentType: "image/webp",
       };
-
+      console.log("storage: ", storageRef);
       const uploadTask = uploadBytesResumable(storageRef, webpBuffer, metadata);
 
       const imageUrlPromise = new Promise<UploadMiddlewareResult>(
@@ -48,6 +52,7 @@ const uploadMiddleware = async (
             },
             async () => {
               const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+              console.log("imageUrl: ", imageUrl);
               resolve({ imageUrl });
             }
           );
