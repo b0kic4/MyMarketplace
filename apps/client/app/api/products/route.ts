@@ -1,14 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import uploadMiddleware from "./uploadMiddleware";
-import { auth } from "@clerk/nextjs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { getToken } = auth();
-    const token = getToken();
-    if (!token) {
-      return NextResponse.json;
-    }
     const formData = await req.formData();
 
     // Filter files with names containing 'image_' and 'isLogo_'
