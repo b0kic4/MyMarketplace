@@ -11,6 +11,12 @@ export async function POST(req: NextRequest) {
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
         (fieldValue instanceof File || typeof fieldValue === "string")
     );
+
+    if (!imageEntries) {
+      console.error("No image entries found: ", imageEntries);
+      return NextResponse.json({ error: "no image entries" });
+    }
+
     console.log("image entries: ", imageEntries);
     if (imageEntries.length === 0) {
       return NextResponse.json({
