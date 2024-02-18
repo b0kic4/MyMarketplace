@@ -8,7 +8,6 @@ export async function POST(req: NextRequest) {
     };
 
     const formData = await req.formData();
-    console.log("form data: ", formData);
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "no image entries" });
     }
 
-    console.log("image entries: ", imageEntries);
     if (imageEntries.length === 0) {
       return NextResponse.json({
         success: false,
@@ -44,16 +42,12 @@ export async function POST(req: NextRequest) {
       ([fieldName, fieldValue]) => fieldValue as string
     );
 
-    console.log("images: ", images);
-    console.log("isLogos: ", isLogos);
-
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
 
     // Handle the results as needed
     // console.log("Upload Results:", uploadResults);
     if (!uploadResults) {
-      console.log("there is no upload results");
       return NextResponse.json({ error: "No upload results" });
     }
     // Create an array of isLogos and imageUrls
@@ -61,8 +55,6 @@ export async function POST(req: NextRequest) {
       isLogo,
       imageUrl: uploadResults[index]?.imageUrl,
     }));
-    console.log("upload results: ", uploadResults);
-    console.log("isLogosAndImageUrls: ", isLogosAndImageUrls);
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);

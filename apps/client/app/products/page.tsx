@@ -207,6 +207,7 @@ export default function Page() {
 
   const handleAddToCart = async (productId: number) => {
     try {
+      setLoading(true);
       const foundProduct = products.find((product) => product.id === productId);
       if (!foundProduct) {
         return toast.error("Product not found", {
@@ -227,15 +228,19 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
+      setLoading(false);
       toast.error("Adding to cart failed", {
         theme: "dark",
         position: "top-left",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleRemoveFromCart = async (productId: number) => {
     try {
+      setLoading(true);
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
         foundProduct,
@@ -253,10 +258,13 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
+      setLoading(false);
       toast.error("Error occured while removing product from cart", {
         position: "top-left",
         theme: "dark",
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -339,7 +347,7 @@ export default function Page() {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      {productIdsInCart.includes(product.id) ? (
+                      {productIdsInCart.includes(product.id) && !isLoading ? (
                         <Button
                           key={product.id}
                           onClick={() => handleRemoveFromCart(product.id)}
@@ -348,7 +356,9 @@ export default function Page() {
                         >
                           Remove from Cart
                         </Button>
-                      ) : (
+                      ) : isLoading ? (
+                        <Spinner />
+                      ) : !isLoading ? (
                         <Button
                           key={product.id}
                           onClick={() => handleAddToCart(product.id)}
@@ -357,7 +367,9 @@ export default function Page() {
                         >
                           Add to Cart
                         </Button>
-                      )}
+                      ) : isLoading ? (
+                        <Spinner />
+                      ) : null}
 
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id

@@ -92,7 +92,7 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <SignedIn>
             {user && user.user?.username}
-            <UserButton />
+            <UserButton afterSignOutUrl="/" />
           </SignedIn>
         </div>
       </div>
