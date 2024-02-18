@@ -37,12 +37,9 @@ export async function POST(req: NextRequest) {
       fieldName.startsWith("image_")
     );
     // Convert the imageFileEntries and isLogoEntries to arrays
-    const images = imageFileEntries
-      .map(([fieldName, fieldValue]) =>
-        isFile(fieldValue) ? (fieldValue as File) : null
-      )
-      .filter((file): file is File => file !== null && file !== undefined);
-
+    const images = imageFileEntries.map(
+      ([fieldName, fieldValue]) => fieldValue as File
+    );
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
@@ -55,18 +52,17 @@ export async function POST(req: NextRequest) {
 
     // Handle the results as needed
     // console.log("Upload Results:", uploadResults);
-
-    // Create an array of isLogos and imageUrls
     if (!uploadResults) {
-      return NextResponse.json({ error: "No upload response" });
+      console.log("there is no upload results");
+      return NextResponse.json({ error: "No upload results" });
     }
+    // Create an array of isLogos and imageUrls
     const isLogosAndImageUrls = isLogos.map((isLogo, index) => ({
       isLogo,
       imageUrl: uploadResults[index]?.imageUrl,
     }));
     console.log("upload results: ", uploadResults);
     console.log("isLogosAndImageUrls: ", isLogosAndImageUrls);
-
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);
