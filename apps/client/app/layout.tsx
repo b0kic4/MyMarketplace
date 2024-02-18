@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ToastContainer } from "./components/ToastContainer";
 const inter = Inter({ subsets: ["latin"] });
+
 export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "MyMarketplace",
