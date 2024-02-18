@@ -5,6 +5,8 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
 
+    console.log("form data: ", formData);
+
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
@@ -38,9 +40,10 @@ export async function POST(req: NextRequest) {
     // console.log("console log images: ", images);
     // console.log("console log isLogos: ", isLogos);
 
+    console.log("Before");
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
-
+    console.log("After");
     // Handle the results as needed
     // console.log("Upload Results:", uploadResults);
 
