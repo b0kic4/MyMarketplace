@@ -149,7 +149,7 @@ const ProductPreview: React.FC<Props> = (props) => {
             });
           }
         } catch (error: any) {
-          toast.error(error.message, {
+          toast.error("Error uploading product", {
             position: "top-left",
             theme: "dark",
           });

@@ -1,3 +1,4 @@
+// InitializeFirebase.ts
 import { initializeApp } from "firebase/app";
 import { getStorage } from "firebase/storage";
 import { getAnalytics, isSupported } from "firebase/analytics";
@@ -12,9 +13,13 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const storage = getStorage(app);
-const analytics = (await isSupported()) ? getAnalytics(app) : null;
 
-export { storage, analytics };
+// Check if window is defined and analytics is supported
+let analytics = null;
+if (typeof window !== "undefined" && (await isSupported())) {
+  analytics = getAnalytics(app);
+}
+
+export { app, storage, analytics };

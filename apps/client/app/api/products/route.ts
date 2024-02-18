@@ -16,7 +16,6 @@ export async function POST(req: NextRequest) {
       );
     }
     const formData = await req.formData();
-
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
