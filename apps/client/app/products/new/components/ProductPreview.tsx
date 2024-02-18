@@ -39,56 +39,45 @@ const ProductPreview: React.FC<Props> = (props) => {
   // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
-      setIsLoading(true);
-      if (
-        props.title === "" ||
-        props.description === "" ||
-        props.categoryType === "" ||
-        props.price === "" ||
-        props.sizes === "" ||
-        props.colors === "" ||
-        props.material === "" ||
-        props.texture === "" ||
-        props.shippingInformation === ""
-      ) {
-        return toast.error("Please provide valid form values!", {
-          position: "top-left",
-          theme: "dark",
+      if (props) {
+        setIsLoading(true);
+        // Upload images to Firebase Cloud Storage
+        const formData = new FormData();
+
+        // Append product data
+        const productData = {
+          images: props.images.map((image, index) => ({
+            file: image.file,
+            isLogo: !!(index === props.logoIndex),
+          })),
+        };
+
+        formData.append("productData", JSON.stringify(productData));
+
+        // Append isLogo property separately
+        props.images.forEach((image, index) => {
+          formData.append(
+            `isLogo_${index}`,
+            index === props.logoIndex ? "true" : "false"
+          );
         });
+
+        // Append each image file
+        props.images.forEach((image, index) => {
+          formData.append(`image_${index}`, image.file);
+        });
+        // const url = process.env.NEXT_PUBLIC_DEV_URL;
+        // Send data to the backend using FormData
+        const response = await axios.post("/api/products", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        setLogoAndImageUrls(response.data);
+      } else {
+        console.log("error");
+        // return toast.error("Client side error");
       }
-      // Upload images to Firebase Cloud Storage
-      const formData = new FormData();
-
-      // Append product data
-      const productData = {
-        images: props.images.map((image, index) => ({
-          file: image.file,
-          isLogo: !!(index === props.logoIndex),
-        })),
-      };
-
-      formData.append("productData", JSON.stringify(productData));
-
-      // Append isLogo property separately
-      props.images.forEach((image, index) => {
-        formData.append(
-          `isLogo_${index}`,
-          index === props.logoIndex ? "true" : "false"
-        );
-      });
-
-      // Append each image file
-      props.images.forEach((image, index) => {
-        formData.append(`image_${index}`, image.file);
-      });
-      // const url = process.env.NEXT_PUBLIC_DEV_URL;
-      // Send data to the backend using FormData
-      const response = await axios.post("/api/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setLogoAndImageUrls(response.data);
     } catch (error: any) {
       setIsLoading(false);
       console.error("Error:", error);
