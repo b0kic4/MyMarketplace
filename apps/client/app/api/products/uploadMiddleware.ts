@@ -1,7 +1,6 @@
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../firebase";
 import sharp from "sharp";
-import { NextResponse } from "next/server";
 
 interface FileProperties {
   size: number;
@@ -20,11 +19,8 @@ const uploadMiddleware = async (
 ): Promise<UploadMiddlewareResult[]> => {
   const uploadPromises: Promise<UploadMiddlewareResult>[] = [];
 
-  console.log("images: ", images);
-
   for (const file of images) {
     try {
-      console.log("file: ", file);
       const buffer = await file.arrayBuffer();
       const imageBuffer = Buffer.from(buffer);
       const webpBuffer = await sharp(imageBuffer).toFormat("webp").toBuffer();
@@ -37,7 +33,7 @@ const uploadMiddleware = async (
       };
 
       const uploadTask = uploadBytesResumable(storageRef, webpBuffer, metadata);
-      console.log("storage ref: ", storageRef);
+
       const imageUrlPromise = new Promise<UploadMiddlewareResult>(
         (resolve, reject) => {
           uploadTask.on(
@@ -59,9 +55,9 @@ const uploadMiddleware = async (
       );
 
       uploadPromises.push(imageUrlPromise);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error:", error);
-      NextResponse.json({ error: error });
+      throw new Error(error.message);
     }
   }
 

@@ -5,13 +5,15 @@ export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
 
-    console.log("form data: ", formData);
+    const isFile = (value: unknown): value is File => {
+      return typeof File !== "undefined" && value instanceof File;
+    };
 
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        (fieldValue instanceof File || typeof fieldValue === "string")
+        (isFile(fieldValue) || typeof fieldValue === "string")
     );
 
     if (imageEntries.length === 0) {
@@ -30,9 +32,12 @@ export async function POST(req: NextRequest) {
     );
 
     // Convert the imageFileEntries and isLogoEntries to arrays
-    const images = imageFileEntries.map(
-      ([fieldName, fieldValue]) => fieldValue as File
-    );
+    const images = imageFileEntries
+      .map(([fieldName, fieldValue]) =>
+        isFile(fieldValue) ? (fieldValue as File) : null
+      )
+      .filter((file): file is File => file !== null && file !== undefined);
+
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
@@ -40,10 +45,9 @@ export async function POST(req: NextRequest) {
     // console.log("console log images: ", images);
     // console.log("console log isLogos: ", isLogos);
 
-    console.log("Before");
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
-    console.log("After");
+
     // Handle the results as needed
     // console.log("Upload Results:", uploadResults);
 

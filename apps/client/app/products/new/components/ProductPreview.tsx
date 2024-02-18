@@ -39,7 +39,6 @@ const ProductPreview: React.FC<Props> = (props) => {
   // if (props.hasErrors) return;
   const handlePublish = async () => {
     try {
-      console.log("props: ", props);
       if (props) {
         setIsLoading(true);
         // Upload images to Firebase Cloud Storage
@@ -75,11 +74,8 @@ const ProductPreview: React.FC<Props> = (props) => {
           },
         });
         setLogoAndImageUrls(response.data);
-      } else {
-        console.log("error");
-        // return toast.error("Client side error");
       }
-    } catch (error) {
+    } catch (error: any) {
       setIsLoading(false);
       console.error("Error:", error);
     } finally {
@@ -107,7 +103,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         userId: user.user?.id,
         isUsed: props.isUsed,
       };
-      console.log("PROPS USEEFFECT: ", props);
+
       if (logoAndImageUrls && !props.hasErrors) {
         try {
           setIsLoading(true);
