@@ -81,17 +81,29 @@ const ProductPreview: React.FC<Props> = (props) => {
       props.images.forEach((image, index) => {
         formData.append(`image_${index}`, image.file);
       });
-      const url = process.env.NEXT_PUBLIC_PRODUCTION_URL;
       // Send data to the backend using FormData
-      const response = await axios.post(`${url}/api/products`, formData, {
+      const response = await axios.post("/api/products", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
       setLogoAndImageUrls(response.data);
-    } catch (error) {
+    } catch (error: any) {
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error("Response Error:", error.response.data);
+        console.error("Status Code:", error.response.status);
+        console.error("Headers:", error.response.headers);
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error("Request Error:", error.request);
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error("Error Message:", error.message);
+      }
+
       setIsLoading(false);
-      console.error("Error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -124,7 +136,6 @@ const ProductPreview: React.FC<Props> = (props) => {
             `${url}/products`,
             finalProductData
           );
-          console.log("response status: ", response.status);
           if (response.status === 201) {
             toast.success("Product has been successfully created!", {
               position: "top-right",

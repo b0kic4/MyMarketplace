@@ -20,9 +20,8 @@ export default function Main() {
     try {
       setLoading(true);
       const response = await axios.get(`${url}/products`);
-      const shuffledProducts = response.data.sort(() => Math.random() - 0.5); // Shuffle the products
+      const shuffledProducts = response.data.sort(() => Math.random() - 0.5);
       setProducts(shuffledProducts);
-      console.log("products: ", products);
     } catch (error) {
       setLoading(false);
       console.log(error);
