@@ -57,9 +57,12 @@ export async function POST(req: NextRequest) {
     // console.log("Upload Results:", uploadResults);
 
     // Create an array of isLogos and imageUrls
+    if (!uploadResults) {
+      return NextResponse.json({ error: "No upload response" });
+    }
     const isLogosAndImageUrls = isLogos.map((isLogo, index) => ({
       isLogo,
-      imageUrl: uploadResults[index].imageUrl,
+      imageUrl: uploadResults[index]?.imageUrl,
     }));
     console.log("upload results: ", uploadResults);
     console.log("isLogosAndImageUrls: ", isLogosAndImageUrls);
