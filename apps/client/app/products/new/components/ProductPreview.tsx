@@ -78,7 +78,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         console.log("error");
         // return toast.error("Client side error");
       }
-    } catch (error: any) {
+    } catch (error) {
       setIsLoading(false);
       console.error("Error:", error);
     } finally {
