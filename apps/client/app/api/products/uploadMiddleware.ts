@@ -26,13 +26,29 @@ const uploadMiddleware = async (
       const imageBuffer = Buffer.from(buffer);
       const webpBuffer = await sharp(imageBuffer).toFormat("webp").toBuffer();
       const fileName = `${Date.now()}-${file.name}-product-img.webp`;
+      console.log("before if file in for: ", file);
+      console.log("before buffer: ", buffer);
+      console.log("before webpbuffer: ", webpBuffer);
+      console.log("before filename: ", fileName);
 
+      if (!buffer && !imageBuffer && !webpBuffer && !fileName) {
+        console.log("in if file in for: ", file);
+        console.log("in buffer: ", buffer);
+        console.log("in webpbuffer: ", webpBuffer);
+        console.log("in filename: ", fileName);
+        throw new Error("Data is missing");
+      }
+      console.log("after if file in for: ", file);
+      console.log("after buffer: ", buffer);
+      console.log("after webpbuffer: ", webpBuffer);
+      console.log("after filename: ", fileName);
       const storageRef = ref(storage, `image/${fileName}`);
       const metadata = {
         contentType: "image/webp",
       };
       const uploadTask = uploadBytesResumable(storageRef, webpBuffer, metadata);
-
+      console.log("storageRef: ", storageRef);
+      console.log("uploadTask: ", uploadTask);
       const imageUrlPromise = new Promise<UploadMiddlewareResult>(
         (resolve, reject) => {
           uploadTask.on(
