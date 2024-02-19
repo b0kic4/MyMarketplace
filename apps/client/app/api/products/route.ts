@@ -18,8 +18,7 @@ export async function POST(req: NextRequest) {
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        (fieldValue instanceof File ||
-          (typeof fieldValue === "string" && fieldValue !== "false"))
+        (isFile(fieldValue) || typeof fieldValue === "string")
     );
 
     console.log("image entries: ", imageEntries);
