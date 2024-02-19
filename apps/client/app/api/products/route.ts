@@ -3,9 +3,6 @@ import uploadMiddleware from "./uploadMiddleware";
 
 export async function POST(req: NextRequest) {
   try {
-    const isFile = (value: unknown): value is File => {
-      return typeof File !== "undefined" && value instanceof File;
-    };
     const formData = await req.formData();
     console.log("form Data: ", formData);
     // Filter files with names containing 'image_' and 'isLogo_'
@@ -19,8 +16,7 @@ export async function POST(req: NextRequest) {
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        ((isFile(fieldValue) && fieldValue instanceof File) ||
-          typeof fieldValue === "string")
+        ((fieldValue && fieldValue) || typeof fieldValue === "string")
     );
 
     console.log("image entries: ", imageEntries);
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
 
     // Convert the imageFileEntries and isLogoEntries to arrays
     const images: any = imageFileEntries.map(
-      ([fieldName, fieldValue]) => fieldValue as File
+      ([fieldName, fieldValue]) => fieldValue as any
     );
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
