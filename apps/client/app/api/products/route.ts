@@ -36,9 +36,13 @@ export async function POST(req: NextRequest) {
     const isLogoEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("isLogo_")
     );
-    const imageFileEntries = imageEntries.filter(([fieldName]) =>
-      fieldName.startsWith("image_")
+    const allEntries = Array.from(formData.entries());
+    const imageFileEntries = allEntries.filter(
+      ([fieldName, fieldValue]) =>
+        fieldName.startsWith("image_") &&
+        (isFile(fieldValue) || typeof fieldValue === "string")
     );
+
     console.log("LOGO ENTRIES: ", isLogoEntries);
     console.log("IMAGE FILE ENTRIES: ", imageFileEntries);
     // Convert the imageFileEntries and isLogoEntries to arrays
