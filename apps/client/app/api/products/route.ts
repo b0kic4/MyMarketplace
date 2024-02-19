@@ -9,8 +9,13 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
     console.log("form Data: ", formData);
     // Filter files with names containing 'image_' and 'isLogo_'
+
+    const entries = Array.from(formData.entries());
+    console.log("Form Data Entries: ", entries);
+
     formData.forEach((fieldValue, fieldName) => {
       console.log(`fieldName: ${fieldName}, fieldValue: ${fieldValue}`);
+      console.log("File instance check: ", fieldValue instanceof File);
     });
 
     // fix not getting images in image Entries
