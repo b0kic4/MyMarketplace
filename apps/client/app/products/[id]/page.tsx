@@ -45,6 +45,9 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
       setIsLoading(false);
     }
   };
+
+  // TODO: implement caching
+  // FIXME: not getting products based on query parameters
   // const fetchMatchingProducts = async () => {};
   const fetchMatchingProducts = async () => {
     try {

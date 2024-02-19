@@ -1,6 +1,7 @@
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import { storage } from "../firebase";
 import sharp from "sharp";
+import { NextResponse } from "next/server";
 
 interface FileProperties {
   size: number;
@@ -46,6 +47,10 @@ const uploadMiddleware = async (
             },
             async () => {
               const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+              if (!imageUrl) {
+                return NextResponse.json({ error: "Error uploading image" });
+              }
+              console.log("image url: ", imageUrl);
               resolve({ imageUrl });
             }
           );
