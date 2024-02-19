@@ -26,12 +26,18 @@ export async function POST(req: NextRequest) {
     }
 
     const images = productData.images.map(
-      (image: { file: File; isLogo: boolean }) => image.file
-    );
-    const isLogos = productData.images.map(
-      (image: { file: File; isLogo: boolean }) => String(image.isLogo)
+      (image: { file: File; isLogo: boolean | string }) => {
+        return isFile(image.file) ? image.file : null;
+      }
     );
 
+    const isLogos = productData.images.map(
+      (image: { file: File; isLogo: boolean | string }) => {
+        return typeof image.isLogo === "boolean" || image.isLogo === "true";
+      }
+    );
+
+    console.log("isLogos: ", isLogos);
     console.log("before if images: ", images);
 
     if (!images || images.length === 0) {
