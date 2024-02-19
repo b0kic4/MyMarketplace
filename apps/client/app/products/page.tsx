@@ -385,8 +385,6 @@ export default function Page() {
                         >
                           <FaBookmark />
                         </Button>
-                      ) : isLoading ? (
-                        <Spinner />
                       ) : !isLoading ? (
                         <Button
                           onClick={() => handleSaveProduct(product.id)}
