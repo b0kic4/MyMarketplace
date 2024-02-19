@@ -19,9 +19,8 @@ export async function POST(req: NextRequest) {
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
         (isFile(fieldValue) || typeof fieldValue === "string")
     );
-
+    console.log("image entries: ", imageEntries);
     if (!imageEntries) {
-      console.error("No image entries found: ", imageEntries);
       return NextResponse.json({ error: "no image entries" });
     }
 
@@ -32,13 +31,17 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // Separate image entries and isLogo entries
+    // this is taking all the entries and finding the one that is true
     const isLogoEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("isLogo_")
     );
+
+    console.log("is logo entries: ", isLogoEntries);
+
     const imageFileEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("image_")
     );
+
     // Convert the imageFileEntries and isLogoEntries to arrays
     const images = imageFileEntries.map(
       ([fieldName, fieldValue]) => fieldValue as File
