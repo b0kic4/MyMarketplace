@@ -49,7 +49,6 @@ const uploadMiddleware = async (
             },
             async () => {
               const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
-              console.log("image url: ", imageUrl);
               if (!imageUrl) {
                 return NextResponse.json({ error: "Error uploading image" });
               }
@@ -61,7 +60,6 @@ const uploadMiddleware = async (
 
       uploadPromises.push(imageUrlPromise);
     } catch (error: any) {
-      console.log("Error: ", error);
       uploadPromises.push(Promise.resolve({ error: error.message }));
       continue;
     }
