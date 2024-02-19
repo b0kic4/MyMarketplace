@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiResponse,
@@ -16,7 +17,7 @@ import {
 import { ProductService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { SaveProductDto } from './dto/save-product-dto';
-import { Cart, Product } from '@prisma/client';
+import { Cart, Product, User } from '@prisma/client';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 
@@ -75,6 +76,7 @@ export class ProductController {
     return this.productService.removeSavedProduct(saveProductDto);
   }
   @Get(':id')
+  // param when providing in the link
   async findOne(@Param('id') id: number) {
     return await this.productService.findById(id);
   }
@@ -98,5 +100,23 @@ export class ProductController {
   @Post('remove-from-cart')
   async removeFromCart(@Body() removeFromCart: RemoveProductFromCartDto) {
     return this.productService.removeProductFromCart(removeFromCart);
+  }
+  @Get('similar-products')
+  async fetchSimilarproducts(
+    @Query('categoryType') categoryType: string,
+    @Query('colors') colors: string,
+    @Query('username') username: string,
+    @Query('material') material: string,
+    @Query('title') title: string,
+  ) {
+    console.log('route has been hit');
+    console.log('Params:', { categoryType, colors, username, material, title });
+    return this.productService.similarProducts(
+      username,
+      categoryType,
+      colors,
+      material,
+      title,
+    );
   }
 }

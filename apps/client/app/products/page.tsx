@@ -158,6 +158,7 @@ export default function Page() {
 
   const handleSaveProduct = async (productId: number) => {
     try {
+      setLoading(true);
       const foundProduct = products.find((product) => product.id === productId);
       const response = await axios.post(
         `${url}/products/save-product`,
@@ -171,10 +172,13 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
+      setLoading(false);
       toast.error(error.message, {
         position: "top-left",
         theme: "dark",
       });
+    } finally {
+      setLoading(false);
     }
   };
   const handleRemoveSavedProduct = async (productId: number) => {
@@ -373,7 +377,7 @@ export default function Page() {
 
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id
-                      ) ? (
+                      ) && !isLoading ? (
                         <Button
                           onClick={() => handleRemoveSavedProduct(product.id)}
                           size="sm"
@@ -381,7 +385,9 @@ export default function Page() {
                         >
                           <FaBookmark />
                         </Button>
-                      ) : (
+                      ) : isLoading ? (
+                        <Spinner />
+                      ) : !isLoading ? (
                         <Button
                           onClick={() => handleSaveProduct(product.id)}
                           size="sm"
@@ -389,6 +395,8 @@ export default function Page() {
                         >
                           <FaRegBookmark />
                         </Button>
+                      ) : (
+                        <Spinner />
                       )}
                     </div>
                   </CardFooter>

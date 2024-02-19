@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Cart, Product, PurchaseStatus } from '@prisma/client';
+import { Cart, Product, PurchaseStatus, User } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
@@ -401,6 +401,46 @@ export class ProductService {
           id: foundCartProduct?.id,
         },
       });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async similarProducts(
+    username: string,
+    categoryType: string,
+    colors: string,
+    material: string,
+    title: string,
+  ) {
+    try {
+      if (!username && !categoryType && !colors && !material && !title) {
+        throw new ConflictException('There is no product');
+      }
+      const product = await this.prisma.product.findMany({
+        where: {
+          user: {
+            username: username,
+          },
+          categoryType: categoryType,
+          colors: colors,
+          material: material,
+          title: title,
+        },
+        include: {
+          reviews: true,
+          images: true,
+          user: true,
+        },
+      });
+      if (!product) {
+        throw new ConflictException('There is no products');
+      }
+      console.log('product: ', product);
+      return product;
     } catch (error) {
       console.log(error);
       throw new HttpException(

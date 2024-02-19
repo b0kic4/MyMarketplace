@@ -17,15 +17,10 @@ import {
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Spinner from "@client/app/components/Loading";
+import { Product } from "../cart-products-interface";
 interface ServierSideProps {
   params: any;
 }
-
-// add some kind of ai to help users create their products
-// ai should read the image and then from the image to generate
-// some kind of description for the product and addtioional information
-// and there can be for user to chose if the generated data is good
-// and if the user doesnt like that one, it can make ai generate more
 
 // products that are similar to current one
 const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
@@ -34,6 +29,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [product, setProduct] = useState<Products>();
   const [visibleImages, setVisibleImages] = useState<number>(3);
+  const [similarProducts, setSimilarProducts] = useState<Product[]>();
   const fetchProduct = async () => {
     try {
       setIsLoading(true);
@@ -50,8 +46,28 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
     }
   };
   // const fetchMatchingProducts = async () => {};
+  const fetchMatchingProducts = async () => {
+    try {
+      if (product) {
+        const response = await axios.get(`${url}/products/similar-products`, {
+          params: {
+            categoryType: product?.categoryType,
+            colors: product?.colors,
+            username: product?.user.username,
+            mateiral: product?.material,
+            title: product?.title,
+          },
+        });
+        setSimilarProducts(response.data);
+        console.log(similarProducts);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     fetchProduct();
+    fetchMatchingProducts();
   }, [productId]);
   // implement rating product functionality final functionality
   // only if its purchased
@@ -138,6 +154,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               </div>
             </div>
           </div>
+          {/* features */}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Features</h2>
             <ul className="list-disc pl-4 grid gap-2 text-sm">
@@ -147,6 +164,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               <li>Customizable watch faces</li>
               <li>Waterproof up to 50 meters</li>
             </ul>
+            {/* specs */}
             <h2 className="font-semibold text-lg">Specifications</h2>
             <table className="w-full text-sm">
               <tbody>
@@ -173,6 +191,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               </tbody>
             </table>
           </div>
+          {/* customer reviews */}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Customer Reviews</h2>
             <div className="grid gap-4">
@@ -265,7 +284,9 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
                 </Select>
               </div>
             </div>
-            <Button size="lg">Add to cart</Button>
+            <Button size="lg" onClick={fetchMatchingProducts}>
+              Add to cart
+            </Button>
           </div>
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Related Products</h2>
