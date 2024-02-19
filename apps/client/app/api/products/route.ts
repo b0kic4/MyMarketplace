@@ -11,8 +11,9 @@ export async function POST(req: NextRequest) {
 
     console.log("form data: ", formData);
     if (!formData) {
-      throw new Error("From data is missing");
+      throw new Error("Form data is missing");
     }
+
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) => {
@@ -25,20 +26,8 @@ export async function POST(req: NextRequest) {
         );
       }
     );
-    const newIsLogoEntries = imageEntries.filter(([fieldName]) =>
-      fieldName.startsWith("isLogo_")
-    );
-    const newImageFileEntries = imageEntries.filter(([fieldName]) =>
-      fieldName.startsWith("image_")
-    );
-    console.log("new image file entries:", newImageFileEntries);
-    console.log("new is logo entries:", newIsLogoEntries);
-    console.log("Image Entries:", imageEntries);
 
-    if (!imageEntries) {
-      console.error("No image entries found: ", imageEntries);
-      return NextResponse.json({ error: "no image entries" });
-    }
+    console.log("Image Entries:", imageEntries);
 
     if (imageEntries.length === 0) {
       return NextResponse.json({
@@ -54,8 +43,10 @@ export async function POST(req: NextRequest) {
     const imageFileEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("image_")
     );
+
     console.log("LOGO ENTRIES: ", isLogoEntries);
     console.log("IMAGE FILE ENTRIES: ", imageFileEntries);
+
     // Convert the imageFileEntries and isLogoEntries to arrays
     const images = imageFileEntries.map(
       ([fieldName, fieldValue]) => fieldValue as File
@@ -63,39 +54,51 @@ export async function POST(req: NextRequest) {
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
+
     console.log("before if images: ", images);
     console.log("is logos: ", isLogos);
-    if (!images) {
+
+    if (!images || images.length === 0) {
       console.log("no images: ", images);
       console.log("no is logos: ", isLogos);
       return NextResponse.json({ error: "No images found" });
     }
+
     console.log("after if images: ", images);
     console.log("after if is logos: ", isLogos);
+
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
 
     // Handle the results as needed
     console.log("Upload Results:", uploadResults);
-    if (!uploadResults) {
+
+    if (!uploadResults || uploadResults.length !== images.length) {
       console.log("upload results failed: ", uploadResults);
-      return NextResponse.json({ error: "No upload results" });
+      return NextResponse.json({ error: "Mismatch in upload results" });
     }
+
     // Create an array of isLogos and imageUrls
     const isLogosAndImageUrls = isLogos.map((isLogo, index) => ({
       isLogo,
       imageUrl: uploadResults[index]?.imageUrl,
     }));
+
     console.log("before if Is Logos and Image: ", isLogosAndImageUrls);
+
     if (!isLogosAndImageUrls) {
       console.log("No Logos and Image");
     }
+
     console.log("after if Is Logos and Image: ", isLogosAndImageUrls);
+
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);
     const errors = uploadResults.map((result) => result.error).filter(Boolean);
+
     console.log("image urls: ", imageUrls);
+
     if (success) {
       return NextResponse.json({
         success: true,
