@@ -15,10 +15,25 @@ export async function POST(req: NextRequest) {
     }
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
-      ([fieldName, fieldValue]) =>
-        (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        (isFile(fieldValue) || typeof fieldValue === "string")
+      ([fieldName, fieldValue]) => {
+        console.log("Field Name:", fieldName);
+        console.log("Field Value:", fieldValue);
+
+        return (
+          (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
+          (isFile(fieldValue) || typeof fieldValue === "string")
+        );
+      }
     );
+    const newIsLogoEntries = imageEntries.filter(([fieldName]) =>
+      fieldName.startsWith("isLogo_")
+    );
+    const newImageFileEntries = imageEntries.filter(([fieldName]) =>
+      fieldName.startsWith("image_")
+    );
+    console.log("new image file entries:", newImageFileEntries);
+    console.log("new is logo entries:", newIsLogoEntries);
+    console.log("Image Entries:", imageEntries);
 
     if (!imageEntries) {
       console.error("No image entries found: ", imageEntries);
@@ -36,13 +51,9 @@ export async function POST(req: NextRequest) {
     const isLogoEntries = imageEntries.filter(([fieldName]) =>
       fieldName.startsWith("isLogo_")
     );
-    const allEntries = Array.from(formData.entries());
-    const imageFileEntries = allEntries.filter(
-      ([fieldName, fieldValue]) =>
-        fieldName.startsWith("image_") &&
-        (isFile(fieldValue) || typeof fieldValue === "string")
+    const imageFileEntries = imageEntries.filter(([fieldName]) =>
+      fieldName.startsWith("image_")
     );
-
     console.log("LOGO ENTRIES: ", isLogoEntries);
     console.log("IMAGE FILE ENTRIES: ", imageFileEntries);
     // Convert the imageFileEntries and isLogoEntries to arrays
