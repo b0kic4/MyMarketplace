@@ -6,10 +6,11 @@ export async function POST(req: NextRequest) {
     const isFile = (value: unknown): value is File => {
       return typeof File !== "undefined" && value instanceof File;
     };
+
     const formData = await req.formData();
     console.log("form Data: ", formData);
-    // Filter files with names containing 'image_' and 'isLogo_'
 
+    // Filter files with names containing 'image_' and 'isLogo_'
     const entries = Array.from(formData.entries());
     console.log("Form Data Entries: ", entries);
 
@@ -53,18 +54,20 @@ export async function POST(req: NextRequest) {
     );
 
     // Convert the imageFileEntries and isLogoEntries to arrays
-    const images = imageFileEntries.map(
-      ([fieldName, fieldValue]) => fieldValue as File
+    const images: any = imageFileEntries.map(
+      ([fieldName, fieldValue]) => fieldValue
     );
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
+
     console.log("before if images: ", images);
     if (!images) {
       console.log("no images: ", images);
       return NextResponse.json({ error: "No images found" });
     }
     console.log("after if images: ", images);
+
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
 
@@ -74,6 +77,7 @@ export async function POST(req: NextRequest) {
       console.log("upload results failed: ", uploadResults);
       return NextResponse.json({ error: "No upload results" });
     }
+
     // Create an array of isLogos and imageUrls
     const isLogosAndImageUrls = isLogos.map((isLogo, index) => ({
       isLogo,
@@ -84,6 +88,7 @@ export async function POST(req: NextRequest) {
       console.log("No Logos and Image");
     }
     console.log(" if Is Logos and Image: ", isLogosAndImageUrls);
+
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);
