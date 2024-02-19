@@ -76,8 +76,9 @@ const uploadMiddleware = async (
 
       uploadPromises.push(imageUrlPromise);
     } catch (error: any) {
-      console.error("Error:", error);
-      throw new Error(error.message);
+      console.log("Error: ", error);
+      uploadPromises.push(Promise.resolve({ error: error.message }));
+      continue;
     }
   }
 
