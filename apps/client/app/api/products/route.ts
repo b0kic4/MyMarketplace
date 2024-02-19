@@ -8,6 +8,7 @@ export async function POST(req: NextRequest) {
     };
 
     const formData = await req.formData();
+    console.log("form Data: ", formData);
     // Filter files with names containing 'image_' and 'isLogo_'
     formData.forEach((fieldValue, fieldName) => {
       console.log(`fieldName: ${fieldName}, fieldValue: ${fieldValue}`);
@@ -17,8 +18,10 @@ export async function POST(req: NextRequest) {
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
-        (isFile(fieldValue) || typeof fieldValue === "string")
+        (fieldValue instanceof File ||
+          (typeof fieldValue === "string" && fieldValue !== "false"))
     );
+
     console.log("image entries: ", imageEntries);
     if (!imageEntries) {
       return NextResponse.json({ error: "no image entries" });
