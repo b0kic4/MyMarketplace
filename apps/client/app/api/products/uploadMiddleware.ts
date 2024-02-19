@@ -47,6 +47,7 @@ const uploadMiddleware = async (
             },
             async () => {
               const imageUrl = await getDownloadURL(uploadTask.snapshot.ref);
+              console.log("image url: ", imageUrl);
               if (!imageUrl) {
                 return NextResponse.json({ error: "Error uploading image" });
               }

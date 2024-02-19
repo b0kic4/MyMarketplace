@@ -44,9 +44,9 @@ export async function POST(req: NextRequest) {
 
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
-
+    console.log("images: ", images);
     // Handle the results as needed
-    // console.log("Upload Results:", uploadResults);
+    console.log("Upload Results:", uploadResults);
     if (!uploadResults) {
       return NextResponse.json({ error: "No upload results" });
     }
@@ -55,6 +55,7 @@ export async function POST(req: NextRequest) {
       isLogo,
       imageUrl: uploadResults[index]?.imageUrl,
     }));
+    console.log("Is Logos and Image: ", isLogosAndImageUrls);
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);
