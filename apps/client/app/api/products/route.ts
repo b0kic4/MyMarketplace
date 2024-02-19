@@ -8,6 +8,11 @@ export async function POST(req: NextRequest) {
     };
 
     const formData = await req.formData();
+
+    console.log("form data: ", formData);
+    if (!formData) {
+      throw new Error("From data is missing");
+    }
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>

@@ -26,16 +26,14 @@ const uploadMiddleware = async (
       const imageBuffer = Buffer.from(buffer);
       const webpBuffer = await sharp(imageBuffer).toFormat("webp").toBuffer();
       const fileName = `${Date.now()}-${file.name}-product-img.webp`;
+      console.log("File data for debugging: ");
       console.log("before if file in for: ", file);
       console.log("before buffer: ", buffer);
       console.log("before webpbuffer: ", webpBuffer);
       console.log("before filename: ", fileName);
 
       if (!buffer && !imageBuffer && !webpBuffer && !fileName) {
-        console.log("in if file in for: ", file);
-        console.log("in buffer: ", buffer);
-        console.log("in webpbuffer: ", webpBuffer);
-        console.log("in filename: ", fileName);
+        console.log("file is missing file: ", file);
         throw new Error("Data is missing");
       }
       console.log("after if file in for: ", file);
