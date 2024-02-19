@@ -8,19 +8,17 @@ export async function POST(req: NextRequest) {
     };
 
     const formData = await req.formData();
+    // Filter files with names containing 'image_' and 'isLogo_'
+    formData.forEach((fieldValue, fieldName) => {
+      console.log(`fieldName: ${fieldName}, fieldValue: ${fieldValue}`);
+    });
 
-    console.log("form data: ", formData);
-    if (!formData) {
-      throw new Error("From data is missing");
-    }
     // Filter files with names containing 'image_' and 'isLogo_'
     const imageEntries = Array.from(formData.entries()).filter(
       ([fieldName, fieldValue]) =>
         (fieldName.startsWith("image_") || fieldName.startsWith("isLogo_")) &&
         (isFile(fieldValue) || typeof fieldValue === "string")
     );
-
-    console.log("image entries: ", imageEntries);
 
     if (!imageEntries) {
       console.error("No image entries found: ", imageEntries);
@@ -48,14 +46,19 @@ export async function POST(req: NextRequest) {
     const isLogos = isLogoEntries.map(
       ([fieldName, fieldValue]) => fieldValue as string
     );
+    console.log("before if images: ", images);
     if (!images) {
+      console.log("no images: ", images);
       return NextResponse.json({ error: "No images found" });
     }
+    console.log("after if images: ", images);
     // Call the uploadMiddleware to handle image uploads
     const uploadResults = await uploadMiddleware(images);
 
     // Handle the results as needed
+    console.log("Upload Results:", uploadResults);
     if (!uploadResults) {
+      console.log("upload results failed: ", uploadResults);
       return NextResponse.json({ error: "No upload results" });
     }
     // Create an array of isLogos and imageUrls
@@ -63,12 +66,16 @@ export async function POST(req: NextRequest) {
       isLogo,
       imageUrl: uploadResults[index]?.imageUrl,
     }));
-    console.log("after if Is Logos and Image: ", isLogosAndImageUrls);
+    console.log("before if Is Logos and Image: ", isLogosAndImageUrls);
+    if (!isLogosAndImageUrls) {
+      console.log("No Logos and Image");
+    }
+    console.log(" if Is Logos and Image: ", isLogosAndImageUrls);
     // Respond to the frontend based on the upload results, isLogos, and imageUrls
     const success = uploadResults.every((result) => !!result.imageUrl);
     const imageUrls = uploadResults.map((result) => result.imageUrl);
     const errors = uploadResults.map((result) => result.error).filter(Boolean);
-    console.log("image urls: ", imageUrls);
+
     if (success) {
       return NextResponse.json({
         success: true,
