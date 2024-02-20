@@ -108,7 +108,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         try {
           setIsLoading(true);
           const response = await axios.post(
-            `${url}/products`,
+            `${url}/products/createProduct`,
             finalProductData
           );
           console.log("response status: ", response.status);

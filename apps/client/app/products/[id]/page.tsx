@@ -21,7 +21,6 @@ import { Product } from "../cart-products-interface";
 interface ServierSideProps {
   params: any;
 }
-
 // products that are similar to current one
 const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   const productId = Number(params.id);
@@ -30,10 +29,11 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   const [product, setProduct] = useState<Products>();
   const [visibleImages, setVisibleImages] = useState<number>(3);
   const [similarProducts, setSimilarProducts] = useState<Product[]>();
+
   const fetchProduct = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(`${url}/products/${productId}`);
+      const response = await axios.get(`${url}/products/byId/${productId}`);
       setProduct(response.data);
     } catch (error: any) {
       setIsLoading(false);
@@ -47,33 +47,32 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   };
 
   // TODO: implement caching
-  // FIXME: not getting products based on query parameters
-  // const fetchMatchingProducts = async () => {};
   const fetchMatchingProducts = async () => {
     try {
       if (product) {
-        const response = await axios.get(`${url}/products/similar-products`, {
+        const response = await axios.get(`${url}/products/getSimilarProducts`, {
           params: {
-            categoryType: product?.categoryType,
-            colors: product?.colors,
-            username: product?.user.username,
-            mateiral: product?.material,
-            title: product?.title,
+            categoryType: product.categoryType,
+            colors: product.colors,
+            username: product.user.username,
+            material: product.material,
           },
         });
+        console.log(response.data);
         setSimilarProducts(response.data);
-        console.log(similarProducts);
       }
     } catch (error) {
       console.log(error);
     }
   };
+
   useEffect(() => {
     fetchProduct();
-    fetchMatchingProducts();
   }, [productId]);
-  // implement rating product functionality final functionality
-  // only if its purchased
+  // getting matching product from displayed product
+  useEffect(() => {
+    if (product) fetchMatchingProducts();
+  }, [product]);
   return (
     <div className="grid gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
       <div className="flex flex-col gap-2 items-start">
@@ -157,43 +156,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               </div>
             </div>
           </div>
-          {/* features */}
-          <div className="grid gap-4">
-            <h2 className="font-semibold text-lg">Features</h2>
-            <ul className="list-disc pl-4 grid gap-2 text-sm">
-              <li>Stylish and comfortable design</li>
-              <li>Heart rate monitoring</li>
-              <li>Step tracking and activity monitoring</li>
-              <li>Customizable watch faces</li>
-              <li>Waterproof up to 50 meters</li>
-            </ul>
-            {/* specs */}
-            <h2 className="font-semibold text-lg">Specifications</h2>
-            <table className="w-full text-sm">
-              <tbody>
-                <tr>
-                  <td>Display</td>
-                  <td>1.4-inch AMOLED</td>
-                </tr>
-                <tr>
-                  <td>Battery Life</td>
-                  <td>Up to 7 days</td>
-                </tr>
-                <tr>
-                  <td>Connectivity</td>
-                  <td>Bluetooth 5.0</td>
-                </tr>
-                <tr>
-                  <td>Compatibility</td>
-                  <td>iOS, Android</td>
-                </tr>
-                <tr>
-                  <td>Water Resistance</td>
-                  <td>Up to 50 meters</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+
           {/* customer reviews */}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Customer Reviews</h2>
@@ -291,6 +254,8 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               Add to cart
             </Button>
           </div>
+          {/* related */}
+          {/* {similarProducts?.map((product) => {})} */}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Related Products</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">

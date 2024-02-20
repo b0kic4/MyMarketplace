@@ -19,7 +19,7 @@ export default function Main() {
   const getProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/products`);
+      const response = await axios.get(`${url}/products/getAll`);
       const shuffledProducts = response.data.sort(() => Math.random() - 0.5);
       setProducts(shuffledProducts);
     } catch (error) {

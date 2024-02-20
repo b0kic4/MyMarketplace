@@ -32,7 +32,7 @@ export default function Page() {
   const getProducts = async () => {
     try {
       setLoading(true);
-      const response = await axios.get(`${url}/products`);
+      const response = await axios.get(`${url}/products/getAll`);
       const prod = response.data;
 
       // count length of all the products
