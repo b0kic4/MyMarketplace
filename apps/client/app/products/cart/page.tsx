@@ -11,12 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TrashIcon } from "@radix-ui/react-icons";
-import {
-  Cart,
-  CartProduct,
-  Product,
-  ProductImage,
-} from "../cart-products-interface";
+import { Cart, CartProduct, ProductImage } from "../cart-products-interface";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaLongArrowAltLeft } from "react-icons/fa";

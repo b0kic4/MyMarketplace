@@ -1,5 +1,4 @@
 "use client";
-// https://v0.dev/r/ge7QyM20jYK
 import Link from "next/link";
 import Image from "next/image";
 import Headerbar from "./components/Headerbar";
@@ -183,6 +182,7 @@ export default function Page() {
   };
   const handleRemoveSavedProduct = async (productId: number) => {
     try {
+      setLoading(true);
       const foundProduct = products.find((product) => product.id === productId);
       if (!foundProduct) {
         return toast.error("Product not found", {
@@ -202,10 +202,13 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
+      setLoading(false);
       toast.error("Removing bookmarked product failed", {
         position: "top-left",
         theme: "dark",
       });
+    } finally {
+      setLoading(false);
     }
   };
 

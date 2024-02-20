@@ -122,13 +122,13 @@ export default function Component() {
     let materialError = "";
 
     if (
-      (newMaterial.length >= 2 && newMaterial.length < 30) ||
+      (newMaterial.length >= 2 && newMaterial.length < 100) ||
       newMaterial === ""
     ) {
       setMaterial(newMaterial);
     } else {
       materialError =
-        "Material must be at least 2 characters long and less than 30 characters";
+        "Material must be at least 2 characters long and less than 100 characters";
     }
 
     setMaterialError(materialError);
@@ -140,12 +140,12 @@ export default function Component() {
     let textureError = "";
 
     if (
-      (newTextureText.length > 0 && newTextureText.length < 30) ||
+      (newTextureText.length > 0 && newTextureText.length < 100) ||
       newTextureText === ""
     ) {
       setTexture(newTextureText);
     } else {
-      textureError = "Provide a valid texture input (max 30 characters)";
+      textureError = "Provide a valid texture input (max 100 characters)";
     }
 
     setTextureError(textureError);
@@ -212,7 +212,7 @@ export default function Component() {
       setCategoryType(newCategoryType as string);
     } else {
       categoryTypeError =
-        "Category must be at least 1 characters long and less than 30 characters";
+        "Category must be at least 1 characters long and less than 100 characters";
     }
 
     setCategoryTypeError(categoryTypeError);
