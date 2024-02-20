@@ -26,7 +26,7 @@ import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
-  @Post()
+  @Post('createProduct')
   @ApiResponse({
     description: 'Product created successfully',
     status: 200,
@@ -44,12 +44,35 @@ export class ProductController {
     return this.productService.create(createProductDto);
   }
 
-  @Get()
+  @Get('getAll')
   async getProducts() {
     return this.productService.getProducts();
   }
 
-  @Post('/save-product')
+  @Get('byId/:id')
+  // param when providing in the link
+  async findOne(@Param('id') id: number) {
+    return await this.productService.findById(id);
+  }
+
+  @Get('getSimilarProducts')
+  async fetchSimilarproducts(
+    @Query('categoryType') categoryType: string,
+    @Query('colors') colors: string,
+    @Query('username') username: string,
+    @Query('material') material: string,
+  ) {
+    console.log('route has been hit');
+    console.log('Params:', { categoryType, colors, username, material });
+    return this.productService.similarProducts(
+      username,
+      categoryType,
+      colors,
+      material,
+    );
+  }
+
+  @Post('save-product')
   @ApiResponse({
     description: 'Product saved successfully',
     status: 200,
@@ -66,7 +89,7 @@ export class ProductController {
 
     return this.productService.saveProduct(saveProductDto);
   }
-  @Post('/remove-saved-product')
+  @Post('remove-saved-product')
   async removeSavedProduct(
     @Body() saveProductDto: SaveProductDto,
   ): Promise<Product> {
@@ -75,11 +98,7 @@ export class ProductController {
     }
     return this.productService.removeSavedProduct(saveProductDto);
   }
-  @Get(':id')
-  // param when providing in the link
-  async findOne(@Param('id') id: number) {
-    return await this.productService.findById(id);
-  }
+
   @Post('add-to-cart')
   async addProdcutToCart(
     @Body() addProdcutToCart: AddProductToCartDto,
@@ -87,6 +106,10 @@ export class ProductController {
     if (!addProdcutToCart)
       throw new ConflictException('Prodcut does not exists');
     return await this.productService.addProductToCart(addProdcutToCart);
+  }
+  @Post('remove-from-cart')
+  async removeFromCart(@Body() removeFromCart: RemoveProductFromCartDto) {
+    return this.productService.removeProductFromCart(removeFromCart);
   }
   // change prodcut quantity
   @Post('update-quantity')
@@ -96,27 +119,5 @@ export class ProductController {
     @Body('userId') userId: string,
   ) {
     return this.productService.updateQuantity(productId, quantity, userId);
-  }
-  @Post('remove-from-cart')
-  async removeFromCart(@Body() removeFromCart: RemoveProductFromCartDto) {
-    return this.productService.removeProductFromCart(removeFromCart);
-  }
-  @Get('similar-products')
-  async fetchSimilarproducts(
-    @Query('categoryType') categoryType: string,
-    @Query('colors') colors: string,
-    @Query('username') username: string,
-    @Query('material') material: string,
-    @Query('title') title: string,
-  ) {
-    console.log('route has been hit');
-    console.log('Params:', { categoryType, colors, username, material, title });
-    return this.productService.similarProducts(
-      username,
-      categoryType,
-      colors,
-      material,
-      title,
-    );
   }
 }

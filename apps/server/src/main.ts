@@ -15,9 +15,6 @@ async function bootstrap() {
 
   const port = process.env.PORT || 5000;
 
-  // Enable CORS
-  app.enableCors();
-
   // Use global validation pipe
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 

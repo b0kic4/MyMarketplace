@@ -414,10 +414,10 @@ export class ProductService {
     categoryType: string,
     colors: string,
     material: string,
-    title: string,
   ) {
     try {
-      if (!username && !categoryType && !colors && !material && !title) {
+      console.log('route has been called');
+      if (!username && !categoryType && !colors && !material) {
         throw new ConflictException('There is no product');
       }
       const product = await this.prisma.product.findMany({
@@ -428,7 +428,6 @@ export class ProductService {
           categoryType: categoryType,
           colors: colors,
           material: material,
-          title: title,
         },
         include: {
           reviews: true,

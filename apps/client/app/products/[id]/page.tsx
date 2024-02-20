@@ -58,8 +58,8 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
             material: product.material,
           },
         });
-        console.log(response.data);
         setSimilarProducts(response.data);
+        console.log("similar products: ", similarProducts);
       }
     } catch (error) {
       console.log(error);
@@ -255,7 +255,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
             </Button>
           </div>
           {/* related */}
-          {/* {similarProducts?.map((product) => {})} */}
+          {similarProducts?.map((product) => {})}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Related Products</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
