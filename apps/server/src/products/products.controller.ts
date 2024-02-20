@@ -62,8 +62,6 @@ export class ProductController {
     @Query('username') username: string,
     @Query('material') material: string,
   ) {
-    console.log('route has been hit');
-    console.log('Params:', { categoryType, colors, username, material });
     return this.productService.similarProducts(
       username,
       categoryType,

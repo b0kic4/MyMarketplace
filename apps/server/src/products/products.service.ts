@@ -416,7 +416,6 @@ export class ProductService {
     material: string,
   ) {
     try {
-      console.log('route has been called');
       if (!username && !categoryType && !colors && !material) {
         throw new ConflictException('There is no product');
       }
@@ -438,7 +437,6 @@ export class ProductService {
       if (!product) {
         throw new ConflictException('There is no products');
       }
-      console.log('product: ', product);
       return product;
     } catch (error) {
       console.log(error);
