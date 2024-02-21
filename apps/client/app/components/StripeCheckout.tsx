@@ -2,7 +2,7 @@
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { Cart } from "../products/cart-products-interface";
-
+import { auth } from "@clerk/nextjs";
 interface Props {
   cart: Cart | undefined;
   totalPrice: string;
@@ -19,7 +19,7 @@ const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+          //   Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           cart,
