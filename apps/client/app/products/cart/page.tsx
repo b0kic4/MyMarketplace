@@ -22,6 +22,12 @@ import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
 import Spinner from "@client/app/components/Loading";
 import StripeCheckout from "@client/app/components/StripeCheckout";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 export default function Component() {
   const [cart, setCart] = useState<Cart>();
@@ -323,7 +329,9 @@ export default function Component() {
                 <p className="font-medium">Subtotal</p>
                 <p className="font-semibold">${totalPrice}</p>
               </div>
-              <StripeCheckout cart={cart} totalPrice={totalPrice} />
+              <Elements stripe={stripePromise}>
+                <StripeCheckout cart={cart} totalPrice={totalPrice} />
+              </Elements>
             </div>
           </CardContent>
         </Card>
