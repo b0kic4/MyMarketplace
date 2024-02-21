@@ -296,7 +296,7 @@ export default function Component() {
                           />
                         </div>
                       </div>
-                      {unSavedChanges.includes(cartProduct.id) && (
+                      {unSavedChanges.includes(cartProduct.id) && !loading ? (
                         <Button
                           className="w-8 h-8"
                           size="icon"
@@ -308,6 +308,8 @@ export default function Component() {
                           <MdDone className="w-4 h-4" />
                           <span className="sr-only">Apply Changes</span>
                         </Button>
+                      ) : (
+                        loading && <Spinner />
                       )}
                       <Button
                         onClick={() => handleRemoveFromCart(product.id)}

@@ -19,13 +19,13 @@ const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          //   Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           cart,
           totalPrice,
         }),
       });
+      console.log("response: ", response);
 
       if (response.ok) {
         // Redirect to Stripe Checkout
