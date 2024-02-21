@@ -21,6 +21,8 @@ export default function Navbar() {
   const links = [
     { label: "Home", href: "/" },
     { label: "Products", href: "/products" },
+    { label: "My Cart", href: "/products/cart" },
+    // { label: "Chat", href: "/" },
   ];
 
   const appendUserToDatabase = async () => {

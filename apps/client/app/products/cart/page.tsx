@@ -21,23 +21,20 @@ import { MdDone } from "react-icons/md";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
 import Spinner from "@client/app/components/Loading";
-// Component
+import StripeCheckout from "@client/app/components/StripeCheckout";
+
 export default function Component() {
-  // params
-  // cart
   const [cart, setCart] = useState<Cart>();
   // data fetching loading states
   const [cartProductIds, setCartProductIds] = useState<
     { productId: number; quantity: number }[]
   >([]);
-
-  // unsaved changes for cart prodcuts
   const [unSavedChanges, setUnSavedChages] = useState<number[]>([]);
-
   const [loading, setLoading] = useState<boolean>(false);
-  // backend url
+
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
+
   // handlers
   const handleQuantityChange = (cartProductId: number, newQuantity: number) => {
     // Find the product that needs to be updated based on cartProductId
@@ -326,9 +323,7 @@ export default function Component() {
                 <p className="font-medium">Subtotal</p>
                 <p className="font-semibold">${totalPrice}</p>
               </div>
-              <Button className="w-full" size="lg">
-                Proceed to Checkout
-              </Button>
+              <StripeCheckout cart={cart} totalPrice={totalPrice} />
             </div>
           </CardContent>
         </Card>

@@ -6,14 +6,6 @@ import { toast } from "react-toastify";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
 import { StarIcon } from "@radix-ui/react-icons";
-import { Label } from "@radix-ui/react-label";
-import {
-  SelectValue,
-  SelectTrigger,
-  SelectItem,
-  SelectContent,
-  Select,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Spinner from "@client/app/components/Loading";

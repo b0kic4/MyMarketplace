@@ -45,7 +45,7 @@ const Navbuttons: React.FC<NavbuttonsProps> = (props) => {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col gap-4 md:flex-row md:space-x-4 p-4 items-center">
+      <div className="flex flex-col justify-center gap-4 md:flex-row md:justify-start md:space-x-4 p-4 items-start">
         <div className="flex flex-col gap-4 sm:flex-row">
           <Button
             className="border-gray-200 gap-2 dark:border-gray-800"
