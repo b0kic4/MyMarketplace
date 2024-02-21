@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
     const event = stripe.webhooks.constructEvent(
       rawBody,
       signature,
-      process.env.STRIPE_ENDPOINT_SECRET!
+      process.env.STRIPE_WEBHOOK_SECRET!
     );
 
     // Handle the specific event type
