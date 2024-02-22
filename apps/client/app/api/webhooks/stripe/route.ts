@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
-
 export async function POST(req: NextRequest) {
   try {
     // Retrieve the raw body and signature from the incoming request
@@ -25,9 +24,9 @@ export async function POST(req: NextRequest) {
         console.log("Checkout Session Completed:", session);
 
         // Extract relevant information from the session
-        console.log("session: ", session);
+        console.log("wh session: ", session);
         const { payment_status } = session;
-
+        console.log("payment status: ", payment_status);
         if (payment_status === "paid") {
           // If payment is successful, make a request to your backend API to store data
           const response = await fetch(

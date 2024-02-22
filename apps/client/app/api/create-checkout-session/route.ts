@@ -2,6 +2,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
+// TODO: Implement sharing functionality for products cart...
+// FIXME: Load time for data fetching reloading and etc...
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 export async function POST(req: NextRequest) {
@@ -14,7 +17,7 @@ export async function POST(req: NextRequest) {
       (cartProduct: any) => cartProduct.product
     );
 
-    // Now 'products' is an array of product objects
+    // Now 'products' is an array of prodinteruct objects
     console.log("products: ", products);
 
     // Iterate through 'products' and perform the Stripe API operations
@@ -55,8 +58,9 @@ export async function POST(req: NextRequest) {
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
+      // success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
-      cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/`,
+      cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
     });
     return NextResponse.json({
       status: 200,

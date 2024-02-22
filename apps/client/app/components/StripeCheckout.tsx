@@ -2,8 +2,6 @@
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { Cart } from "../products/cart-products-interface";
-import { auth } from "@clerk/nextjs";
-import { loadStripe } from "@stripe/stripe-js";
 interface Props {
   cart: Cart | undefined;
   totalPrice: string;
