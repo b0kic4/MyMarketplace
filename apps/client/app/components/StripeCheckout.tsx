@@ -8,10 +8,8 @@ interface Props {
   cart: Cart | undefined;
   totalPrice: string;
 }
-
-const StripeCheckout: React.FC<Props> = async ({ cart, totalPrice }) => {
-  const asyncStripe = loadStripe(process.env.STRIPE_SECRET_KEY!);
-  const stripePromise = async () => await asyncStripe;
+const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
+  const stripe = useStripe();
   const elements = useElements();
 
   const handleCheckout = async () => {
@@ -31,7 +29,7 @@ const StripeCheckout: React.FC<Props> = async ({ cart, totalPrice }) => {
         // Redirect to Stripe Checkout
         const responseBody = await response.json();
         const sessionId = JSON.parse(responseBody.body).id;
-        const stripe = await stripePromise();
+
         const result = await stripe!.redirectToCheckout({
           sessionId: sessionId,
         });
