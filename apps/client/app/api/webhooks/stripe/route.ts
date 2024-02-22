@@ -26,21 +26,18 @@ export async function POST(req: NextRequest) {
 
         // Extract relevant information from the session
         console.log("session: ", session);
-        const { payment_status, customer_email, amount_total } = session;
+        const { payment_status } = session;
 
         if (payment_status === "paid") {
           // If payment is successful, make a request to your backend API to store data
           const response = await fetch(
-            `${process.env.NEXT_PUBLIC_NESTJS_URL}/store-payment-info`,
+            `${process.env.NEXT_PUBLIC_NESTJS_URL}/payments/store-payment-info`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                customerEmail: customer_email,
-                amountTotal: amount_total,
-              }),
+              body: JSON.stringify({ session: session }),
             }
           );
 

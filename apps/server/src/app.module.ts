@@ -8,6 +8,9 @@ import { PrismaService } from './prisma-service/prisma.service';
 import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
+import { PaymentsService } from './payments/payments.service';
+import { PaymentsController } from './payments/payments.controller';
+import { PaymentsModule } from './payments/payments.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -16,8 +19,9 @@ import { CartModule } from './cart/cart.module';
     AuthModule,
     ProductsModule,
     CartModule,
+    PaymentsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService, PrismaService],
+  controllers: [AppController, PaymentsController],
+  providers: [AppService, PrismaService, PaymentsService],
 })
 export class AppModule {}
