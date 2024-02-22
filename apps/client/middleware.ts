@@ -7,7 +7,7 @@ export default authMiddleware({
     "/api/products/uploadMiddleware",
     "/api/products",
     "/api/create-checkout-session",
-    "/api/webooks/stripe",
+    "/api/webhooks/stripe",
   ],
 });
 
