@@ -25,13 +25,13 @@ const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
           totalPrice,
         }),
       });
-      console.log("response: ", response);
-
       if (response.ok) {
         // Redirect to Stripe Checkout
-        const session = await response.json();
+        const responseBody = await response.json();
+        const sessionId = JSON.parse(responseBody.body).id;
+
         const result = await stripe!.redirectToCheckout({
-          sessionId: session.id,
+          sessionId: sessionId,
         });
 
         if (result.error) {
