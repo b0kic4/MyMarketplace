@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
         console.log("metadata: ", metadata);
 
         if (payment_status === "paid") {
-          const products = metadata?.products;
           // If payment is successful, make a request to your backend API to store data
           const response = await fetch(
             `${process.env.NEXT_PUBLIC_NESTJS_URL}/payments/store-payment-info`,
@@ -42,7 +41,7 @@ export async function POST(req: NextRequest) {
               headers: {
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({ session: session, products: products }),
+              body: JSON.stringify({ session: session, metadata: metadata }),
             }
           );
 
