@@ -24,7 +24,6 @@ export async function POST(req: NextRequest) {
     const stripeProducts = await Promise.all(
       products.map(async (product: any) => {
         const stripeProduct = await stripe.products.create({
-          id: product.id,
           name: product.title,
           description: product.description,
         });
@@ -64,6 +63,7 @@ export async function POST(req: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
       cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
       metadata: {
+        products: cart.products,
         stripeProducts: stripeProductsString,
       },
     });
