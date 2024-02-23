@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
       cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
       metadata: {
-        products: cart.products,
+        products: products,
         stripeProducts: stripeProductsString,
       },
     });
