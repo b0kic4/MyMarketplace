@@ -1,8 +1,7 @@
 // api/create-checkout-session.ts
-import { useUser } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-
+import { currentUser } from "@clerk/nextjs";
 // TODO: Implement sharing functionality for products cart...
 // FIXME: Load time for data fetching reloading and etc...
 
@@ -11,6 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 export async function POST(req: NextRequest) {
   try {
     const { cart, totalPrice } = await req.json();
+    const user = await currentUser();
     // const cartProducts = cart.products.map((product: any) => {
     //   return product;
     // });
@@ -49,13 +49,12 @@ export async function POST(req: NextRequest) {
       price: stripeProducts[index].price,
       quantity: cartProduct.quantity,
     }));
-    const user = useUser();
     console.log("lineItems: ", lineItems);
     const productIds = products.map((product: any) => {
       return product.id;
     });
     const metadata = {
-      userId: user.user!.id,
+      userId: user!.id,
       productIds: productIds as string,
     };
     // Create a Checkout Session
