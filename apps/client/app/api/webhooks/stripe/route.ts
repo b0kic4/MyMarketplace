@@ -29,8 +29,8 @@ export async function POST(req: NextRequest) {
         const { payment_status, payment_intent, metadata } = session;
 
         console.log("payment status: ", payment_status);
-        console.log("intent: ", payment_intent);
         console.log("metadata: ", metadata);
+        console.log("intent: ", payment_intent);
 
         if (payment_status === "paid") {
           const products = metadata?.products;
