@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
         const stripeProduct = await stripe.products.create({
           name: product.title,
           description: product.description,
-          images: product.images.imageUrl,
+          images: [product.images.imageUrl],
         });
 
         const stripePrice = await stripe.prices.create({
@@ -34,7 +34,6 @@ export async function POST(req: NextRequest) {
           unit_amount: (product.price as number) * 100,
           currency: "usd",
         });
-
         return {
           product: stripeProduct,
           price: stripePrice.id,
@@ -61,6 +60,9 @@ export async function POST(req: NextRequest) {
       // success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
       cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
+      metadata: {
+        products: cart.products,
+      },
     });
     return NextResponse.json({
       status: 200,
