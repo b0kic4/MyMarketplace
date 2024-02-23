@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
     });
     const metadata = {
       userId: user!.id,
-      productIds: productIds,
+      productIds: JSON.stringify(productIds),
     };
     // Create a Checkout Session
     // stripe checkout session create expects:
