@@ -24,9 +24,9 @@ export async function POST(req: NextRequest) {
     const stripeProducts = await Promise.all(
       products.map(async (product: any) => {
         const stripeProduct = await stripe.products.create({
+          id: product.id,
           name: product.title,
           description: product.description,
-          images: [product.images.imageUrl],
         });
 
         const stripePrice = await stripe.prices.create({
@@ -51,8 +51,11 @@ export async function POST(req: NextRequest) {
     }));
 
     console.log("lineItems: ", lineItems);
-
     // Create a Checkout Session
+    const stripeProductsString = JSON.stringify(stripeProducts);
+    // stripe checkout session create expects:
+    // number, string or null -> we cant pass an array
+    // but then in backend we will just parse the stripeProducts
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
@@ -61,7 +64,7 @@ export async function POST(req: NextRequest) {
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
       cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
       metadata: {
-        products: cart.products,
+        stripeProducts: stripeProductsString,
       },
     });
     return NextResponse.json({
