@@ -26,8 +26,11 @@ export async function POST(req: NextRequest) {
 
         // Extract relevant information from the session
         console.log("wh session: ", session);
-        const { payment_status } = session;
+        const { payment_status, payment_intent } = session;
+
         console.log("payment status: ", payment_status);
+        console.log("intent: ", payment_intent);
+
         if (payment_status === "paid") {
           // If payment is successful, make a request to your backend API to store data
           const response = await fetch(
