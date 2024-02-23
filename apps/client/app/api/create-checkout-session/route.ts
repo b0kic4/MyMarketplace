@@ -1,4 +1,5 @@
 // api/create-checkout-session.ts
+import { useUser } from "@clerk/nextjs";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 
@@ -48,10 +49,16 @@ export async function POST(req: NextRequest) {
       price: stripeProducts[index].price,
       quantity: cartProduct.quantity,
     }));
-
+    const user = useUser();
     console.log("lineItems: ", lineItems);
+    const productIds = products.map((product: any) => {
+      return product.id;
+    });
+    const metadata = {
+      userId: user.user!.id,
+      productIds: productIds as string,
+    };
     // Create a Checkout Session
-    const stripeProductsString = JSON.stringify(stripeProducts);
     // stripe checkout session create expects:
     // number, string or null -> we cant pass an array
     // but then in backend we will just parse the stripeProducts
@@ -62,10 +69,7 @@ export async function POST(req: NextRequest) {
       // success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
       success_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/products/cart`,
       cancel_url: `${process.env.NEXT_PUBLIC_PRODUCTION_URL}/cancel`,
-      metadata: {
-        // products: products,
-        stripeProducts: stripeProductsString,
-      },
+      metadata: metadata,
     });
     return NextResponse.json({
       status: 200,
