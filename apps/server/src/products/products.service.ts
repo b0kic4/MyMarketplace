@@ -273,6 +273,7 @@ export class ProductService {
           data: {
             cartId: existingCart.id,
             productId: prodcut.id,
+            purchaseStatus: PurchaseStatus.NotPurchased,
           },
         });
         existingCartPorduct = createNewCartProduct;
