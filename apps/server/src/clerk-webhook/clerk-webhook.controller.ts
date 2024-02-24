@@ -12,8 +12,8 @@ export class ClerkWebhookController {
         const clerkUser = clerkEvent.data;
         const userData = {
           clerkUserId: clerkUser.id,
-          username: clerkUser.username || null,
-          email: clerkUser.email_addresses[0]?.email_address || null,
+          username: clerkUser.username,
+          email: clerkUser.email_addresses[0]?.email_address,
           imageUrl: clerkUser.image_url || null,
           fullName:
             `${clerkUser.first_name} ${clerkUser.last_name}`.trim() || null,
@@ -32,6 +32,7 @@ export class ClerkWebhookController {
         return 'Unsupported webhook type';
       }
     } catch (error) {
+      console.log(error);
       console.error('Error handling Clerk webhook:', error.message);
       return 'Error handling webhook';
     }
