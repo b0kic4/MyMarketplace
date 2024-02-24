@@ -104,6 +104,12 @@ export class PaymentsService {
         },
       });
       console.log('order: ', order);
+      const clearCart = await this.prisma.cart.delete({
+        where: {
+          id: cart.id,
+        },
+      });
+
       return order;
     } catch (error) {
       console.log(error);
@@ -112,5 +118,8 @@ export class PaymentsService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
+  async getOrderByUserId(userId: any) {
+    console.log('userid: ', userId);
   }
 }

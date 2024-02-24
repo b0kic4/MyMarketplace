@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 @Controller('payments')
 export class PaymentsController {
@@ -8,5 +8,9 @@ export class PaymentsController {
     const session = requestBody.session;
     const metadata = requestBody.metadata;
     return await this.paymentService.storePaymentInfo(session, metadata);
+  }
+  @Get('getOrderByUserId')
+  async getByOrderByUserId(@Query('userId') userId: any) {
+    return await this.paymentService.getOrderByUserId(userId);
   }
 }
