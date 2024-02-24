@@ -98,7 +98,7 @@ model Review {
 model Order {
   id                Int           @id @default(autoincrement())
   userId            Int
-  totalPrice        String
+  totalPrice        Int
   cartId            Int?          @unique
   Cart              Cart?         @relation(fields: [cartId], references: [id], name: "order")
   purchasedProducts CartProduct[] @relation("purchasedProducts")
