@@ -40,11 +40,7 @@ export class PaymentsService {
           },
         },
         include: {
-          products: {
-            include: {
-              product: true,
-            },
-          },
+          products: true,
         },
       });
       if (!cart) {
