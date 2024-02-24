@@ -22,7 +22,8 @@ export class PaymentsService {
         throw new Error('No products found in metadata');
       }
       const paymentStatus = session.payment_status;
-      const amount = session.amount_total;
+      const amountTotalInPennies = session.amount_total;
+      const amountTotalInDollars = amountTotalInPennies / 100;
       const productIds = JSON.parse(metadata.productIds);
       console.log('product ids: ', productIds);
       const userId = metadata.userId;
@@ -89,8 +90,9 @@ export class PaymentsService {
       const order = await this.prisma.order.create({
         data: {
           orderStatus: OrderStatus.Succeed,
-          totalPrice: amount,
+          totalPrice: amountTotalInDollars.toString(),
           userId: user.id,
+          cartId: cart.id,
           purchasedProducts: {
             create: cartProducts.map((cartProduct) => ({
               cartId: cartProduct.cart.id,
