@@ -2,6 +2,8 @@
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { Cart } from "../products/cart-products-interface";
+import { useUser } from "@clerk/nextjs";
+import { toast } from "react-toastify";
 interface Props {
   cart: Cart | undefined;
   totalPrice: string;
@@ -9,8 +11,14 @@ interface Props {
 const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
   const stripe = useStripe();
   const elements = useElements();
-
+  const user = useUser();
   const handleCheckout = async () => {
+    if (!user.isSignedIn) {
+      return toast.error("Please sign in before purchasing products", {
+        position: "top-left",
+        theme: "dark",
+      });
+    }
     try {
       // Make API call to your server to initiate a Stripe Checkout session
       const response = await fetch("/api/create-checkout-session", {
