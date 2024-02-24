@@ -5,7 +5,6 @@ import { ConfigModule } from '@nestjs/config';
 import { TrpcModule } from './trpc/trpc.module';
 import { UsersModule } from './users/users.module';
 import { PrismaService } from './prisma-service/prisma.service';
-import { AuthModule } from './auth/auth.module';
 import { ProductsModule } from './products/products.module';
 import { CartModule } from './cart/cart.module';
 import { PaymentsService } from './payments/payments.service';
@@ -17,7 +16,6 @@ import { ClerkWebhookController } from './clerk-webhook/clerk-webhook.controller
     ConfigModule.forRoot(),
     TrpcModule,
     UsersModule,
-    AuthModule,
     ProductsModule,
     CartModule,
     PaymentsModule,
