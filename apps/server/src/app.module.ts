@@ -11,6 +11,7 @@ import { PaymentsService } from './payments/payments.service';
 import { PaymentsController } from './payments/payments.controller';
 import { PaymentsModule } from './payments/payments.module';
 import { ClerkWebhookController } from './clerk-webhook/clerk-webhook.controller';
+import { UsersService } from './users/users.service';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -21,6 +22,6 @@ import { ClerkWebhookController } from './clerk-webhook/clerk-webhook.controller
     PaymentsModule,
   ],
   controllers: [AppController, PaymentsController, ClerkWebhookController],
-  providers: [AppService, PrismaService, PaymentsService],
+  providers: [AppService, PrismaService, UsersService, PaymentsService],
 })
 export class AppModule {}
