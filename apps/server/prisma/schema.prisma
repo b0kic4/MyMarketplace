@@ -78,6 +78,8 @@ model CartProduct {
   quantity       Int            @default(1)
   purchaseStatus PurchaseStatus
   cart           Cart           @relation(fields: [cartId], references: [id])
+  orderId        Int?
+  order          Order?         @relation("purchasedProducts", fields: [orderId], references: [id])
   product        Product        @relation(fields: [productId], references: [id])
   createdAt      DateTime       @default(now())
   updatedAt      DateTime       @updatedAt
@@ -94,15 +96,16 @@ model Review {
 }
 
 model Order {
-  id                Int         @id @default(autoincrement())
+  id                Int           @id @default(autoincrement())
   userId            Int
   totalPrice        String
-  cartId            Int?        @unique
-  purchasedProducts Cart?       @relation(fields: [cartId], references: [id], name: "order")
-  OrderStatus       OrderStatus
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  user              User        @relation(fields: [userId], references: [id], name: "userOrder")
+  cartId            Int?          @unique
+  Cart              Cart?         @relation(fields: [cartId], references: [id], name: "order")
+  purchasedProducts CartProduct[] @relation("purchasedProducts")
+  orderStatus       OrderStatus // Rename to follow the convention (camelCase)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  user              User          @relation(fields: [userId], references: [id], name: "userOrder")
 }
 
 enum PurchaseStatus {

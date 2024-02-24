@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
+import { OrderStatus, PurchaseStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
@@ -50,13 +51,13 @@ export class PaymentsService {
       if (!cart) {
         throw new ConflictException('No Cart associated with provieded user');
       }
-      console.log('cart: ', cart);
       const cartProducts = await this.prisma.cartProduct.findMany({
         where: {
           cartId: cart.id,
         },
         include: {
           product: true,
+          cart: true,
         },
       });
       if (!cartProducts) {
@@ -72,6 +73,36 @@ export class PaymentsService {
       }
       // All products in productIds are found in the cartProducts
       console.log('All products found in the cart.');
+      const uniqueCartProductsHolder = await this.prisma.cartProduct.findFirst({
+        where: {
+          cartId: cart.id,
+        },
+      });
+      const updatedCartProducts = await this.prisma.cartProduct.update({
+        where: {
+          id: uniqueCartProductsHolder!.id,
+        },
+        data: {
+          purchaseStatus: PurchaseStatus.Purchased,
+        },
+      });
+      const order = await this.prisma.order.create({
+        data: {
+          orderStatus: OrderStatus.Succeed,
+          totalPrice: amount,
+          userId: user.id,
+          purchasedProducts: {
+            create: cartProducts.map((cartProduct) => ({
+              cartId: cartProduct.cart.id,
+              productId: cartProduct.product.id,
+              quantity: cartProduct.quantity,
+              purchaseStatus: updatedCartProducts.purchaseStatus,
+            })),
+          },
+        },
+      });
+      console.log('order: ', order);
+      return order;
     } catch (error) {
       console.log(error);
       throw new HttpException(
