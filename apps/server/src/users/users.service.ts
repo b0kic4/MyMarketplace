@@ -8,18 +8,19 @@ export class UsersService {
 
   async create(userData: any): Promise<any> {
     try {
+      console.log('User data: ', userData);
       const newUser = await this.prisma.user.create({
         data: {
           clerkUserId: userData.clerkUserId,
-          username: userData.username || null,
-          email: userData.email || null,
-          imageUrl: userData.imageUrl || null,
+          username: userData.username,
+          email: userData.email,
+          imageUrl: userData.imageUrl,
           fullName: userData.fullName || null,
           createdAt: new Date(userData.createdAt).toISOString(),
           updatedAt: new Date(userData.updatedAt).toISOString(),
         },
       });
-
+      console.log('New User: ', newUser);
       return newUser;
     } catch (error) {
       // Handle unique constraint violation (e.g., duplicate email)
