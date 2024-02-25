@@ -5,8 +5,8 @@ import { UsersService } from '@server/users/users.service';
 @Controller('clerk-webhook')
 export class ClerkWebhookController {
   constructor(
-    private readonly usersService: UsersService,
-    private readonly prisma: PrismaService,
+    // private readonly usersService: UsersService,
+    private prisma: PrismaService,
   ) {}
 
   @Post('user')
@@ -23,15 +23,18 @@ export class ClerkWebhookController {
           fullName:
             `${clerkUser.first_name} ${clerkUser.last_name}`.trim() || null,
         };
-        const newUser = await this.prisma.user.create({
-          data: userData,
-        });
-        console.log('New user in handle webhook: ', newUser);
-
+        try {
+          const newUser = await this.prisma.user.create({
+            data: userData,
+          });
+          console.log('New user in handle webhook: ', newUser);
+          return 'User created successfully';
+        } catch (error) {
+          console.log(error);
+        }
+        throw new Error('Error saving user to database');
         // Create the user in the database
-        await this.usersService.create(userData);
-
-        return 'User created successfully';
+        // await this.usersService.create(userData);
       } else {
         console.log('Unsupported Clerk webhook type:', clerkEvent.type);
         return 'Unsupported webhook type';
