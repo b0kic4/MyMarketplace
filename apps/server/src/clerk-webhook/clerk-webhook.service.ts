@@ -1,4 +1,6 @@
+// clerk-webhook.service.ts
 import { Injectable } from '@nestjs/common';
+import { User } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateUserDto } from '@server/users/dto/create-user.dto';
 
@@ -6,7 +8,7 @@ import { CreateUserDto } from '@server/users/dto/create-user.dto';
 export class ClerkWebhookService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(clerkEvent: any): Promise<string> {
+  async createUser(clerkEvent: any): Promise<User> {
     try {
       if (clerkEvent.type === 'user.created') {
         const clerkUser = clerkEvent.data;
@@ -23,7 +25,7 @@ export class ClerkWebhookService {
             data: userData,
           });
           console.log('New user in handle webhook service: ', newUser);
-          return 'User created successfully';
+          return newUser;
         } catch (error: any) {
           console.log('Error creating user:', error);
 

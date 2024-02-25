@@ -67,6 +67,7 @@ model Cart {
   order     Order?        @relation("order")
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+
   @@index([userId, productId], name: "idx_user_product")
 }
 
