@@ -8,10 +8,8 @@ export class UsersService {
 
   async create(userData: any): Promise<any> {
     try {
-      // FIXME: NOT REGISTERING CLERKUSERID
       console.log('User data: ', userData);
       if (!userData) throw new Error('User data invalid');
-
       const newUser = await this.prisma.user.create({
         data: {
           clerkUserId: userData.clerkUserId,
