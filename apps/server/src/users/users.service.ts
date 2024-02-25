@@ -17,8 +17,6 @@ export class UsersService {
           imageUrl: userData.imageUrl,
           username: userData.username,
           fullName: userData.fullName,
-          updatedAt: userData.updatedAt,
-          createdAt: userData.createdAt,
         },
       });
       console.log('New User: ', newUser);

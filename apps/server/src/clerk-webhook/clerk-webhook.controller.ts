@@ -17,8 +17,6 @@ export class ClerkWebhookController {
           imageUrl: clerkUser.image_url || null,
           fullName:
             `${clerkUser.first_name} ${clerkUser.last_name}`.trim() || null,
-          createdAt: new Date(clerkUser.created_at).toISOString(),
-          updatedAt: new Date(clerkUser.updated_at).toISOString(),
         };
 
         // Create the user in the database
