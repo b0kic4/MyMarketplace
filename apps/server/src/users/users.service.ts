@@ -8,17 +8,16 @@ export class UsersService {
 
   async create(userData: any): Promise<any> {
     try {
+      console.log('User Data: ', userData);
       const newUser = await this.prisma.user.create({
         data: userData,
       });
-
       return newUser;
     } catch (error) {
       // Handle unique constraint violation (e.g., duplicate email)
       if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
         throw new ConflictException('Email address is already in use.');
       }
-
       // Handle other errors as needed
       throw error;
     }

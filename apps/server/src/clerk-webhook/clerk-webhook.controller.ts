@@ -22,9 +22,7 @@ export class ClerkWebhookController {
         };
 
         // Create the user in the database
-        const newUser = await this.usersService.create(userData);
-
-        console.log('User created:', newUser);
+        await this.usersService.create(userData);
 
         return 'User created successfully';
       } else {
