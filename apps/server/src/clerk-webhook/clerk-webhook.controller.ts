@@ -7,9 +7,9 @@ export class ClerkWebhookController {
   @Post('user')
   async handleWebhook(@Body() clerkEvent: any) {
     try {
-      console.log('clerk event: ', clerkEvent);
       if (clerkEvent.type === 'user.created') {
         const clerkUser = clerkEvent.data;
+        // console.log('clerk user: ', clerkUser);
         const userData = {
           clerkUserId: clerkUser.id,
           username: clerkUser.username,

@@ -1,18 +1,19 @@
 // CreateUserDto.ts
-import { IsEmail, IsString } from 'class-validator';
 class EmailAddress {
+  pathRoot: string;
   emailAddress: string;
-  // You can add other properties if needed
+  linkedTo: any[];
+  id: string;
+  verification: any;
 }
 
 export class CreateUserDto {
-  id: string;
+  clerkUserId: string;
   username: string;
   imageUrl: string;
-
   emailAddress: string;
-
   emailAddresses: EmailAddress[];
-
-  fullName: string;
+  fullName: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
