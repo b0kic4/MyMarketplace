@@ -1,14 +1,15 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { myClerk } from '@server/clerk.config';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async create(userData: any): Promise<any> {
+  async create(userData: CreateUserDto): Promise<any> {
     try {
-      console.log('User data: ', userData);
+      console.log('user data in user service: ', userData);
       if (!userData) throw new Error('User data invalid');
       const newUser = await this.prisma.user.create({
         data: {

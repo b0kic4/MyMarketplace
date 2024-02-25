@@ -1,4 +1,5 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { CreateUserDto } from '@server/users/dto/create-user.dto';
 import { UsersService } from '@server/users/users.service';
 @Controller('clerk-webhook')
 export class ClerkWebhookController {
@@ -10,7 +11,7 @@ export class ClerkWebhookController {
       if (clerkEvent.type === 'user.created') {
         const clerkUser = clerkEvent.data;
         // console.log('clerk user: ', clerkUser);
-        const userData = {
+        const userData: CreateUserDto = {
           clerkUserId: clerkUser.id,
           username: clerkUser.username,
           email: clerkUser.email_addresses[0]?.email_address,
