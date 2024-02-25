@@ -1,6 +1,5 @@
 import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
-import { myClerk } from '@server/clerk.config';
 import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
