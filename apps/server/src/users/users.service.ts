@@ -1,5 +1,6 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
+import { myClerk } from '@server/clerk.config';
 
 @Injectable()
 export class UsersService {
@@ -29,5 +30,37 @@ export class UsersService {
       // Handle other errors as needed
       throw error;
     }
+  }
+  async findAll() {
+    return this.prisma.user.findMany();
+  }
+
+  async findById(id: number) {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
+  async findByEmail(email: string, username: string): Promise<any> {
+    return this.prisma.user.findFirst({
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            username,
+          },
+        ],
+      },
+    });
+  }
+
+  update(id: number) {
+    return `This action updates a #${id} user`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} user`;
   }
 }
