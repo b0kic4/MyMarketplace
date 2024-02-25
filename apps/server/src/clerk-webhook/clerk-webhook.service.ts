@@ -18,14 +18,20 @@ export class ClerkWebhookService {
           fullName:
             `${clerkUser.first_name} ${clerkUser.last_name}`.trim() || null,
         };
+        try {
+          const newUser = await this.prisma.user.create({
+            data: userData,
+          });
+          console.log('New user in handle webhook service: ', newUser);
+          return 'User created successfully';
+        } catch (error: any) {
+          console.log('Error creating user:', error);
 
-        const newUser = await this.prisma.user.create({
-          data: userData,
-        });
-
-        console.log('New user in handle webhook service: ', newUser);
-
-        return 'User created successfully';
+          if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
+            throw new Error('Email address is already in use.');
+          }
+          throw new Error('Error saving user to database');
+        }
       } else {
         console.log('Unsupported Clerk webhook type:', clerkEvent.type);
         throw new Error('Unsupported webhook type');
