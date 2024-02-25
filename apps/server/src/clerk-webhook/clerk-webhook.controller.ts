@@ -1,9 +1,13 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateUserDto } from '@server/users/dto/create-user.dto';
 import { UsersService } from '@server/users/users.service';
 @Controller('clerk-webhook')
 export class ClerkWebhookController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Post('user')
   async handleWebhook(@Body() clerkEvent: any) {
@@ -19,6 +23,10 @@ export class ClerkWebhookController {
           fullName:
             `${clerkUser.first_name} ${clerkUser.last_name}`.trim() || null,
         };
+        const newUser = await this.prisma.user.create({
+          data: userData,
+        });
+        console.log('New user in handle webhook: ', newUser);
 
         // Create the user in the database
         await this.usersService.create(userData);
