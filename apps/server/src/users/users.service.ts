@@ -8,31 +8,33 @@ export class UsersService {
 
   async create(userData: any): Promise<any> {
     try {
+      // FIXME: NOT REGISTERING CLERKUSERID
       console.log('User data: ', userData);
       if (!userData) throw new Error('User data invalid');
+
       const newUser = await this.prisma.user.create({
         data: {
           clerkUserId: userData.clerkUserId,
-          username: userData.username,
           email: userData.email,
           imageUrl: userData.imageUrl,
-          fullName: userData.fullName || null,
-          createdAt: new Date(userData.createdAt).toISOString(),
-          updatedAt: new Date(userData.updatedAt).toISOString(),
+          username: userData.username,
+          fullName: userData.fullName,
+          updatedAt: userData.updatedAt,
+          createdAt: userData.createdAt,
         },
       });
       console.log('New User: ', newUser);
       return newUser;
     } catch (error) {
+      console.log(error);
       // Handle unique constraint violation (e.g., duplicate email)
       if (error.code === 'P2002' && error.meta?.target?.includes('email')) {
         throw new ConflictException('Email address is already in use.');
       }
-
-      // Handle other errors as needed
       throw error;
     }
   }
+
   async findAll() {
     return this.prisma.user.findMany();
   }
