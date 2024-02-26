@@ -308,7 +308,7 @@ export default function Page() {
           {/* Listing products text  */}
           <Listingtext filter={filter} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
-            {!setInitialLoading ? (
+            {!initialLoading ? (
               products.map((product) => (
                 <Card className="p-1" key={product.id}>
                   <CardContent className="p-4">

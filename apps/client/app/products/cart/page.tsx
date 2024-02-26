@@ -328,7 +328,9 @@ export default function Component() {
                   );
                 })
               ) : (
-                <Spinner />
+                <div className="flex justify-center content-center items-center text-center">
+                  <Spinner />
+                </div>
               )}
             </div>
 
