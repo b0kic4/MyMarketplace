@@ -364,7 +364,15 @@ export default function Page() {
                           Remove from Cart
                         </Button>
                       ) : isLoading ? (
-                        <Spinner />
+                        <Button
+                          key={product.id}
+                          disabled
+                          onClick={() => handleRemoveFromCart(product.id)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Loading...
+                        </Button>
                       ) : !isLoading ? (
                         <Button
                           key={product.id}
@@ -375,7 +383,15 @@ export default function Page() {
                           Add to Cart
                         </Button>
                       ) : isLoading ? (
-                        <Spinner />
+                        <Button
+                          key={product.id}
+                          disabled
+                          onClick={() => handleAddToCart(product.id)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Loading...
+                        </Button>
                       ) : null}
 
                       {product.savedByUsers.some(
@@ -397,7 +413,14 @@ export default function Page() {
                           <FaRegBookmark />
                         </Button>
                       ) : (
-                        <Spinner />
+                        <Button
+                          onClick={() => handleSaveProduct(product.id)}
+                          size="sm"
+                          disabled
+                          variant="outline"
+                        >
+                          Loading...
+                        </Button>
                       )}
                     </div>
                   </CardFooter>
