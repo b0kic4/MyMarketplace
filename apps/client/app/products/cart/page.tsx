@@ -93,6 +93,7 @@ export default function Component() {
 
   const getCart = async () => {
     try {
+      setLoading(true);
       const response = await axios.get(`${url}/cart`, {
         params: {
           userId: user.user?.id,
@@ -103,7 +104,10 @@ export default function Component() {
         setCart(response.data);
       }
     } catch (error) {
+      setLoading(false);
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -238,7 +242,7 @@ export default function Component() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
-              {Array.isArray(cart?.products) &&
+              {Array.isArray(cart?.products) && !loading ? (
                 cart.products.map((cartProduct: CartProduct) => {
                   const product: any = cartProduct.product;
 
@@ -322,7 +326,10 @@ export default function Component() {
                       </Button>
                     </div>
                   );
-                })}
+                })
+              ) : (
+                <Spinner />
+              )}
             </div>
 
             {/* Additional content */}
