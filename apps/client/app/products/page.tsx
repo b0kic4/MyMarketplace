@@ -17,6 +17,7 @@ import { Cart } from "./cart-products-interface";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
   const [filter, setFilter] = useState<string>("all");
@@ -30,7 +31,7 @@ export default function Page() {
   // data fetching
   const getProducts = async () => {
     try {
-      setLoading(true);
+      setInitialLoading(true);
       const response = await axios.get(`${url}/products/getAll`);
       const prod = response.data;
 
@@ -68,10 +69,10 @@ export default function Page() {
       // Apply filtering based on the current state
       applyFilter(prod);
     } catch (error) {
-      setLoading(false);
+      setInitialLoading(false);
       console.log(error);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -307,7 +308,7 @@ export default function Page() {
           {/* Listing products text  */}
           <Listingtext filter={filter} />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
-            {!isLoading ? (
+            {!setInitialLoading ? (
               products.map((product) => (
                 <Card className="p-1" key={product.id}>
                   <CardContent className="p-4">
@@ -364,15 +365,7 @@ export default function Page() {
                           Remove from Cart
                         </Button>
                       ) : isLoading ? (
-                        <Button
-                          key={product.id}
-                          disabled
-                          onClick={() => handleRemoveFromCart(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          Loading...
-                        </Button>
+                        <Spinner />
                       ) : !isLoading ? (
                         <Button
                           key={product.id}
@@ -383,15 +376,7 @@ export default function Page() {
                           Add to Cart
                         </Button>
                       ) : isLoading ? (
-                        <Button
-                          key={product.id}
-                          disabled
-                          onClick={() => handleAddToCart(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          Loading...
-                        </Button>
+                        <Spinner />
                       ) : null}
 
                       {product.savedByUsers.some(
