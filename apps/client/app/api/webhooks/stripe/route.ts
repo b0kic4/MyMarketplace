@@ -20,17 +20,17 @@ export async function POST(req: NextRequest) {
     switch (event.type) {
       case "checkout.session.completed":
         // Handle successful checkout session completion
-        console.log("event: ", event);
+        // console.log("event: ", event);
         const session = event.data.object;
-        console.log("Checkout Session Completed:", session);
+        // console.log("Checkout Session Completed:", session);
 
         // Extract relevant information from the session
-        console.log("wh session: ", session);
+        // console.log("wh session: ", session);
         const { payment_status, payment_intent, metadata } = session;
 
-        console.log("payment status: ", payment_status);
-        console.log("intent: ", payment_intent);
-        console.log("metadata: ", metadata);
+        // console.log("payment status: ", payment_status);
+        // console.log("intent: ", payment_intent);
+        // console.log("metadata: ", metadata);
 
         if (payment_status === "paid") {
           // If payment is successful, make a request to your backend API to store data

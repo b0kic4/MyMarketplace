@@ -25,7 +25,7 @@ export class PaymentsService {
       const amountTotalInPennies = session.amount_total;
       const amountTotalInDollars = amountTotalInPennies / 100;
       const productIds = JSON.parse(metadata.productIds);
-      console.log('product ids: ', productIds);
+
       const userId = metadata.userId;
       const user = await this.prisma.user.findFirst({
         where: {
@@ -103,8 +103,7 @@ export class PaymentsService {
           },
         },
       });
-      console.log('order: ', order);
-      const clearCart = await this.prisma.cart.delete({
+      await this.prisma.cart.delete({
         where: {
           id: cart.id,
         },

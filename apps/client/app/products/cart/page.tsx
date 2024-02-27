@@ -1,4 +1,3 @@
-// Import statements
 "use client";
 import {
   CardTitle,
@@ -36,7 +35,8 @@ export default function Component() {
     { productId: number; quantity: number }[]
   >([]);
   const [unSavedChanges, setUnSavedChages] = useState<number[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(false);
+  const [loadingProduct, setLoadingProduct] = useState<number | null>(null);
 
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
@@ -93,7 +93,7 @@ export default function Component() {
 
   const getCart = async () => {
     try {
-      setLoading(true);
+      setInitialLoading(true);
       const response = await axios.get(`${url}/cart`, {
         params: {
           userId: user.user?.id,
@@ -104,10 +104,10 @@ export default function Component() {
         setCart(response.data);
       }
     } catch (error) {
-      setLoading(false);
+      setInitialLoading(false);
       console.log(error);
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
     }
   };
 
@@ -119,12 +119,15 @@ export default function Component() {
   const saveChanges = async (productId: number, quantity: number) => {
     // product id is cart product id, not actual product id
     try {
-      setLoading(true);
+      // Set the loadingProduct to the current productId
+      setLoadingProduct(productId);
+
       const response = await axios.post(`${url}/products/update-quantity`, {
         id: productId,
         quantity: quantity,
         userId: user.user?.id,
       });
+
       if (response.status === 201) {
         toast.success("Quantity updated successfully", {
           position: "top-right",
@@ -132,18 +135,18 @@ export default function Component() {
         });
         getCart();
       }
+
       // Remove the cartProductId from unSavedChanges after saving changes
       setUnSavedChages((prevUnsavedChanges) =>
         prevUnsavedChanges.filter((id) => id !== productId)
       );
     } catch (error) {
-      setLoading(false);
       console.log(error);
     } finally {
-      setLoading(false);
+      // Reset the loadingProduct after the update is complete
+      setLoadingProduct(null);
     }
   };
-
   const handleRemoveFromCart = async (productId: number) => {
     try {
       const productToRemove = cart?.products.find(
@@ -242,7 +245,7 @@ export default function Component() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
-              {Array.isArray(cart?.products) && !loading ? (
+              {Array.isArray(cart?.products) && !initialLoading ? (
                 cart.products.map((cartProduct: CartProduct) => {
                   const product: any = cartProduct.product;
 
@@ -300,7 +303,7 @@ export default function Component() {
                           />
                         </div>
                       </div>
-                      {unSavedChanges.includes(cartProduct.id) && !loading ? (
+                      {unSavedChanges.includes(cartProduct.id) && (
                         <Button
                           className="w-8 h-8"
                           size="icon"
@@ -309,11 +312,13 @@ export default function Component() {
                             saveChanges(cartProduct.id, cartProduct.quantity)
                           }
                         >
-                          <MdDone className="w-4 h-4" />
+                          {loadingProduct === cartProduct.id ? (
+                            <Spinner />
+                          ) : (
+                            <MdDone className="w-4 h-4" />
+                          )}
                           <span className="sr-only">Apply Changes</span>
                         </Button>
-                      ) : (
-                        loading && <Spinner />
                       )}
                       <Button
                         onClick={() => handleRemoveFromCart(product.id)}

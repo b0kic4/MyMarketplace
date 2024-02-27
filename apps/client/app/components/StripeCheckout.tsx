@@ -1,5 +1,5 @@
 // StripeCheckout.tsx
-import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { useStripe } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
 import { Cart } from "../products/cart-products-interface";
 import { useUser } from "@clerk/nextjs";
@@ -10,7 +10,6 @@ interface Props {
 }
 const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
   const stripe = useStripe();
-  const elements = useElements();
   const user = useUser();
   const handleCheckout = async () => {
     if (!user.isSignedIn) {
