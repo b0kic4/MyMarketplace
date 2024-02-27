@@ -16,7 +16,8 @@ import Listingtext from "./components/Listingtext";
 import { Cart } from "./cart-products-interface";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
+  const [isSavingProduct, setSavingProduct] = useState<boolean>(false);
+  const [isUpdatingCart, setUpdatingCart] = useState<boolean>(false);
   const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
@@ -158,7 +159,7 @@ export default function Page() {
 
   const handleSaveProduct = async (productId: number) => {
     try {
-      setLoading(true);
+      setSavingProduct(true);
 
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
@@ -174,18 +175,18 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
-      setLoading(false);
+      setSavingProduct(false);
       toast.error(error.message, {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setLoading(false);
+      setSavingProduct(false);
     }
   };
   const handleRemoveSavedProduct = async (productId: number) => {
     try {
-      setLoading(true);
+      setSavingProduct(true);
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
         foundProduct,
@@ -209,19 +210,19 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
-      setLoading(false);
+      setSavingProduct(false);
       toast.error("Removing bookmarked product failed", {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setLoading(false);
+      setSavingProduct(false);
     }
   };
 
   const handleAddToCart = async (productId: number) => {
     try {
-      setLoading(true);
+      setUpdatingCart(true);
       const foundProduct = products.find((product) => product.id === productId);
       if (!foundProduct) {
         return toast.error("Product not found", {
@@ -242,19 +243,19 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
-      setLoading(false);
+      setUpdatingCart(false);
       toast.error("Adding to cart failed", {
         theme: "dark",
         position: "top-left",
       });
     } finally {
-      setLoading(false);
+      setUpdatingCart(false);
     }
   };
 
   const handleRemoveFromCart = async (productId: number) => {
     try {
-      setLoading(true);
+      setUpdatingCart(true);
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
         foundProduct,
@@ -272,13 +273,13 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
-      setLoading(false);
+      setUpdatingCart(false);
       toast.error("Error occured while removing product from cart", {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setLoading(false);
+      setUpdatingCart(false);
     }
   };
 
@@ -361,47 +362,46 @@ export default function Page() {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      {productIdsInCart.includes(product.id) && !isLoading ? (
+                      {productIdsInCart.includes(product.id) &&
+                      !isUpdatingCart ? (
                         <Button
                           key={product.id}
                           onClick={() => handleRemoveFromCart(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          Remove from Cart
+                          {isUpdatingCart ? <Spinner /> : "Remove from Cart"}
                         </Button>
-                      ) : isLoading ? (
-                        <Spinner />
-                      ) : !isLoading ? (
+                      ) : !isUpdatingCart ? (
                         <Button
                           key={product.id}
                           onClick={() => handleAddToCart(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          Add to Cart
+                          {isUpdatingCart ? <Spinner /> : "Add to Cart"}
                         </Button>
-                      ) : isLoading ? (
+                      ) : (
                         <Spinner />
-                      ) : null}
+                      )}
 
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id
-                      ) && !isLoading ? (
+                      ) && !isSavingProduct ? (
                         <Button
                           onClick={() => handleRemoveSavedProduct(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          <FaBookmark />
+                          {isSavingProduct ? <Spinner /> : <FaBookmark />}
                         </Button>
-                      ) : !isLoading ? (
+                      ) : !isSavingProduct ? (
                         <Button
                           onClick={() => handleSaveProduct(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          <FaRegBookmark />
+                          {isSavingProduct ? <Spinner /> : <FaRegBookmark />}
                         </Button>
                       ) : (
                         <Spinner />
