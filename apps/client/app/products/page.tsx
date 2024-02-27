@@ -187,6 +187,10 @@ export default function Page() {
     try {
       setLoading(true);
       const foundProduct = products.find((product) => product.id === productId);
+      const data = {
+        foundProduct,
+        userID: user.user?.id,
+      };
       if (!foundProduct) {
         return toast.error("Product not found", {
           position: "top-left",
@@ -195,7 +199,7 @@ export default function Page() {
       }
       const response = await axios.post(
         `${url}/products/remove-saved-product`,
-        foundProduct
+        data
       );
       if (response.status === 201) {
         toast.success("Product is not bookmarked anymore", {

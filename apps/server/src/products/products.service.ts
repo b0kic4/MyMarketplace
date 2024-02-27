@@ -165,6 +165,12 @@ export class ProductService {
   // bookmarking product from bookmarked
   async removeSavedProduct(saveProductDto: SaveProductDto): Promise<Product> {
     try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          clerkUserId: saveProductDto.userID,
+        },
+      });
+      if (!user) throw new Error('User not found');
       const product = await this.prisma.product.update({
         where: {
           id: saveProductDto.foundProduct.id,
@@ -172,7 +178,7 @@ export class ProductService {
         data: {
           savedByUsers: {
             disconnect: {
-              id: Number(saveProductDto.foundProduct.userId),
+              id: user.id,
             },
           },
         },
