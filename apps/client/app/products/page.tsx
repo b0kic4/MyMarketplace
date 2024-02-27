@@ -159,11 +159,13 @@ export default function Page() {
   const handleSaveProduct = async (productId: number) => {
     try {
       setLoading(true);
+
       const foundProduct = products.find((product) => product.id === productId);
-      const response = await axios.post(
-        `${url}/products/save-product`,
-        foundProduct
-      );
+      const data = {
+        foundProduct,
+        userID: user.user?.id,
+      };
+      const response = await axios.post(`${url}/products/save-product`, data);
       if (response.status === 201) {
         toast.success("Product is bookmarked", {
           position: "top-right",
@@ -398,14 +400,7 @@ export default function Page() {
                           <FaRegBookmark />
                         </Button>
                       ) : (
-                        <Button
-                          onClick={() => handleSaveProduct(product.id)}
-                          size="sm"
-                          disabled
-                          variant="outline"
-                        >
-                          Loading...
-                        </Button>
+                        <Spinner />
                       )}
                     </div>
                   </CardFooter>

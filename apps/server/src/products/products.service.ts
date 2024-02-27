@@ -104,10 +104,11 @@ export class ProductService {
   // bookmarking product
   async saveProduct(saveProductDto: SaveProductDto) {
     try {
-      // Find the product based on the provided id
+      // userId -> is id of the user that holds the product
+      // userID -> is id of the user that requested the method
       const product = await this.prisma.product.findUnique({
         where: {
-          id: saveProductDto.id,
+          id: saveProductDto.foundProduct.id,
         },
         include: {
           savedByUsers: true,
@@ -117,11 +118,10 @@ export class ProductService {
       if (!product) {
         throw new HttpException('Product not found', HttpStatus.NOT_FOUND);
       }
-
       // Find the user who saved the product
-      const user = await this.prisma.user.findUnique({
+      const user = await this.prisma.user.findFirst({
         where: {
-          id: Number(saveProductDto.userId),
+          clerkUserId: saveProductDto.userID,
         },
         include: {
           savedProducts: true,
@@ -167,12 +167,12 @@ export class ProductService {
     try {
       const product = await this.prisma.product.update({
         where: {
-          id: saveProductDto.id,
+          id: saveProductDto.foundProduct.id,
         },
         data: {
           savedByUsers: {
             disconnect: {
-              id: Number(saveProductDto.userId),
+              id: Number(saveProductDto.foundProduct.userId),
             },
           },
         },

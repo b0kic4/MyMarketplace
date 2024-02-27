@@ -71,15 +71,6 @@ export class ProductController {
   }
 
   @Post('save-product')
-  @ApiResponse({
-    description: 'Product saved successfully',
-    status: 200,
-  })
-  @ApiBadRequestResponse({
-    description: 'Product data is missing or invalid',
-    type: ConflictException,
-  })
-  @ApiInternalServerErrorResponse({ description: 'Internal Server Error' })
   async saveProduct(@Body() saveProductDto: SaveProductDto): Promise<Product> {
     if (!saveProductDto) {
       throw new ConflictException('Product does not exist');
