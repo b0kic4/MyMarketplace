@@ -15,8 +15,11 @@ import { toast } from "react-toastify";
 import Listingtext from "./components/Listingtext";
 import { Cart } from "./cart-products-interface";
 export default function Page() {
-  const [products, setProducts] = useState<Products[]>([]);
 
+  // TODO: implement session storage instead if api fetching
+  // FIX: Fix schema for using storage sessions
+
+  const [products, setProducts] = useState<Products[]>([]);
   const [isSavingProduct, setSavingProduct] = useState<{
     [key: number]: boolean;
   }>({});
@@ -371,7 +374,7 @@ export default function Page() {
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
                       {productIdsInCart.includes(product.id) &&
-                      !isUpdatingCart[product.id] ? (
+                        !isUpdatingCart[product.id] ? (
                         <Button
                           key={product.id}
                           onClick={() => handleRemoveFromCart(product.id)}
