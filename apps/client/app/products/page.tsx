@@ -16,8 +16,13 @@ import Listingtext from "./components/Listingtext";
 import { Cart } from "./cart-products-interface";
 export default function Page() {
   const [products, setProducts] = useState<Products[]>([]);
-  const [isSavingProduct, setSavingProduct] = useState<boolean>(false);
-  const [isUpdatingCart, setUpdatingCart] = useState<boolean>(false);
+
+
+  const [isSavingProduct, setSavingProduct] = useState<{ [key: number]: boolean }>({});
+  const [isUpdatingCart, setUpdatingCart] = useState<{ [key: number]: boolean }>({});
+
+  // const [productLoadingStates, setProductLoadingStates] = useState<{ [key: number]: boolean }>({});
+
   const [initialLoading, setInitialLoading] = useState<boolean>(false);
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
@@ -159,7 +164,7 @@ export default function Page() {
 
   const handleSaveProduct = async (productId: number) => {
     try {
-      setSavingProduct(true);
+      setSavingProduct((prev) => ({ ...prev, [productId]: true }));
 
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
@@ -175,18 +180,18 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
-      setSavingProduct(false);
+      setSavingProduct((prev) => ({ ...prev, [productId]: false }));
       toast.error(error.message, {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setSavingProduct(false);
+      setSavingProduct((prev) => ({ ...prev, [productId]: false }));
     }
   };
   const handleRemoveSavedProduct = async (productId: number) => {
     try {
-      setSavingProduct(true);
+      setSavingProduct((prev) => ({ ...prev, [productId]: true }));
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
         foundProduct,
@@ -210,19 +215,19 @@ export default function Page() {
         getProducts();
       }
     } catch (error: any) {
-      setSavingProduct(false);
+      setSavingProduct((prev) => ({ ...prev, [productId]: false }));
       toast.error("Removing bookmarked product failed", {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setSavingProduct(false);
+      setSavingProduct((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
   const handleAddToCart = async (productId: number) => {
     try {
-      setUpdatingCart(true);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: true }));
       const foundProduct = products.find((product) => product.id === productId);
       if (!foundProduct) {
         return toast.error("Product not found", {
@@ -243,19 +248,19 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
-      setUpdatingCart(false);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: false }));
       toast.error("Adding to cart failed", {
         theme: "dark",
         position: "top-left",
       });
     } finally {
-      setUpdatingCart(false);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
   const handleRemoveFromCart = async (productId: number) => {
     try {
-      setUpdatingCart(true);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: true }));
       const foundProduct = products.find((product) => product.id === productId);
       const data = {
         foundProduct,
@@ -273,13 +278,13 @@ export default function Page() {
         getCart();
       }
     } catch (error) {
-      setUpdatingCart(false);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: false }));
       toast.error("Error occured while removing product from cart", {
         position: "top-left",
         theme: "dark",
       });
     } finally {
-      setUpdatingCart(false);
+      setUpdatingCart((prev) => ({ ...prev, [productId]: false }));
     }
   };
 
@@ -314,7 +319,8 @@ export default function Page() {
           />
           {/* Listing products text  */}
           <Listingtext filter={filter} />
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
+          <div className="grid g      setSavingProduct((prev) => ({ ...prev, [productId]: false }));
+rid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
             {!initialLoading ? (
               products.map((product) => (
                 <Card className="p-1" key={product.id}>
@@ -362,51 +368,49 @@ export default function Page() {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      {productIdsInCart.includes(product.id) &&
-                      !isUpdatingCart ? (
+                      {productIdsInCart.includes(product.id) && !isUpdatingCart[product.id] ? (
                         <Button
                           key={product.id}
                           onClick={() => handleRemoveFromCart(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          {isUpdatingCart ? <Spinner /> : "Remove from Cart"}
+                          {isUpdatingCart[product.id] ? <Spinner /> : "Remove from Cart"}
                         </Button>
-                      ) : !isUpdatingCart ? (
+                      ) : !isUpdatingCart[product.id] ? (
                         <Button
                           key={product.id}
                           onClick={() => handleAddToCart(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          {isUpdatingCart ? <Spinner /> : "Add to Cart"}
+                          {isUpdatingCart[product.id] ? <Spinner /> : "Add to Cart"}
                         </Button>
                       ) : (
                         <Spinner />
                       )}
 
-                      {product.savedByUsers.some(
-                        (u) => u.clerkUserId === user.user?.id
-                      ) && !isSavingProduct ? (
+                      {product.savedByUsers.some((u) => u.clerkUserId === user.user?.id) && !isSavingProduct[product.id] ? (
                         <Button
                           onClick={() => handleRemoveSavedProduct(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          {isSavingProduct ? <Spinner /> : <FaBookmark />}
+                          {isSavingProduct[product.id] ? <Spinner /> : <FaBookmark />}
                         </Button>
-                      ) : !isSavingProduct ? (
+                      ) : !isSavingProduct[product.id] ? (
                         <Button
                           onClick={() => handleSaveProduct(product.id)}
                           size="sm"
                           variant="outline"
                         >
-                          {isSavingProduct ? <Spinner /> : <FaRegBookmark />}
+                          {isSavingProduct[product.id] ? <Spinner /> : <FaRegBookmark />}
                         </Button>
                       ) : (
                         <Spinner />
                       )}
                     </div>
+
                   </CardFooter>
                 </Card>
               ))
