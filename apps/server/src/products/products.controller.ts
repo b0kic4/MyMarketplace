@@ -45,8 +45,11 @@ export class ProductController {
   }
 
   @Get('getAll')
-  async getProducts() {
-    return this.productService.getProducts();
+  getAllProducts(
+    @Query('filter') filter: string,
+    @Query('userId') userId?: string,
+  ) {
+    return this.productService.findAll(filter, userId);
   }
 
   @Get('byId/:id')
