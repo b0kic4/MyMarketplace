@@ -10,9 +10,14 @@ import {
 } from "react-icons/fa";
 import { FiGrid, FiPackage } from "react-icons/fi";
 // import { Badge } from "@/components/ui/badge";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 const Navbuttons = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const currentFilter = searchParams.get("filter");
+  const isActive = (filterName: string) =>
+    currentFilter === filterName || (!currentFilter && filterName === "all");
+
   const handleFilterChange = useCallback(
     (filterName: string) => {
       const newPath = `${window.location.pathname}?filter=${filterName}`;
@@ -27,7 +32,7 @@ const Navbuttons = () => {
         <div className="grid gap-3">
           <p className="text-gray-500 dark:text-gray-400">Browse our catalog</p>
           <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
+            className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("all") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
             onClick={() => handleFilterChange("all")}
           >
@@ -42,7 +47,7 @@ const Navbuttons = () => {
       <div className="flex flex-col justify-center gap-4 md:flex-row md:justify-start md:space-x-4 p-4 items-start">
         <div className="flex flex-col gap-4 sm:flex-row">
           <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
+            className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("newArrivals") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
             onClick={() => handleFilterChange("newArrivals")}
           >
@@ -53,7 +58,7 @@ const Navbuttons = () => {
             {/* </Badge> */}
           </Button>
           <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
+            className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("usedItems") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
             onClick={() => handleFilterChange("usedItems")}
           >
@@ -64,7 +69,7 @@ const Navbuttons = () => {
             {/* </Badge> */}
           </Button>
           <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
+            className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("myProducts") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
             onClick={() => handleFilterChange("myProducts")}
           >

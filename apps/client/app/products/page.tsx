@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Product, ProductImage } from "./cart-products-interface";
 import Navbuttons from "./components/Navbuttons";
 import { useUser } from "@clerk/nextjs";
+import Listingtext from "./components/Listingtext";
 
 // export async function loader() {
 //   const products = await getProducts()
@@ -47,14 +48,11 @@ const Productpage = () => {
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
       <div className="flex-1 flex w-full flex-col min-h-screen">
-        {/* Headerbar for searching products */}
+        {/* Headerbar */}
         <Headerbar />
         <section className="grid gap-6 md:gap-8 p-4 md:p-6">
-          {/* All products new arriavls etc... buttons */}
+          {/* nav buttons */}
           <Navbuttons />
-          {/* Listing products text  */}
-          {/* <Listingtext filter={filter} /> */}
-
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
             {products.length > 0 ? (
               products.map((product: Product) => (
