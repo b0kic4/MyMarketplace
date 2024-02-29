@@ -45,11 +45,16 @@ export class ProductController {
   }
 
   @Get('getAll')
-  getAllProducts(
+  getAll(): Promise<Product[]> {
+    return this.productService.findAll();
+  }
+
+  @Get('getProductsWithFilter')
+  getProductsWithFilter(
     @Query('filter') filter: string,
     @Query('userId') userId?: string,
   ) {
-    return this.productService.findAll(filter, userId);
+    return this.productService.findWithFiltering(filter, userId);
   }
 
   @Get('byId/:id')

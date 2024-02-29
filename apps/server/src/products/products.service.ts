@@ -80,7 +80,21 @@ export class ProductService {
   }
 
   // getting products
-  async findAll(filter: string, userId?: string): Promise<Product[]> {
+
+  async findAll() {
+    const products = await this.prisma.product.findMany({
+      include: {
+        images: true,
+        user: true,
+        savedByUsers: true,
+        cart: true,
+        reviews: true,
+      },
+    });
+    return products;
+  }
+
+  async findWithFiltering(filter: string, userId?: string): Promise<Product[]> {
     const user = await this.prisma.user.findFirst({
       where: {
         clerkUserId: userId,

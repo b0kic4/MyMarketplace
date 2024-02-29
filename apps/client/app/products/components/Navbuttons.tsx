@@ -9,13 +9,10 @@ import {
   FaShoppingCart,
 } from "react-icons/fa";
 import { FiGrid, FiPackage } from "react-icons/fi";
-import { Badge } from "@/components/ui/badge";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+// import { Badge } from "@/components/ui/badge";
+import { useRouter } from "next/navigation";
 const Navbuttons = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
   const handleFilterChange = useCallback(
     (filterName: string) => {
       const newPath = `${window.location.pathname}?filter=${filterName}`;
