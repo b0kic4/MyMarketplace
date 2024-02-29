@@ -10,25 +10,27 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Product, ProductImage } from "./cart-products-interface";
 import Navbuttons from "./components/Navbuttons";
+import { useUser } from "@clerk/nextjs";
 
 // export async function loader() {
 //   const products = await getProducts()
 //   return { products }
 // }
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+// const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const Productpage = () => {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Default the filter to "all" when not specified
   const filter = searchParams.get("filter") || "all";
+  const userId = useUser().user?.id;
 
   useEffect(() => {
     setLoading(true);
-    getProducts(filter)
+    getProducts(filter, userId)
       .then((fetchedProducts) => {
         setProducts(fetchedProducts);
         setError(null);
@@ -37,13 +39,8 @@ const Productpage = () => {
         console.error("Failed to load products:", err);
         setError(err);
       })
-      .finally(() => {
-        setLoading(false);
-      });
-    console.log("filter: ", filter);
-    console.log("fetchedProducts: ", products);
-  }, [filter]);
-
+      .finally(() => setLoading(false));
+  }, [filter, userId]); // Include userId in the dependency array
   if (error) return <div>Failed to load products.</div>;
   if (loading) return <div>Loading...</div>;
 

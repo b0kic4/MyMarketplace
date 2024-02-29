@@ -58,7 +58,7 @@ const Navbuttons = () => {
           <Button
             className="border-gray-200 gap-2 dark:border-gray-800"
             variant="outline"
-            onClick={() => handleFilterChange("userdItems")}
+            onClick={() => handleFilterChange("usedItems")}
           >
             <FaDollarSign className="h-4 w-4 mr-2" />
             Used Items

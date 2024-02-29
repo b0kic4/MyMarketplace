@@ -81,7 +81,6 @@ export class ProductService {
 
   // getting products
   async findAll(filter: string, userId?: string): Promise<Product[]> {
-    console.log('filter: ', filter);
     const user = await this.prisma.user.findFirst({
       where: {
         clerkUserId: userId,
@@ -130,10 +129,8 @@ export class ProductService {
             reviews: true,
           },
         });
-        if (!product) throw new Error('No products');
         return product;
       case 'myProducts':
-        console.log('user id: ', user!.id);
         // Optionally check if user exists in the database for additional validation
         const usersProducts = await this.prisma.product.findMany({
           where: {
@@ -149,7 +146,6 @@ export class ProductService {
             reviews: true,
           },
         });
-        console.log(usersProducts);
         return usersProducts;
         break;
     }
