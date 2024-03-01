@@ -18,32 +18,34 @@ import Listingtext from "./components/Listingtext";
 //   return { products }
 // }
 
-// const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
 const Productpage = () => {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState([]);
+  // const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   const filter = searchParams.get("filter") || "all";
   const userId = useUser().user?.id;
 
-  useEffect(() => {
-    setLoading(true);
-    getProducts(filter, userId)
-      .then((fetchedProducts) => {
-        setProducts(fetchedProducts);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Failed to load products:", err);
-        setError(err);
-      })
-      .finally(() => setLoading(false));
-  }, [filter, userId]); // Include userId in the dependency array
+  const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?filter=${filter}${userId ? `&userId=${userId}` : ""}`;
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: products, error } = useSWR(apiUrl, fetcher);
+  // useEffect(() => {
+  //   setLoading(true);
+  //   getProducts(filter, userId)
+  //     .then((fetchedProducts) => {
+  //       setProducts(fetchedProducts);
+  //       setError(null);
+  //     })
+  //     .catch((err) => {
+  //       console.error("Failed to load products:", err);
+  //       setError(err);
+  //     })
+  //     .finally(() => setLoading(false));
+  // }, [filter, userId]); // Include userId in the dependency array
+  if (!products && !error) return <div>Loading...</div>;
   if (error) return <div>Failed to load products.</div>;
-  if (loading) return <div>Loading...</div>;
+  // if (loading) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
