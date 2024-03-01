@@ -26,8 +26,12 @@ const Productpage = () => {
 
   const filter = searchParams.get("filter") || "all";
   const userId = useUser().user?.id;
+  const queryParams = new URLSearchParams({ filter });
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?filter=${filter}${userId ? `&userId=${userId}` : ""}`;
+  if (userId) queryParams.append("userId", userId);
+
+  const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`;
+
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: products, error } = useSWR(apiUrl, fetcher);
   // useEffect(() => {
