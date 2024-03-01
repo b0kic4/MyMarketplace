@@ -4,25 +4,15 @@ import { useRouter, useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import Link from "next/link";
 import Image from "next/image";
-import { getProducts } from "@client/lib/actions/actions";
 import Headerbar from "./components/Headerbar";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Product, ProductImage } from "./cart-products-interface";
 import Navbuttons from "./components/Navbuttons";
 import { useUser } from "@clerk/nextjs";
-import Listingtext from "./components/Listingtext";
-
-// export async function loader() {
-//   const products = await getProducts()
-//   return { products }
-// }
-
+import ProductsSkeletonLoader from "../components/ProductsSkeletonLoader";
 const Productpage = () => {
   const searchParams = useSearchParams();
-  // const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  // const [error, setError] = useState(null);
 
   const filter = searchParams.get("filter") || "all";
   const userId = useUser().user?.id;
@@ -34,22 +24,25 @@ const Productpage = () => {
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: products, error } = useSWR(apiUrl, fetcher);
-  // useEffect(() => {
-  //   setLoading(true);
-  //   getProducts(filter, userId)
-  //     .then((fetchedProducts) => {
-  //       setProducts(fetchedProducts);
-  //       setError(null);
-  //     })
-  //     .catch((err) => {
-  //       console.error("Failed to load products:", err);
-  //       setError(err);
-  //     })
-  //     .finally(() => setLoading(false));
-  // }, [filter, userId]); // Include userId in the dependency array
-  if (!products && !error) return <div>Loading...</div>;
-  if (error) return <div>Failed to load products.</div>;
-  // if (loading) return <div>Loading...</div>;
+
+  if (!products && !error) {
+    return (
+      <div className="flex flex-1 min-h-screen min-w-full">
+        <div className="flex-1 flex w-full flex-col min-h-screen">
+          <Headerbar />
+          <section className="grid gap-6 md:gap-8 p-4 md:p-6">
+            <Navbuttons />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
+              {/* Render multiple skeleton loaders based on an estimated number of products */}
+              {Array.from({ length: 8 }, (_, index) => (
+                <ProductsSkeletonLoader key={index} />
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+  } if (error) return <div>Failed to load products.</div>;
 
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
