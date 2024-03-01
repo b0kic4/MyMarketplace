@@ -45,8 +45,16 @@ export class ProductController {
   }
 
   @Get('getAll')
-  async getProducts() {
-    return this.productService.getProducts();
+  getAll(): Promise<Product[]> {
+    return this.productService.findAll();
+  }
+
+  @Get('getProductsWithFilter')
+  getProductsWithFilter(
+    @Query('filter') filter: string,
+    @Query('userId') userId?: string,
+  ) {
+    return this.productService.findWithFiltering(filter, userId);
   }
 
   @Get('byId/:id')

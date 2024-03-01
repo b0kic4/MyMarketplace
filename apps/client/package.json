@@ -45,6 +45,7 @@
     "react-toastify": "^10.0.4",
     "sharp": "^0.33.2",
     "stripe": "^14.17.0",
+    "swr": "^2.2.5",
     "tailwind-merge": "^2.2.1",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^9.0.1",

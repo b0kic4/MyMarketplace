@@ -13,7 +13,7 @@ const Listingtext: React.FC<Props> = ({ filter }) => {
         <p className="font-bold text-xl">Listing Used items</p>
       ) : filter === "saved-products" ? (
         <p className="font-bold text-xl">Listing Bookmarked products</p>
-      ) : filter === "my-products" ? (
+      ) : filter === "myProducts" ? (
         <p className="font-bold text-xl">Listing My Products</p>
       ) : null}
     </div>

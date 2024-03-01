@@ -80,27 +80,91 @@ export class ProductService {
   }
 
   // getting products
-  async getProducts() {
-    try {
-      const products = await this.prisma.product.findMany({
-        include: {
-          images: true,
-          user: true,
-          savedByUsers: true,
-          cart: true,
-          reviews: true,
-        },
-      });
-      return products;
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Internal Server Error',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
+
+  async findAll() {
+    const products = await this.prisma.product.findMany({
+      include: {
+        images: true,
+        user: true,
+        savedByUsers: true,
+        cart: true,
+        reviews: true,
+      },
+    });
+    return products;
   }
 
+  async findWithFiltering(filter: string, userId?: string): Promise<Product[]> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        clerkUserId: userId,
+      },
+    });
+    switch (filter) {
+      case 'all' || null:
+        // Assuming you want to fetch all products without a specific filter
+        const allProducts = await this.prisma.product.findMany({
+          include: {
+            images: true,
+            user: true,
+            savedByUsers: true,
+            cart: true,
+            reviews: true,
+          },
+        });
+        return allProducts;
+        break;
+      case 'newArrivals':
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        const products = await this.prisma.product.findMany({
+          where: {
+            createdAt: oneWeekAgo,
+          },
+          include: {
+            images: true,
+            user: true,
+            savedByUsers: true,
+            cart: true,
+            reviews: true,
+          },
+        });
+        return products;
+      case 'usedItems':
+        const product = await this.prisma.product.findMany({
+          where: {
+            isUsed: true,
+          },
+          include: {
+            images: true,
+            user: true,
+            savedByUsers: true,
+            cart: true,
+            reviews: true,
+          },
+        });
+        return product;
+      case 'myProducts':
+        // Optionally check if user exists in the database for additional validation
+        const usersProducts = await this.prisma.product.findMany({
+          where: {
+            user: {
+              id: user!.id,
+            },
+          },
+          include: {
+            images: true,
+            user: true,
+            savedByUsers: true,
+            cart: true,
+            reviews: true,
+          },
+        });
+        return usersProducts;
+        break;
+    }
+    throw new Error('Invalid parameters');
+  }
   // bookmarking product
   async saveProduct(saveProductDto: SaveProductDto) {
     try {

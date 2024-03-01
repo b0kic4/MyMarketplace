@@ -10,29 +10,28 @@ import { useUser } from "@clerk/nextjs";
 import { ProductImage, Products } from "../products/new/interfaces";
 import Spinner from "./Loading";
 import Link from "next/link";
-
+import { getAllProducts } from "@client/lib/actions/actions";
 export default function Main() {
   const [products, setProducts] = useState<Products[]>([]);
   const [isLoading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState(null);
   const user = useUser();
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
-  const getProducts = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${url}/products/getAll`);
-      const shuffledProducts = response.data.sort(() => Math.random() - 0.5);
-      setProducts(shuffledProducts);
-    } catch (error) {
-      setLoading(false);
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    getProducts();
-  }, [user.user?.id]);
+    setLoading(true);
+    getAllProducts()
+      .then((fetchedProducts) => {
+        setProducts(fetchedProducts);
+        setError(null);
+      })
+      .catch((err) => {
+        console.error("Failed to load products:", err);
+        setError(err);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+  if (error) return <div>Failed to load products.</div>;
 
   return (
     <main className="flex-1">
