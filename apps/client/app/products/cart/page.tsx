@@ -94,7 +94,7 @@ export default function Component() {
   const getCart = async () => {
     try {
       setInitialLoading(true);
-      const response = await axios.get(`${url}/cart`, {
+      const response = await axios.get(`${url}/cart/getCartByUserId`, {
         params: {
           userId: user.user?.id,
         },

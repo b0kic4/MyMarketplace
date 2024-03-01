@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import useSWR from "swr";
 import Link from "next/link";
@@ -11,19 +11,42 @@ import { Product, ProductImage } from "./cart-products-interface";
 import Navbuttons from "./components/Navbuttons";
 import { useUser } from "@clerk/nextjs";
 import ProductsSkeletonLoader from "../components/ProductsSkeletonLoader";
+import { FaRegBookmark } from "react-icons/fa";
+import { FaBookmark } from "react-icons/fa";
+import { saveProduct } from "@client/lib/actions/actions";
+import { removeSavedProduct } from "@client/lib/actions/actions";
+import { addToCart } from "@client/lib/actions/actions";
+import { removeFromCart } from "@client/lib/actions/actions";
+
+
 const Productpage = () => {
   const searchParams = useSearchParams();
-
+  const user = useUser()
   const filter = searchParams.get("filter") || "all";
-  const userId = useUser().user?.id;
+  const userId = user.user?.id as string;
   const queryParams = new URLSearchParams({ filter });
+  const cartQueryParams = new URLSearchParams({ userId });
+  const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
 
+  // fetching products
   if (userId) queryParams.append("userId", userId);
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`;
+  const apiProdUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`;
 
+  const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: products, error } = useSWR(apiUrl, fetcher);
+  const { data: products, error } = useSWR(apiProdUrl, fetcher);
+  const { data: cart } = useSWR(apiCartUrl, fetcher)
+  // console.log("cart: ", cart)
+
+  useEffect(() => {
+    if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined
+      const productIds = cart.products.map((product: any) => product.product.id) as number[] | undefined;
+      setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+    } else {
+      setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
+    }
+  }, [cart]);
 
   if (!products && !error) {
     return (
@@ -99,68 +122,48 @@ const Productpage = () => {
                   </CardContent>
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
-                    {/* <div className="items-center text-center flex gap-2">
-                      {productIdsInCart.includes(product.id) &&
-                      !isUpdatingCart[product.id] ? (
-                        <Button
-                          key={product.id}
-                          onClick={() => handleRemoveFromCart(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          {isUpdatingCart[product.id] ? (
-                            <Spinner />
-                          ) : (
-                            "Remove from Cart"
-                          )}
-                        </Button>
-                      ) : !isUpdatingCart[product.id] ? (
-                        <Button
-                          key={product.id}
-                          onClick={() => handleAddToCart(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          {isUpdatingCart[product.id] ? (
-                            <Spinner />
-                          ) : (
-                            "Add to Cart"
-                          )}
-                        </Button>
-                      ) : (
-                        <Spinner />
-                      )}
-
+                    <div className="items-center text-center flex gap-2">
+                      {productIdsInCart.includes(product.id)
+                        ? (
+                          <Button
+                            key={product.id}
+                            onClick={() => removeFromCart(product, user.user!.id)} // Assuming you have a removeFromCart function
+                            size="sm"
+                            variant="outline"
+                          >
+                            Remove from Cart
+                          </Button>
+                        ) : (
+                          <Button
+                            key={product.id}
+                            onClick={() => addToCart(product, userId)} // Assuming you have an addToCart function
+                            size="sm"
+                            variant="outline"
+                          >
+                            Add to Cart
+                          </Button>
+                        )}
                       {product.savedByUsers.some(
                         (u) => u.clerkUserId === user.user?.id
-                      ) && !isSavingProduct[product.id] ? (
-                        <Button
-                          onClick={() => handleRemoveSavedProduct(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          {isSavingProduct[product.id] ? (
-                            <Spinner />
-                          ) : (
+                      ) ? (
+                        <>
+                          <Button
+                            onClick={() => removeSavedProduct(product, user.user!.id)}
+                            size="sm"
+                            variant="outline"
+                          >
                             <FaBookmark />
-                          )}
-                        </Button>
-                      ) : !isSavingProduct[product.id] ? (
-                        <Button
-                          onClick={() => handleSaveProduct(product.id)}
-                          size="sm"
-                          variant="outline"
-                        >
-                          {isSavingProduct[product.id] ? (
-                            <Spinner />
-                          ) : (
-                            <FaRegBookmark />
-                          )}
-                        </Button>
-                      ) : (
-                        <Spinner />
-                      )}
-                    </div> */}
+                          </Button>
+
+                        </>
+                      ) : <Button
+                        onClick={() => saveProduct(product, user.user!.id)}
+                        size="sm"
+                        variant="outline"
+                      >
+                        <FaRegBookmark />
+                      </Button>}
+                    </div>
                   </CardFooter>
                 </Card>
               ))
