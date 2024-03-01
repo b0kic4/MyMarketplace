@@ -1,37 +1,38 @@
-"use client";
+"use client"
 import { CardContent, CardFooter, Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaSearch } from "react-icons/fa";
 import Image from "next/image";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { useUser } from "@clerk/nextjs";
-import { ProductImage, Products } from "../products/new/interfaces";
-import Spinner from "./Loading";
+import { ProductImage } from "../products/new/interfaces";
 import Link from "next/link";
-import { getAllProducts } from "@client/lib/actions/actions";
+import SkeletonLoader from "./MainProductsSkeletonLoader";
+import useSWR from "swr";
 export default function Main() {
-  const [products, setProducts] = useState<Products[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState(null);
-  const user = useUser();
-  const url = process.env.NEXT_PUBLIC_NESTJS_URL;
 
-  useEffect(() => {
-    setLoading(true);
-    getAllProducts()
-      .then((fetchedProducts) => {
-        setProducts(fetchedProducts);
-        setError(null);
-      })
-      .catch((err) => {
-        console.error("Failed to load products:", err);
-        setError(err);
-      })
-      .finally(() => setLoading(false));
-  }, []);
-  if (error) return <div>Failed to load products.</div>;
+  const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getAll`;
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const { data: products, error } = useSWR(apiUrl, fetcher);
+
+  if (!products && !error) {
+    return (
+      <div className="flex flex-1 min-h-screen min-w-full">
+        <div className="flex-1 flex w-full flex-col min-h-screen">
+          <section className="grid gap-6 md:gap-8 p-4 md:p-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6">
+              {/* Render multiple skeleton loaders based on an estimated number of products */}
+              {Array.from({ length: 4 }, (_, index) => (
+                <SkeletonLoader key={index} />
+              ))}
+            </div>
+          </section>
+        </div>
+      </div>
+    );
+
+  } if (error) return <div>Failed to load products.</div>;
+
+
 
   return (
     <main className="flex-1">
@@ -63,48 +64,44 @@ export default function Main() {
         <div className="container grid items-center justify-center gap-4 px-4 md:px-6">
           <div className="mx-auto w-full max-w-6xl space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6">
-              {!isLoading ? (
-                products.slice(0, 4).map((product) => (
-                  <Card key={product.id}>
-                    <Link href={`/products/${product.id}`}>
-                      <CardContent className="p-4">
-                        <div className="grid w-full grid-cols-1 items-start gap-4">
-                          {product.images.map((image: ProductImage) =>
-                            image.isLogo === true || image.isLogo === "true" ? (
-                              <Image
-                                key={image.id}
-                                alt={product.title}
-                                className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
-                                height={300}
-                                src={image.imageUrl || "/placeholder.svg"}
-                                width={300}
-                              />
-                            ) : null
-                          )}
-                          <div className="space-y-2">
-                            <h3 className="text-xl font-bold">
-                              {product.title}
-                            </h3>
-                            <p className="text-sm text-gray-500 dark:text-gray-400">
-                              {product.description}
-                            </p>
-                          </div>
+              {products.slice(0, 4).map((product: any) => (
+                <Card key={product.id}>
+                  <Link href={`/products/${product.id}`}>
+                    <CardContent className="p-4">
+                      <div className="grid w-full grid-cols-1 items-start gap-4">
+                        {product.images.map((image: ProductImage) =>
+                          image.isLogo === true || image.isLogo === "true" ? (
+                            <Image
+                              key={image.id}
+                              alt={product.title}
+                              className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                              height={300}
+                              src={image.imageUrl || "/placeholder.svg"}
+                              width={300}
+                            />
+                          ) : null
+                        )}
+                        <div className="space-y-2">
+                          <h3 className="text-xl font-bold">
+                            {product.title}
+                          </h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            {product.description}
+                          </p>
                         </div>
-                      </CardContent>
-                      <CardFooter className="flex items-center justify-between p-4">
-                        <span className="text-xl font-bold">
-                          ${product.price}
-                        </span>
-                        <Button size="sm" variant="outline">
-                          View Details
-                        </Button>
-                      </CardFooter>
-                    </Link>
-                  </Card>
-                ))
-              ) : (
-                <Spinner />
-              )}
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex items-center justify-between p-4">
+                      <span className="text-xl font-bold">
+                        ${product.price}
+                      </span>
+                      <Button size="sm" variant="outline">
+                        View Details
+                      </Button>
+                    </CardFooter>
+                  </Link>
+                </Card>
+              ))}
             </div>
           </div>
         </div>
