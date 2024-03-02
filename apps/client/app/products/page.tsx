@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import Link from "next/link";
 import Image from "next/image";
 import Headerbar from "./components/Headerbar";
@@ -47,6 +47,28 @@ const Productpage = () => {
       setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
     }
   }, [cart]);
+
+  const handleAddToCart = async (product: Product) => {
+    await addToCart(product, userId);
+    setProductIdsInCart((currentIds) => [...currentIds, product.id]);
+    mutate(apiCartUrl); // Trigger revalidation
+  };
+
+  const handleRemoveFromCart = async (product: Product) => {
+    await removeFromCart(product, userId);
+    setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
+    mutate(apiCartUrl); // Trigger revalidation
+  };
+
+  const handleSaveProduct = async (product: Product) => {
+    await saveProduct(product, userId)
+    mutate(apiProdUrl)
+  }
+  const handleRemoveSavedProduct = async (product: Product) => {
+    await removeSavedProduct(product, userId)
+    mutate(apiProdUrl)
+  }
+
 
   if (!products && !error) {
     return (
@@ -127,7 +149,7 @@ const Productpage = () => {
                         ? (
                           <Button
                             key={product.id}
-                            onClick={() => removeFromCart(product, userId)}
+                            onClick={() => handleRemoveFromCart(product)}
                             size="sm"
                             variant="outline"
                           >
@@ -136,7 +158,7 @@ const Productpage = () => {
                         ) : (
                           <Button
                             key={product.id}
-                            onClick={() => addToCart(product, userId)}
+                            onClick={() => handleAddToCart(product)}
                             size="sm"
                             variant="outline"
                           >
@@ -148,7 +170,7 @@ const Productpage = () => {
                       ) ? (
                         <>
                           <Button
-                            onClick={() => removeSavedProduct(product, user.user!.id)}
+                            onClick={() => handleRemoveSavedProduct(product)}
                             size="sm"
                             variant="outline"
                           >
@@ -157,7 +179,7 @@ const Productpage = () => {
 
                         </>
                       ) : <Button
-                        onClick={() => saveProduct(product, user.user!.id)}
+                        onClick={() => handleSaveProduct(product)}
                         size="sm"
                         variant="outline"
                       >
