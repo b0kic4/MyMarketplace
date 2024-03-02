@@ -32,6 +32,7 @@ export default function Component() {
   const userId = user.user?.id as string
 
   const cartQueryParams = new URLSearchParams({ userId });
+
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
   const { data: cart } = useSWR(apiCartUrl, fetcher)
@@ -60,10 +61,6 @@ export default function Component() {
       }
     }
   };
-  // handlers
-  useEffect(() => {
-    mutate(apiCartUrl)
-  }, [userId]);
 
   const [totalPrice, setTotalPrice] = useState<string>("");
   const calculatePrice = () => {
@@ -89,7 +86,6 @@ export default function Component() {
   }, [cart]);
 
   const handleRemoveFromCart = async (product: Product) => {
-    console.log(product)
     await removeFromCart(product, userId);
     mutate(apiCartUrl); // Trigger revalidation
   };

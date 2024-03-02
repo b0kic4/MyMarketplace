@@ -24,6 +24,7 @@ const Productpage = () => {
   const user = useUser()
   const filter = searchParams.get("filter") || "all";
   const userId = user.user?.id as string;
+
   const queryParams = new URLSearchParams({ filter });
   const cartQueryParams = new URLSearchParams({ userId });
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
