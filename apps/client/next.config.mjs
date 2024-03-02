@@ -1,6 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  images: { domains: ["firebasestorage.googleapis.com", "img.clerk.com"] },
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
+      { protocol: 'https', hostname: 'img.clerk.com' },
+    ],
+  },
 };
 
 export default nextConfig;
+

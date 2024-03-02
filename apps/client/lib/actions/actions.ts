@@ -129,9 +129,6 @@ export async function removeFromCart(product: Product, userId: string) {
 }
 
 export async function handleCartProductQuantityChange(productId: number, quantity: number, userId: string) {
-  console.log(productId)
-  console.log(quantity)
-  console.log(userId)
   const url = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/update-quantity`;
   const response = await fetch(url, {
     method: "POST",

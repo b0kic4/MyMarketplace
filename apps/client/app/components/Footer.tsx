@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTwitter, FaGithub, FaLinkedin } from "react-icons/fa";
 import { FiPackage } from "react-icons/fi";
 
 export default function Footer() {
@@ -82,24 +82,29 @@ export default function Footer() {
         <div className="flex flex-col gap-2 min-[300px]:flex-row items-start justify-center">
           <Link
             className="inline-flex h-8 items-center rounded-md border border-gray-200 bg-white px-3 text-xs font-medium shadow-sm gap-1.5 dark:border-gray-800 dark:bg-gray-950 dark:gap-1.5"
-            href="#"
+            href="https://twitter.com/bok1c4"
+            target="_blank"
           >
             <FaTwitter className="h-4 w-4" />
             Twitter
           </Link>
           <Link
             className="inline-flex h-8 items-center rounded-md border  border-gray-200 bg-white px-3 text-xs font-medium shadow-sm gap-1.5  dark:border-gray-800 dark:bg-gray-950 dark:gap-1.5"
-            href="#"
+            href="https://github.com/b0kic4"
+            target="_blank"
+
           >
-            <FaFacebook className="h-4 w-4" />
-            Facebook
+            <FaGithub className="h-4 w-4" />
+            GitHub
           </Link>
           <Link
             className="inline-flex h-8 items-center rounded-md border border-gray-200 bg-white px-3 text-xs font-medium shadow-sm gap-1.5  dark:border-gray-800 dark:bg-gray-950 dark:gap-1.5"
-            href="#"
+            href="https://www.linkedin.com/in/boris-nikolic-a44a2126a/"
+            target="_blank"
+
           >
-            <FaInstagram className="h-4 w-4" />
-            Instagram
+            <FaLinkedin className="h-4 w-4" />
+            LinkedIn
           </Link>
         </div>
       </div>
