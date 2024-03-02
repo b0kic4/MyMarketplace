@@ -24,9 +24,8 @@ export async function getAllProducts() {
   return response.json();
 }
 
-// cart and products manipulation
 
-
+// functionality for saving products
 export async function saveProduct(product: Product, userId: string) {
   const data = {
     foundProduct: product,
@@ -69,6 +68,7 @@ export async function removeSavedProduct(product: Product, userId: string) {
   return response.json(); // Correctly parses the JSON response body
 }
 
+// cart functionalities
 export async function getCart(userId: string) {
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
 
@@ -126,4 +126,28 @@ export async function removeFromCart(product: Product, userId: string) {
   const jsonResponse = await response.json();
   // Return the parsed JSON response
   return jsonResponse;
+}
+
+export async function handleCartProductQuantityChange(productId: number, quantity: number, userId: string) {
+  console.log(productId)
+  console.log(quantity)
+  console.log(userId)
+  const url = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/update-quantity`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      id: productId,
+      quantity: quantity,
+      userId: userId,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Network response error");
+  }
+
+  return response.json();
 }

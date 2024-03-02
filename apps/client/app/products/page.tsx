@@ -37,7 +37,6 @@ const Productpage = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: products, error } = useSWR(apiProdUrl, fetcher);
   const { data: cart } = useSWR(apiCartUrl, fetcher)
-  // console.log("cart: ", cart)
 
   useEffect(() => {
     if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined

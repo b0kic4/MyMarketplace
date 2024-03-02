@@ -10,183 +10,68 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { TrashIcon } from "@radix-ui/react-icons";
-import { Cart, CartProduct, ProductImage } from "../cart-products-interface";
+import { CartProduct, ProductImage, Product } from "../cart-products-interface";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
-import axios from "axios";
-import { MdDone } from "react-icons/md";
+import useSWR, { mutate } from "swr";
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
-import Spinner from "@client/app/components/Loading";
 import StripeCheckout from "@client/app/components/StripeCheckout";
 import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
+import { removeFromCart, handleCartProductQuantityChange } from "@client/lib/actions/actions";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
 
 export default function Component() {
-  const [cart, setCart] = useState<Cart>();
-  // data fetching loading states
-  const [cartProductIds, setCartProductIds] = useState<
-    { productId: number; quantity: number }[]
-  >([]);
-  const [unSavedChanges, setUnSavedChages] = useState<number[]>([]);
-  const [initialLoading, setInitialLoading] = useState<boolean>(false);
-  const [loadingProduct, setLoadingProduct] = useState<number | null>(null);
-
-  const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
+  const userId = user.user?.id as string
 
-  // handlers
-  const handleQuantityChange = (cartProductId: number, newQuantity: number) => {
-    // Find the product that needs to be updated based on cartProductId
-    const productToUpdate = cart?.products.find(
-      (cartProduct) => cartProduct.id === cartProductId
-    );
+  const cartQueryParams = new URLSearchParams({ userId });
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+  const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
+  const { data: cart } = useSWR(apiCartUrl, fetcher)
+
+
+
+  const handleQuantityChange = async (cartProductId: number, newQuantity: number) => {
+    const productToUpdate = cart?.products.find((cartProduct: CartProduct) => cartProduct.id === cartProductId);
 
     if (productToUpdate) {
-      const theProduct = productToUpdate?.product as any;
-      const stock = theProduct?.stock || 0;
-
-      if (newQuantity < stock) {
-        // Check if the cartProductId is already in unSavedChanges
-        const isAlreadyUnsaved = unSavedChanges.includes(cartProductId);
-
-        // If it's not in unSavedChanges, add it
-        if (!isAlreadyUnsaved) {
-          setUnSavedChages((prevUnsavedChanges) => [
-            ...prevUnsavedChanges,
-            cartProductId,
-          ]);
+      try {
+        const theProduct = productToUpdate?.product as any;
+        const stock = theProduct?.stock || 0;
+        if (newQuantity <= stock) {
+          await handleCartProductQuantityChange(cartProductId, newQuantity, userId);
+          mutate(apiCartUrl);
         }
-
-        const updatedCartProductIds = cartProductIds.map((item) =>
-          item.productId === cartProductId
-            ? { ...item, quantity: newQuantity }
-            : item
-        );
-        setCartProductIds(updatedCartProductIds);
-
-        const updatedCart = {
-          ...cart,
-          products: cart?.products.map((cartProduct) =>
-            cartProduct.id === cartProductId
-              ? { ...cartProduct, quantity: newQuantity }
-              : cartProduct
-          ),
-        };
-        setCart(updatedCart as any);
-
-        calculatePrice();
-      } else {
-        // If the new quantity is not less than stock, remove from unSavedChanges
-        setUnSavedChages((prevUnsavedChanges) =>
-          prevUnsavedChanges.filter((id) => id !== cartProductId)
-        );
+        else {
+          toast.error("No more products to add", {
+            position: "top-left",
+            theme: "dark"
+          })
+        }
+      } catch (error) {
+        console.error("Failed to update cart quantity:", error);
       }
     }
   };
-
-  const getCart = async () => {
-    try {
-      setInitialLoading(true);
-      const response = await axios.get(`${url}/cart/getCartByUserId`, {
-        params: {
-          userId: user.user?.id,
-        },
-      });
-      const responseCart: Cart = response.data;
-      if (responseCart.user.clerkUserId === user.user?.id) {
-        setCart(response.data);
-      }
-    } catch (error) {
-      setInitialLoading(false);
-      console.log(error);
-    } finally {
-      setInitialLoading(false);
-    }
-  };
-
+  // handlers
   useEffect(() => {
-    getCart();
-  }, [user.user?.id]);
+    mutate(apiCartUrl)
+  }, [userId]);
 
-  // updating the quantity of the cart items
-  const saveChanges = async (productId: number, quantity: number) => {
-    // product id is cart product id, not actual product id
-    try {
-      // Set the loadingProduct to the current productId
-      setLoadingProduct(productId);
-
-      const response = await axios.post(`${url}/products/update-quantity`, {
-        id: productId,
-        quantity: quantity,
-        userId: user.user?.id,
-      });
-
-      if (response.status === 201) {
-        toast.success("Quantity updated successfully", {
-          position: "top-right",
-          theme: "dark",
-        });
-        getCart();
-      }
-
-      // Remove the cartProductId from unSavedChanges after saving changes
-      setUnSavedChages((prevUnsavedChanges) =>
-        prevUnsavedChanges.filter((id) => id !== productId)
-      );
-    } catch (error) {
-      console.log(error);
-    } finally {
-      // Reset the loadingProduct after the update is complete
-      setLoadingProduct(null);
-    }
-  };
-  const handleRemoveFromCart = async (productId: number) => {
-    try {
-      const productToRemove = cart?.products.find(
-        (cartProduct: any) => cartProduct.product.id === productId
-      );
-      const foundProduct = productToRemove?.product;
-      const data = {
-        foundProduct,
-        userId: user.user?.id,
-      };
-      const response = await axios.post(
-        `${url}/products/remove-from-cart`,
-        data
-      );
-      if (response.status === 201) {
-        toast.success("Product removed from cart successfully", {
-          position: "top-right",
-          theme: "dark",
-        });
-        getCart();
-      }
-    } catch (error) {
-      toast.error("Error occured while removing product from cart", {
-        position: "top-left",
-        theme: "dark",
-      });
-    }
-  };
-
-  // its string bc price is saved as string because of float value
   const [totalPrice, setTotalPrice] = useState<string>("");
   const calculatePrice = () => {
     try {
-      // getting cart products
       const cartProducts = cart?.products;
       if (cartProducts) {
-        // Use reduce to sum up the prices of all products
-        const totalPrice = cartProducts.reduce((acc, cartProduct) => {
+        const totalPrice = cartProducts.reduce((acc: number, cartProduct: CartProduct) => {
           const product: any = cartProduct.product;
-
           const productPrice = parseFloat(product.price) || 0;
           const itemTotalPrice = productPrice * cartProduct.quantity;
 
@@ -203,14 +88,13 @@ export default function Component() {
     calculatePrice();
   }, [cart]);
 
-  // {unSavedChanges ? (
-  //   <>
-  //     <Button  onClick={saveChanges}>Apply</Button>
-  //     <Button disabled>
-  //       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-  //     </Button>
-  //   </>
-  // ) : null}
+  const handleRemoveFromCart = async (product: Product) => {
+    console.log(product)
+    await removeFromCart(product, userId);
+    mutate(apiCartUrl); // Trigger revalidation
+  };
+
+
   return (
     <div className="flex flex-1 justify-around flex-col gap-10">
       <div>
@@ -245,7 +129,7 @@ export default function Component() {
           </CardHeader>
           <CardContent className="p-0">
             <div className="divide-y">
-              {Array.isArray(cart?.products) && !initialLoading ? (
+              {Array.isArray(cart?.products) && (
                 cart.products.map((cartProduct: CartProduct) => {
                   const product: any = cartProduct.product;
 
@@ -303,25 +187,8 @@ export default function Component() {
                           />
                         </div>
                       </div>
-                      {unSavedChanges.includes(cartProduct.id) && (
-                        <Button
-                          className="w-8 h-8"
-                          size="icon"
-                          variant="outline"
-                          onClick={() =>
-                            saveChanges(cartProduct.id, cartProduct.quantity)
-                          }
-                        >
-                          {loadingProduct === cartProduct.id ? (
-                            <Spinner />
-                          ) : (
-                            <MdDone className="w-4 h-4" />
-                          )}
-                          <span className="sr-only">Apply Changes</span>
-                        </Button>
-                      )}
                       <Button
-                        onClick={() => handleRemoveFromCart(product.id)}
+                        onClick={() => handleRemoveFromCart(product)}
                         className="w-8 h-8"
                         size="icon"
                         variant="outline"
@@ -332,10 +199,6 @@ export default function Component() {
                     </div>
                   );
                 })
-              ) : (
-                <div className="flex justify-center content-center items-center text-center">
-                  <Spinner />
-                </div>
               )}
             </div>
 
