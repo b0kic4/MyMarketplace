@@ -6,7 +6,6 @@ import { Cart } from '@prisma/client';
   constructor(private cartService: CartService) { }
   @Get('getCartByUserId')
   async findById(@Query('userId') userId: string): Promise<Cart> {
-    console.log("route has been hit")
     return await this.cartService.getCartByUserId(userId);
   }
 }
