@@ -17,7 +17,7 @@ import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   // creating product
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -113,7 +113,6 @@ export class ProductService {
           },
         });
         return allProducts;
-        break;
       case 'newArrivals':
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
@@ -161,7 +160,6 @@ export class ProductService {
           },
         });
         return usersProducts;
-        break;
     }
     throw new Error('Invalid parameters');
   }
@@ -292,14 +290,17 @@ export class ProductService {
         },
       });
       if (!prodcut) throw new ConflictException('Product does not exists');
+
       const user = await this.prisma.user.findFirst({
         where: {
           clerkUserId: addProdcutToCart.userId,
         },
       });
+      if (!user) throw new ConflictException("User not found")
+
       const cart = await this.prisma.cart.findFirst({
         where: {
-          userId: Number(user?.id),
+          userId: Number(user.id),
         },
       });
 
@@ -338,7 +339,7 @@ export class ProductService {
             },
           },
         });
-      } else {
+      } else if (!cartProduct) {
         const createNewCartProduct = await this.prisma.cartProduct.create({
           data: {
             cartId: existingCart.id,
@@ -465,13 +466,16 @@ export class ProductService {
           cartId: cart.id,
         },
       });
-      await this.prisma.cartProduct.delete({
+      if (!foundCartProduct) throw new ConflictException("Product not in cart")
+
+      const removedCartProduct = await this.prisma.cartProduct.delete({
         where: {
           cartId: cart.id,
           productId: product.id,
           id: foundCartProduct?.id,
         },
       });
+      return removedCartProduct
     } catch (error) {
       console.log(error);
       throw new HttpException(
@@ -480,6 +484,7 @@ export class ProductService {
       );
     }
   }
+
   async similarProducts(
     username: string,
     categoryType: string,

@@ -84,7 +84,7 @@ export async function addToCart(product: Product, userId: string) {
   const data = {
     foundProduct: product,
     userID: userId
-  }
+  };
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const response = await fetch(`${url}/products/add-to-cart`, {
     method: "POST",
@@ -98,14 +98,17 @@ export async function addToCart(product: Product, userId: string) {
     throw new Error("Network response was not ok");
   }
 
-  return response.json(); // Correctly parses the JSON response body
-
+  // Parse the JSON response body once
+  const jsonResponse = await response.json();
+  // Return the parsed JSON response
+  return jsonResponse;
 }
+
 export async function removeFromCart(product: Product, userId: string) {
   const data = {
     foundProduct: product,
     userID: userId
-  }
+  };
   const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const response = await fetch(`${url}/products/remove-from-cart`, {
     method: "POST",
@@ -118,6 +121,9 @@ export async function removeFromCart(product: Product, userId: string) {
   if (!response.ok) {
     throw new Error("Network response was not ok");
   }
-  return response.json(); // Correctly parses the JSON response body
 
+  // Parse the JSON response body once
+  const jsonResponse = await response.json();
+  // Return the parsed JSON response
+  return jsonResponse;
 }
