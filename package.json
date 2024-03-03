@@ -8,7 +8,6 @@
     "apps/server"
   ],
   "scripts": {
-    "//": "use npm run --filter server build or dev or production",
     "dev": "npm run dev:client & npm run dev:server",
     "start": "npm run start:client & npm run start:server",
     "build": "npm run build:client & npm run build:server",
