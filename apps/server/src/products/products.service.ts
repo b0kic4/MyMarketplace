@@ -283,6 +283,7 @@ export class ProductService {
   // adding product to cart
   async addProductToCart(addProdcutToCart: AddProductToCartDto): Promise<Cart> {
     try {
+      console.log(addProdcutToCart)
       // finding the product that is provided
       const prodcut = await this.prisma.product.findUnique({
         where: {
@@ -290,12 +291,12 @@ export class ProductService {
         },
       });
       if (!prodcut) throw new ConflictException('Product does not exists');
-
       const user = await this.prisma.user.findFirst({
         where: {
           clerkUserId: addProdcutToCart.userId,
         },
       });
+      console.log("user: ", user)
       if (!user) throw new ConflictException("User not found")
 
       const cart = await this.prisma.cart.findFirst({
@@ -305,7 +306,6 @@ export class ProductService {
       });
 
       let existingCart;
-
       if (cart) {
         existingCart = cart;
       } else {
