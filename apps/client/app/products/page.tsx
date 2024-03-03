@@ -22,21 +22,28 @@ import { removeFromCart } from "@client/lib/actions/actions";
 const Productpage = () => {
   const searchParams = useSearchParams();
   const user = useUser()
+
   const filter = searchParams.get("filter") || "all";
   const userId = user.user?.id as string;
-  const queryParams = new URLSearchParams({ filter });
-  const cartQueryParams = new URLSearchParams({ userId });
+
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
 
+  const [apiProdUrl, setApiProdUrl] = useState<string>('');
+  const [apiCartUrl, setApiCartUrl] = useState<string>('');
+
   // fetching products
-  if (userId) queryParams.append("userId", userId);
+  useEffect(() => {
+    if (userId) {
+      const queryParams = new URLSearchParams({ filter, userId });
+      const cartQueryParams = new URLSearchParams({ userId });
+      setApiProdUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`);
+      setApiCartUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`);
+    }
+  }, [userId, filter]);
 
-  const apiProdUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`;
-
-  const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: products, error } = useSWR(apiProdUrl, fetcher);
-  const { data: cart } = useSWR(apiCartUrl, fetcher)
+  const { data: products, error: error } = useSWR(apiProdUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: cart, error: cartError } = useSWR(apiCartUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
 
   useEffect(() => {
     if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined
@@ -46,6 +53,7 @@ const Productpage = () => {
       setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
     }
   }, [cart]);
+
 
   const handleAddToCart = async (product: Product) => {
     await addToCart(product, userId);

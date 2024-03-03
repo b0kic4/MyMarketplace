@@ -33,11 +33,15 @@ export default function Component() {
   const user = useUser();
   const userId = user.user?.id as string
 
-  // unsaved changes for specific products
+  const [apiCartUrl, setApiCartUrl] = useState<string>("")
+  useEffect(() => {
+    if (userId) {
+      const cartQueryParams = new URLSearchParams({ userId });
+      setApiCartUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`)
+    }
+  }, [userId])
 
-  const cartQueryParams = new URLSearchParams({ userId });
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
   const { data: cart } = useSWR(apiCartUrl, fetcher)
 
   // updating ui when changing quantity
@@ -119,7 +123,6 @@ export default function Component() {
   }, [cart]);
 
   const handleRemoveFromCart = async (product: Product) => {
-    console.log(product)
     await removeFromCart(product, userId);
     mutate(apiCartUrl); // Trigger revalidation
   };
