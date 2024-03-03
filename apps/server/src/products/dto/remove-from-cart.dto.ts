@@ -17,7 +17,7 @@ class ProductDto {
 
 export class RemoveProductFromCartDto {
   foundProduct: ProductDto;
-  userId: string | undefined;
+  userID: string | undefined;
 }
 
 class ImageDto {
