@@ -16,6 +16,8 @@ import { useEffect, useState } from "react";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
 import useSWR, { mutate } from "swr";
+import debounce from 'lodash.debounce';
+
 import { toast } from "react-toastify";
 import { useUser } from "@clerk/nextjs";
 import StripeCheckout from "@client/app/components/StripeCheckout";
@@ -31,35 +33,40 @@ export default function Component() {
   const user = useUser();
   const userId = user.user?.id as string
 
+  // unsaved changes for specific products
+
   const cartQueryParams = new URLSearchParams({ userId });
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const apiCartUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`
   const { data: cart } = useSWR(apiCartUrl, fetcher)
 
-
-
-  const handleQuantityChange = async (cartProductId: number, newQuantity: number) => {
-    const productToUpdate = cart?.products.find((cartProduct: CartProduct) => cartProduct.id === cartProductId);
-
-    if (productToUpdate) {
-      try {
-        const theProduct = productToUpdate?.product as any;
-        const stock = theProduct?.stock || 0;
-        if (newQuantity <= stock) {
-          await handleCartProductQuantityChange(cartProductId, newQuantity, userId);
-          mutate(apiCartUrl);
-        }
-        else {
-          toast.error("No more products to add", {
-            position: "top-left",
-            theme: "dark"
-          })
-        }
-      } catch (error) {
-        console.error("Failed to update cart quantity:", error);
-      }
-    }
+  const optimisticUpdateQuantity = (cartProductId: number, newQuantity: number) => {
+    const updatedProducts = cart?.products.map((product: CartProduct) =>
+      product.id === cartProductId ? { ...product, quantity: newQuantity } : product
+    );
+    // Update local state or SWR cache without revalidation
+    mutate(apiCartUrl, { ...cart, products: updatedProducts }, false);
   };
+
+  const debouncedHandleQuantityChange = debounce(async (cartProductId, newQuantity) => {
+    try {
+      await handleCartProductQuantityChange(cartProductId, newQuantity, userId);
+      // After a successful API call, revalidate the cart data
+      mutate(apiCartUrl);
+    } catch (error) {
+      console.error("Failed to update cart quantity:", error);
+      toast.error("Failed to update quantity", { position: "top-left", theme: "dark" });
+      // Optionally, revert the optimistic update by re-fetching the cart data
+      mutate(apiCartUrl);
+    }
+  }, 500);
+
+  const handleQuantityChange = (cartProductId: number, newQuantity: number) => {
+    optimisticUpdateQuantity(cartProductId, newQuantity);
+    debouncedHandleQuantityChange(cartProductId, newQuantity);
+  };
+
+
   // handlers
   useEffect(() => {
     mutate(apiCartUrl)
