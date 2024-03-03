@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Cart, Product, PurchaseStatus, User } from '@prisma/client';
+import { Cart, Product, PurchaseStatus } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';

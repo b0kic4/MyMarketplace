@@ -16,7 +16,7 @@ export default function Main() {
 
   if (!products && !error) {
     return (
-      <div className="flex flex-1 min-h-screen min-w-full">
+      <main className="flex-1">
         <section className="w-full py-6 md:py-12 lg:py-16 xl:py-20">
           <div className="container flex flex-col items-center justify-center gap-4 px-4 text-center md:gap-10 md:px-6">
             <div className="space-y-2">
@@ -41,16 +41,18 @@ export default function Main() {
             </div>
           </div>
         </section>
-        <div className="flex-1 flex w-full flex-col min-h-screen">
-          <section className="grid gap-6 md:gap-8 p-4 md:p-6 lg: p-1">
-            <div className="mx-auto max-w-4xl grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
-              {Array.from({ length: 4 }, (_, index) => (
-                <SkeletonLoader key={index} />
-              ))}
-            </div>
-          </section>
+        <div className="flex flex-1 min-h-screen min-w-full">
+          <div className="flex-1 flex w-full flex-col min-h-screen">
+            <section className="grid gap-6 md:gap-8 p-4 md:p-6 lg: p-1">
+              <div className="mx-auto max-w-4xl grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
+                {Array.from({ length: 4 }, (_, index) => (
+                  <SkeletonLoader key={index} />
+                ))}
+              </div>
+            </section>
+          </div>
         </div>
-      </div>
+      </main>
     );
 
   } if (error) return <div>Failed to load products.</div>;
