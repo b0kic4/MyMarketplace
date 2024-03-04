@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
 import useSWR, { mutate } from "swr";
-
 import { StarIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
