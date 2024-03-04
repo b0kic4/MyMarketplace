@@ -295,7 +295,6 @@ export class ProductService {
           clerkUserId: addProdcutToCart.userID,
         },
       });
-      console.log("user: ", user)
       if (!user) throw new ConflictException("User not found")
 
       const cart = await this.prisma.cart.findFirst({

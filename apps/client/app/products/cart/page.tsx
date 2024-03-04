@@ -54,7 +54,6 @@ export default function Component() {
         const updatedProducts = cart?.products.map((product: CartProduct) =>
           product.id === cartProductId ? { ...product, quantity: newQuantity } : product
         );
-        // Update local state or SWR cache without revalidation
         mutate(apiCartUrl, { ...cart, products: updatedProducts }, false);
       }
     }
