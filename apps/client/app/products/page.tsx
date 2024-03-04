@@ -17,6 +17,7 @@ import { saveProduct } from "@client/lib/actions/actions";
 import { removeSavedProduct } from "@client/lib/actions/actions";
 import { addToCart } from "@client/lib/actions/actions";
 import { removeFromCart } from "@client/lib/actions/actions";
+import { toast } from "react-toastify";
 
 
 const Productpage = () => {
@@ -27,6 +28,7 @@ const Productpage = () => {
   const userId = user.user?.id as string;
 
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
+  const [savedProductIds, setSavedProductIds] = useState<number[]>([]);
 
   const [apiProdUrl, setApiProdUrl] = useState<string>('');
   const [apiCartUrl, setApiCartUrl] = useState<string>('');
@@ -45,6 +47,7 @@ const Productpage = () => {
   const { data: products, error: error } = useSWR(apiProdUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
   const { data: cart, error: cartError } = useSWR(apiCartUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
 
+  // getting products that are in cart
   useEffect(() => {
     if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined
       const productIds = cart.products.map((product: any) => product.product.id) as number[] | undefined;
@@ -54,29 +57,68 @@ const Productpage = () => {
     }
   }, [cart]);
 
+  // getting saved products
+  useEffect(() => {
+    if (products) {
+      // Assuming products is an array of product objects
+      const savedIds = products
+        .filter((product: Product) => product.savedByUsers.some(user => user.clerkUserId === userId))
+        .map((product: Product) => product.id);
+      setSavedProductIds(savedIds);
+    }
+  }, [products, userId]);
 
-  const handleAddToCart = async (product: Product) => {
-    await addToCart(product, userId);
+
+  const handleAddToCartOptimistically = async (product: Product) => {
+    // Optimistically update UI
     setProductIdsInCart((currentIds) => [...currentIds, product.id]);
-    mutate(apiCartUrl); // Trigger revalidation
+    try {
+      await addToCart(product, userId);
+      mutate(apiCartUrl); // Revalidate cache if necessary
+    } catch (error) {
+      // Revert UI on error
+      setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
+      // Handle error (e.g., show a notification)
+    }
   };
 
-  const handleRemoveFromCart = async (product: Product) => {
-    await removeFromCart(product, userId);
+  const handleRemoveFromCartOptimistically = async (product: Product) => {
+    // Optimistically update UI
     setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
-    mutate(apiCartUrl); // Trigger revalidation
+    try {
+      await removeFromCart(product, userId);
+      mutate(apiCartUrl); // Revalidate cache if necessary
+    } catch (error) {
+      // Revert UI on error
+      setProductIdsInCart((currentIds) => [...currentIds, product.id]);
+      // Handle error
+    }
   };
 
-  const handleSaveProduct = async (product: Product) => {
-    await saveProduct(product, userId)
-    mutate(apiProdUrl)
-  }
-  const handleRemoveSavedProduct = async (product: Product) => {
-    await removeSavedProduct(product, userId)
-    mutate(apiProdUrl)
-  }
+  const handleSaveProductOptimistically = async (product: Product) => {
+    // Optimistically update UI
+    setSavedProductIds((currentIds) => [...currentIds, product.id]);
+    try {
+      await saveProduct(product, userId);
+      mutate(apiProdUrl); // Revalidate if necessary
+    } catch (error) {
+      setSavedProductIds((currentIds) => currentIds.filter(id => id !== product.id));
+      toast.error("Error occured while saving product", { position: "top-left", theme: "dark" })
+    }
+  };
 
-
+  const handleRemoveSavedProductOptimistically = async (product: Product) => {
+    // Optimistically update UI
+    setSavedProductIds((currentIds) => currentIds.filter(id => id !== product.id));
+    try {
+      await removeSavedProduct(product, userId);
+      mutate(apiProdUrl); // Revalidate if necessary
+    } catch (error) {
+      // Revert UI on error
+      setSavedProductIds((currentIds) => [...currentIds, product.id]);
+      toast.error("Error occured while removing saved product", { position: "top-left", theme: "dark" })
+    }
+  };
   if (!products && !error) {
     return (
       <div className="flex flex-1 min-h-screen min-w-full">
@@ -85,7 +127,6 @@ const Productpage = () => {
           <section className="grid gap-6 md:gap-8 p-4 md:p-6">
             <Navbuttons />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
-              {/* Render multiple skeleton loaders based on an estimated number of products */}
               {Array.from({ length: 8 }, (_, index) => (
                 <ProductsSkeletonLoader key={index} />
               ))}
@@ -156,7 +197,7 @@ const Productpage = () => {
                         ? (
                           <Button
                             key={product.id}
-                            onClick={() => handleRemoveFromCart(product)}
+                            onClick={() => handleRemoveFromCartOptimistically(product)}
                             size="sm"
                             variant="outline"
                           >
@@ -165,33 +206,32 @@ const Productpage = () => {
                         ) : (
                           <Button
                             key={product.id}
-                            onClick={() => handleAddToCart(product)}
+                            onClick={() => handleAddToCartOptimistically(product)}
                             size="sm"
                             variant="outline"
                           >
                             Add to Cart
                           </Button>
                         )}
-                      {product.savedByUsers.some(
-                        (u) => u.clerkUserId === user.user?.id
-                      ) ? (
+                      {savedProductIds.includes(product.id) ? (
                         <>
                           <Button
-                            onClick={() => handleRemoveSavedProduct(product)}
+                            onClick={() => handleRemoveSavedProductOptimistically(product)}
                             size="sm"
                             variant="outline"
                           >
                             <FaBookmark />
                           </Button>
-
                         </>
-                      ) : <Button
-                        onClick={() => handleSaveProduct(product)}
-                        size="sm"
-                        variant="outline"
-                      >
-                        <FaRegBookmark />
-                      </Button>}
+                      ) : (
+                        <Button
+                          onClick={() => handleSaveProductOptimistically(product)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          <FaRegBookmark />
+                        </Button>
+                      )}
                     </div>
                   </CardFooter>
                 </Card>
