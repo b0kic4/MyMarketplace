@@ -33,6 +33,8 @@ export default function Component() {
   const user = useUser();
   const userId = user.user?.id as string
 
+  const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
+
   const [apiCartUrl, setApiCartUrl] = useState<string>("")
   useEffect(() => {
     if (userId) {
@@ -43,6 +45,15 @@ export default function Component() {
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: cart } = useSWR(apiCartUrl, fetcher)
+
+  useEffect(() => {
+    if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined
+      const productIds = cart.products.map((product: any) => product.product.id) as number[] | undefined;
+      setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+    } else {
+      setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
+    }
+  }, [cart]);
 
   // updating ui when changing quantity
   const optimisticUpdateQuantity = (cartProductId: number, newQuantity: number) => {
@@ -58,6 +69,36 @@ export default function Component() {
       }
     }
   };
+
+  const handleRemoveFromCartOptimistically = async (product: Product) => {
+    // Optimistically update UI: Remove product ID from productIdsInCart
+    setProductIdsInCart(currentIds => currentIds.filter(id => id !== product.id));
+
+    // Optimistically update the cart data to remove the product
+    const updatedCart = {
+      ...cart,
+      products: cart.products.filter((cartProduct: any) => cartProduct.product.id !== product.id)
+    };
+
+    mutate(apiCartUrl, updatedCart, false); // Update SWR cache without revalidation
+
+    try {
+      await removeFromCart(product, userId);
+      // Optionally, you can revalidate the cart data from the server after the product is successfully removed:
+      mutate(apiCartUrl);
+    } catch (error) {
+      console.error("Failed to remove product from cart:", error);
+      // Revert UI on error: Add product ID back to productIdsInCart
+      setProductIdsInCart(currentIds => [...currentIds, product.id]);
+
+      // Revert the optimistic update of the cart data
+      mutate(apiCartUrl, cart, false); // You might need to fetch the latest cart data if this approach doesn't work as expected
+
+      // Handle error (e.g., show a notification)
+      toast.error("Failed to remove product from cart", { position: "top-left", theme: "dark" });
+    }
+  };
+
 
   const debouncedHandleQuantityChange = debounce(async (cartProductId, newQuantity) => {
     const productToUpdate = cart?.products.find((cartProduct: CartProduct) => cartProduct.id === cartProductId);
@@ -121,11 +162,6 @@ export default function Component() {
     calculatePrice();
   }, [cart]);
 
-  const handleRemoveFromCart = async (product: Product) => {
-    await removeFromCart(product, userId);
-    mutate(apiCartUrl); // Trigger revalidation
-  };
-
 
   return (
     <div className="flex flex-1 justify-around flex-col gap-10">
@@ -164,71 +200,74 @@ export default function Component() {
               {Array.isArray(cart?.products) && (
                 cart.products.map((cartProduct: CartProduct) => {
                   const product: any = cartProduct.product;
-
                   return (
-                    <div
-                      className="flex items-center gap-4 p-4"
-                      key={cartProduct.id}
-                    >
-                      <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
-                        {Array.isArray(product.images) &&
-                          product.images.map(
-                            (image: ProductImage, index: number) => {
-                              return image.isLogo === true ||
-                                image.isLogo === "true" ? (
-                                <Link href={`/products/${product.id}`}>
-                                  <Image
-                                    key={index}
-                                    alt={product.title}
-                                    className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
-                                    height={500}
-                                    src={image.imageUrl || "/placeholder.svg"}
-                                    width={500}
-                                  />
-                                </Link>
-                              ) : null;
-                            }
-                          )}
-                      </div>
+                    <>
+                      {productIdsInCart.includes(product.id) ? (
+                        <div
+                          className="flex items-center gap-4 p-4"
+                          key={cartProduct.id}
+                        >
+                          <div className="w-16 h-16 relative flex-shrink-0 rounded-lg overflow-hidden">
+                            {Array.isArray(product.images) &&
+                              product.images.map(
+                                (image: ProductImage, index: number) => {
+                                  return image.isLogo === true ||
+                                    image.isLogo === "true" ? (
+                                    <Link href={`/products/${product.id}`}>
+                                      <Image
+                                        key={index}
+                                        alt={product.title}
+                                        className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
+                                        height={500}
+                                        src={image.imageUrl || "/placeholder.svg"}
+                                        width={500}
+                                      />
+                                    </Link>
+                                  ) : null;
+                                }
+                              )}
+                          </div>
 
-                      <div className="flex-1">
-                        <h3 className="font-semibold line-clamp-2">
-                          {product.title}
-                        </h3>
-                        <p className="font-medium">${product.price}</p>
-                        <p className="text-xs">Stock: {product.stock}</p>
-                        <div className="flex items-center gap-2">
-                          <Label
-                            className="m-0"
-                            htmlFor={`quantity-${cartProduct.id}`}
+                          <div className="flex-1">
+                            <h3 className="font-semibold line-clamp-2">
+                              {product.title}
+                            </h3>
+                            <p className="font-medium">${product.price}</p>
+                            <p className="text-xs">Stock: {product.stock}</p>
+                            <div className="flex items-center gap-2">
+                              <Label
+                                className="m-0"
+                                htmlFor={`quantity-${cartProduct.id}`}
+                              >
+                                Quantity:
+                              </Label>
+                              <Input
+                                id={`quantity-${cartProduct.id}`}
+                                type="number"
+                                className="w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 xl:w-1/6"
+                                value={cartProduct.quantity}
+                                onChange={(e) =>
+                                  handleQuantityChange(
+                                    cartProduct.id,
+                                    +e.target.value
+                                  )
+                                }
+                                min="1"
+                              />
+                            </div>
+                          </div>
+                          <Button
+                            onClick={() => handleRemoveFromCartOptimistically(product)}
+                            className="w-8 h-8"
+                            size="icon"
+                            variant="outline"
                           >
-                            Quantity:
-                          </Label>
-                          <Input
-                            id={`quantity-${cartProduct.id}`}
-                            type="number"
-                            className="w-1/2 sm:w-1/4 md:w-1/5 lg:w-1/6 xl:w-1/6"
-                            value={cartProduct.quantity}
-                            onChange={(e) =>
-                              handleQuantityChange(
-                                cartProduct.id,
-                                +e.target.value
-                              )
-                            }
-                            min="1"
-                          />
+                            <TrashIcon className="w-4 h-4" />
+                            <span className="sr-only">Remove</span>
+                          </Button>
                         </div>
-                      </div>
-                      <Button
-                        onClick={() => handleRemoveFromCart(product)}
-                        className="w-8 h-8"
-                        size="icon"
-                        variant="outline"
-                      >
-                        <TrashIcon className="w-4 h-4" />
-                        <span className="sr-only">Remove</span>
-                      </Button>
-                    </div>
+                      ) : (<p>No products in cart</p>)}
+                    </>
                   );
                 })
               )}

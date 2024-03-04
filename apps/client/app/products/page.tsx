@@ -64,8 +64,6 @@ const Productpage = () => {
       const savedIds = products
         .filter((product: Product) => product.savedByUsers.some(user => user.clerkUserId === userId))
         .map((product: Product) => product.id);
-      console.log(savedIds)
-
       setSavedProductIds(savedIds);
     }
   }, [products, userId]);
