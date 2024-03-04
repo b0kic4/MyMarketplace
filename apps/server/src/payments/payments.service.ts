@@ -9,12 +9,10 @@ import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
 export class PaymentsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async storePaymentInfo(session: any, metadata: any) {
     try {
       // extracted data from session and metadata
-      console.log('session: ', session);
-      console.log('metadata: ', metadata);
       if (!session) {
         throw new Error('No session found');
       }
@@ -64,7 +62,6 @@ export class PaymentsService {
       if (!cartProducts) {
         throw new ConflictException('No products found in cart');
       }
-      console.log('CART PRODUCTS: ', cartProducts);
       const productsNotFound = productIds.filter(
         (productId: any) =>
           !cartProducts.some((cp) => cp.product.id === productId),
@@ -73,7 +70,6 @@ export class PaymentsService {
         throw new ConflictException('Some products are not found in the cart');
       }
       // All products in productIds are found in the cartProducts
-      console.log('All products found in the cart.');
       const uniqueCartProductsHolder = await this.prisma.cartProduct.findFirst({
         where: {
           cartId: cart.id,
@@ -103,11 +99,14 @@ export class PaymentsService {
           },
         },
       });
-      await this.prisma.cart.delete({
+
+      const deletedCart = await this.prisma.cart.delete({
         where: {
           id: cart.id,
         },
       });
+
+      console.log("deleted cart: ", deletedCart)
 
       return order;
     } catch (error) {
@@ -118,7 +117,33 @@ export class PaymentsService {
       );
     }
   }
-  async getOrderByUserId(userId: any) {
-    console.log('userid: ', userId);
+  async getOrderByUserId(userId: string) {
+    try {
+      const user = await this.prisma.user.findFirst({
+        where: {
+          clerkUserId: userId
+        }
+      })
+      if (!user) throw new ConflictException("User not found")
+      const orders = await this.prisma.order.findMany(({
+        where: {
+          userId: user.id
+        }
+      }))
+      console.log("orders: ", orders)
+
+      if (!orders) {
+        throw new ConflictException("No Orders")
+      }
+
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+    }
+
   }
 }

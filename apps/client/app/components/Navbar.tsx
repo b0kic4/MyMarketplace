@@ -7,36 +7,21 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { IoMenu } from "react-icons/io5";
-import { FaMountain, FaShoppingCart } from "react-icons/fa";
+import { FaMountain, FaShoppingCart, FaHome, FaShoppingBasket } from "react-icons/fa";
+import { FaTruckFast } from "react-icons/fa6";
+
 import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import axios from "axios";
 
 export default function Navbar() {
-  const url = process.env.NEXT_PUBLIC_NESTJS_URL;
   const user = useUser();
   const pathName = usePathname();
-  const [appended, setAppended] = useState<boolean>(false);
   const links = [
-    { label: "Home", href: "/" },
-    { label: "Products", href: "/products" },
-    { label: "My Cart", href: "/products/cart" },
-    // { label: "Chat", href: "/" },
+    { label: "Home", href: "/", Icon: FaHome },
+    { label: "Products", href: "/products", Icon: FaShoppingBasket },
+    { label: "My Cart", href: "/products/cart", Icon: FaShoppingCart },
+    { label: "My Orders", href: "/orders", Icon: FaTruckFast },
   ];
-
-  const appendUserToDatabase = async () => {
-    try {
-      const response = await axios.post(`${url}/user`, user.user);
-      if (response.status === 201) setAppended(true);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  useEffect(() => {
-    if (!appended) appendUserToDatabase();
-  }, [user.user?.id]);
 
   return (
     <header className="flex items-center h-16 px-4 md:px-6 w-full border-b">
@@ -56,15 +41,13 @@ export default function Navbar() {
           <div />
           <div className="bg-slate-50">
             <div className="flex flex-col gap-2">
-              {links.map((link) => (
+              {links.map(({ Icon, label, href }) => (
                 <Link
-                  className={`flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium dark:bg-gray-800/50 ${
-                    pathName === link.href ? "active" : ""
-                  }`}
-                  key={link.href}
-                  href={link.href}
+                  className={`flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium dark:bg-gray-800/50 ${pathName === href ? "active" : ""}`}
+                  key={href}
+                  href={href}
                 >
-                  {link.label}
+                  <Icon className="mr-2 h-5 w-5" />{label}
                 </Link>
               ))}
             </div>
@@ -74,18 +57,15 @@ export default function Navbar() {
       <div className="hidden md:flex items-center gap-4">
         <Link href="#">
           <FaMountain className="h-6 w-6" />
-          <span className="sr-only">Acme Inc</span>
         </Link>
         <nav className="flex items-center gap-4" id="nav">
-          {links.map((link) => (
+          {links.map(({ Icon, label, href }) => (
             <Link
-              className={`flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium dark:bg-gray-800/50 ${
-                pathName === link.href ? "active" : ""
-              }`}
-              key={link.href}
-              href={link.href}
+              className={`flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium dark:bg-gray-800/50 ${pathName === href ? "active" : ""}`}
+              key={href}
+              href={href}
             >
-              {link.label}
+              <Icon className="mr-2 h-5 w-5" />{label}
             </Link>
           ))}
         </nav>

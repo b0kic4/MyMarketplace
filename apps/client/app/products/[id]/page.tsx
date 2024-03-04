@@ -4,7 +4,6 @@ import { toast } from "react-toastify";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
 import useSWR, { mutate } from "swr";
-
 import { StarIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -17,12 +16,6 @@ interface ServierSideProps {
 }
 // products that are similar to current one
 const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
-  // jedna glavna slika koja ce da bude prva
-  // dole preview od ostalih slika manje kockice
-  // i kad se klikne ja jednu od tih slika da postane glavna
-  // arrow napred i nazad
-  // i da kad kliknes na veliku sliku veliki popup za zumiranje i 
-  // listanje drugih slika
   const [productApiUrl, setProductApiUrl] = useState<string>("")
   const [apiCartUrl, setApiCartUrl] = useState<string>("")
   const [similarProductsApiUrl, setSimilarProductsApiUrl] = useState<string>('')

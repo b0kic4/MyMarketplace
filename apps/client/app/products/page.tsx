@@ -34,12 +34,16 @@ const Productpage = () => {
   const [apiCartUrl, setApiCartUrl] = useState<string>('');
 
   // fetching products
+
   useEffect(() => {
     if (userId) {
       const queryParams = new URLSearchParams({ filter, userId });
       const cartQueryParams = new URLSearchParams({ userId });
       setApiProdUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`);
       setApiCartUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`);
+    } else {
+      const queryParams = new URLSearchParams({ filter })
+      setApiProdUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`);
     }
   }, [userId, filter]);
 
