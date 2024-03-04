@@ -43,6 +43,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.50.1",
     "react-icons": "^5.0.1",
+    "react-modal": "^3.16.1",
     "react-toastify": "^10.0.4",
     "sharp": "^0.33.2",
     "stripe": "^14.17.0",

@@ -1,113 +1,109 @@
 "use client";
-import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Products } from "../new/interfaces";
 import { toast } from "react-toastify";
 import { FaLongArrowAltLeft } from "react-icons/fa";
 import Link from "next/link";
+import useSWR, { mutate } from "swr";
+
 import { StarIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import Spinner from "@client/app/components/Loading";
-import { Cart, Product, ProductImage } from "../cart-products-interface";
+import { Product, ProductImage } from "../cart-products-interface";
+import { removeFromCart, addToCart } from "@client/lib/actions/actions";
+import GalleryModal from "@client/app/components/GalleryModal";
 import { useUser } from "@clerk/nextjs";
 interface ServierSideProps {
   params: any;
 }
 // products that are similar to current one
 const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
-  const productId = Number(params.id);
-  const url = process.env.NEXT_PUBLIC_NESTJS_URL;
-  const [product, setProduct] = useState<Products>();
-  const [visibleImages, setVisibleImages] = useState<number>(3);
-  const [similarProducts, setSimilarProducts] = useState<Product[]>([]);
-  const user = useUser();
-  const [loading, setLoading] = useState<boolean>(false);
-  const [cart, setCart] = useState<Cart>();
-  const fetchProduct = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${url}/products/byId/${productId}`);
-      setProduct(response.data);
-    } catch (error: any) {
-      setLoading(false);
-      toast.error("Error has occured, please try again", {
-        position: "top-left",
-        theme: "dark",
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+  // jedna glavna slika koja ce da bude prva
+  // dole preview od ostalih slika manje kockice
+  // i kad se klikne ja jednu od tih slika da postane glavna
+  // arrow napred i nazad
+  // i da kad kliknes na veliku sliku veliki popup za zumiranje i 
+  // listanje drugih slika
+  const [productApiUrl, setProductApiUrl] = useState<string>("")
+  const [apiCartUrl, setApiCartUrl] = useState<string>("")
+  const [similarProductsApiUrl, setSimilarProductsApiUrl] = useState<string>('')
 
-  // TODO: implement caching
-  const fetchMatchingProducts = async () => {
-    try {
-      if (product) {
-        const response = await axios.get(`${url}/products/getSimilarProducts`, {
-          params: {
-            categoryType: product.categoryType,
-            colors: product.colors,
-            username: product.user.username,
-            material: product.material,
-          },
-        });
-        setSimilarProducts(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+  const productId = params.id
+
+  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<ProductImage | null>(null);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+
+  const user = useUser();
+  const userId = user.user?.id as string
+
 
   useEffect(() => {
-    fetchProduct();
-  }, [productId]);
+    if (productId) {
+      const productFetchParams = new URLSearchParams({ productId });
+      setProductApiUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/byid/?${productFetchParams}`)
+    }
+  }, [productId])
 
-  // getting matching product from displayed product
+  useEffect(() => {
+    if (userId) {
+      const cartQueryParams = new URLSearchParams({ userId });
+      setApiCartUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`);
+    }
+  }, [userId])
+
+  const { data: product, error: productError } = useSWR(productApiUrl, fetcher);
+  const { data: cart } = useSWR(apiCartUrl, fetcher)
+
+  // similar products setting params
   useEffect(() => {
     if (product) {
-      fetchMatchingProducts();
-      getCart();
+      console.log(product)
+      const queryParams = new URLSearchParams({
+        categoryType: product.categoryType,
+        colors: product.colors,
+        username: product.user.username,
+        material: product.material,
+      }).toString();
+      setSimilarProductsApiUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getSimilarProducts?${queryParams}`);
     }
   }, [product]);
 
-  const getCart = async () => {
-    try {
-      const response = await axios.get(`${url}/cart`, {
-        params: {
-          userId: user.user?.id,
-        },
-      });
-      setCart(response.data);
-    } catch (error) {
-      console.log(error);
+
+  // images
+  useEffect(() => {
+    if (product?.images && product.images.length > 0) {
+      setSelectedImage(product.images[selectedImageIndex]);
     }
+  }, [selectedImageIndex, product]);
+
+  const handleThumbnailClick = (index: number) => {
+    setSelectedImageIndex(index);
+  };
+  useEffect(() => {
+    // Automatically select the first image with isLogo set to true, or default to the first image
+    const logoIndex = product?.images.findIndex((img: ProductImage) => img.isLogo === 'true');
+    setSelectedImageIndex(logoIndex >= 0 ? logoIndex : 0);
+  }, [product]);
+
+  const handleMainImageClick = () => {
+    setShowModal(true);
   };
 
-  const handleAddToCart = async () => {
+  // Use SWR to fetch similar products
+  const { data: similarProducts, error: similarProductsError } = useSWR(similarProductsApiUrl, fetcher);
+
+  const handleAddToCartOptimistically = async (product: Product) => {
+    // Optimistically update UI
+    setProductIdsInCart((currentIds) => [...currentIds, product.id]);
     try {
-      setLoading(true);
-      const foundProduct = product;
-      const data = {
-        foundProduct,
-        userId: user.user?.id,
-      };
-      const response = await axios.post(`${url}/products/add-to-cart`, data);
-      if (response.status === 201) {
-        toast.success("Product added to cart successfully", {
-          position: "top-right",
-          theme: "dark",
-        });
-        getCart();
-      }
+      await addToCart(product, userId);
+      mutate(apiCartUrl); // Revalidate cache if necessary
     } catch (error) {
-      setLoading(false);
-      toast.error("Adding to cart failed", {
-        theme: "dark",
-        position: "top-left",
-      });
-    } finally {
-      setLoading(false);
+      // Revert UI on error
+      setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
+      // Handle error (e.g., show a notification)
     }
   };
 
@@ -122,33 +118,32 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
 
   const currentProductId = product?.id;
 
-  const handleRemoveFromCart = async () => {
+  const handleRemoveFromCartOptimistically = async (product: Product) => {
+    // Optimistically update UI: Remove product ID from productIdsInCart
+    setProductIdsInCart(currentIds => currentIds.filter(id => id !== product.id));
+
+    // Optimistically update the cart data to remove the product
+    const updatedCart = {
+      ...cart,
+      products: cart.products.filter((cartProduct: any) => cartProduct.product.id !== product.id)
+    };
+
+    mutate(apiCartUrl, updatedCart, false); // Update SWR cache without revalidation
+
     try {
-      setLoading(true);
-      const foundProduct = product;
-      const data = {
-        foundProduct,
-        userId: user.user?.id,
-      };
-      const response = await axios.post(
-        `${url}/products/remove-from-cart`,
-        data
-      );
-      if (response.status === 201) {
-        toast.success("Product removed from cart successfully", {
-          position: "top-right",
-          theme: "dark",
-        });
-        getCart();
-      }
+      await removeFromCart(product, userId);
+      // Optionally, you can revalidate the cart data from the server after the product is successfully removed:
+      mutate(apiCartUrl);
     } catch (error) {
-      setLoading(false);
-      toast.error("Error occured while removing product from cart", {
-        position: "top-left",
-        theme: "dark",
-      });
-    } finally {
-      setLoading(false);
+      console.error("Failed to remove product from cart:", error);
+      // Revert UI on error: Add product ID back to productIdsInCart
+      setProductIdsInCart(currentIds => [...currentIds, product.id]);
+
+      // Revert the optimistic update of the cart data
+      mutate(apiCartUrl, cart, false); // You might need to fetch the latest cart data if this approach doesn't work as expected
+
+      // Handle error (e.g., show a notification)
+      toast.error("Failed to remove product from cart", { position: "top-left", theme: "dark" });
     }
   };
 
@@ -163,37 +158,51 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
           Back to Products
         </Link>
       </div>
-      {product ? (
+      {product && (
         <>
           <div className="grid gap-4 md:gap-8 items-start">
             <h1 className="font-bold text-3xl tracking-tight">
               {product?.title}
             </h1>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {product.images &&
-                product.images
-                  .slice(0, visibleImages)
-                  .map((image) => (
-                    <Image
-                      key={image.id}
-                      alt={product.title}
-                      className="aspect-square object-cover border border-gray-200 w-full rounded-lg overflow-hidden dark:border-gray-800"
-                      height={600}
-                      src={image.imageUrl}
-                      width={600}
-                    />
-                  ))}
+
+
+            <div className="relative cursor-pointer" onClick={handleMainImageClick}>
+              {selectedImage && (
+                <Image
+                  src={selectedImage.imageUrl}
+                  alt="Selected product image"
+                  width={400} // Adjust width as needed
+                  height={400} // Adjust height as needed
+                  layout="responsive"
+                  objectFit="cover"
+                  className="rounded-md"
+                />
+              )}
             </div>
-            {product.images && product.images.length > visibleImages && (
-              <div className="flex justify-center mt-4">
-                <Button
-                  size="sm"
-                  onClick={() => setVisibleImages((prev) => prev + 3)}
-                >
-                  Load More Images
-                </Button>
-              </div>
+
+            <div className="flex flex-wrap gap-2 mt-4">
+              {product?.images.map((image: ProductImage, index: number) => (
+                <img
+                  key={image.id}
+                  src={image.imageUrl}
+                  alt={`Thumbnail ${index + 1}`}
+                  onClick={() => handleThumbnailClick(index)}
+                  height={100}
+                  width={100}
+                  className={`w-24 h-24 object-cover cursor-pointer rounded-lg ${index === selectedImageIndex ? 'ring-2 ring-blue-500' : ''}`}
+                />
+              ))}
+            </div>
+
+            {showModal && (
+              <GalleryModal
+                isOpen={showModal}
+                images={product?.images || []}
+                initialIndex={selectedImageIndex}
+                onClose={() => setShowModal(false)}
+              />
             )}
+
             <div className="grid gap-2 text-sm leading-loose bg-gray-100 p-6 rounded-md">
               <h2 className="font-semibold text-lg mb-4">
                 Product Information
@@ -300,40 +309,34 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
             </div>
           </div>
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
-            {productIdsInCart.includes(product.id) && !loading ? (
+            {productIdsInCart.includes(product.id) ? (
               <Button
                 key={product.id}
                 size="default"
                 variant="outline"
-                onClick={handleRemoveFromCart}
+                onClick={() => handleRemoveFromCartOptimistically(product)}
               >
                 Remove from Cart
               </Button>
-            ) : loading ? (
-              <Spinner />
-            ) : !loading ? (
+            ) : (
               <Button
                 size="default"
                 variant="outline"
-                onClick={handleAddToCart}
+                onClick={() => handleAddToCartOptimistically(product)}
               >
                 Add to cart
               </Button>
-            ) : loading ? (
-              <Spinner />
-            ) : null}
+            )}
           </div>
-
           {/* RELATED PRODUCTS:::::: */}
-
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Related Products</h2>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {similarProducts
+              {similarProducts && similarProducts
                 .filter(
-                  (similarProduct) => similarProduct.id !== currentProductId
+                  (similarProduct: Product) => similarProduct.id !== currentProductId
                 )
-                .map((product) => (
+                .map((product: Product) => (
                   <div className="flex flex-col items-start" key={product.id}>
                     <Link
                       className="aspect-image overflow-hidden rounded-lg"
@@ -379,9 +382,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
             </div>
           </div>
         </>
-      ) : loading ? (
-        <Spinner />
-      ) : null}
+      )}
     </div>
   );
 };

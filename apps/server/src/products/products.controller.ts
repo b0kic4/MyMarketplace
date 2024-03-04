@@ -3,7 +3,6 @@ import {
   ConflictException,
   Controller,
   Get,
-  Param,
   Post,
   Query,
 } from '@nestjs/common';
@@ -56,10 +55,9 @@ export class ProductController {
     return this.productService.findWithFiltering(filter, userId);
   }
 
-  @Get('byId/:id')
-  // param when providing in the link
-  async findOne(@Param('id') id: number) {
-    return await this.productService.findById(id);
+  @Get('byId')
+  async findOne(@Query('productId') productId: number) {
+    return await this.productService.findById(productId);
   }
 
   @Get('getSimilarProducts')
