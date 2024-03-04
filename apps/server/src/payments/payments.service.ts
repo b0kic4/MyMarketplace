@@ -99,7 +99,15 @@ export class PaymentsService {
           },
         },
       });
-
+      const deleteCartProducts = await this.prisma.cartProduct.deleteMany({
+        where: {
+          cartId: cart.id
+        }
+      })
+      if (!deleteCartProducts) {
+        throw new ConflictException("No Cart Products")
+      }
+      console.log("deleted Cart Products: ", deleteCartProducts)
       const deletedCart = await this.prisma.cart.delete({
         where: {
           id: cart.id,
