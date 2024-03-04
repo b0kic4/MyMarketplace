@@ -8,7 +8,7 @@ import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
 export class CartService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
   async getCartByUserId(userId: string): Promise<any> {
     try {
       const user = await this.prisma.user.findFirst({
@@ -40,7 +40,10 @@ export class CartService {
         },
       });
       if (!cart) throw new ConflictException('Cart not found');
-      return cart;
+      if (cart.isPurchased === false) {
+        return cart;
+      }
+      return
     } catch (error) {
       throw new HttpException(
         'Internal Server Error',
