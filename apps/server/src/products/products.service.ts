@@ -259,10 +259,10 @@ export class ProductService {
   }
 
   // finding product by provided id
-  async findById(id: number): Promise<Product> {
+  async findById(productId: number): Promise<Product> {
     try {
       const product = await this.prisma.product.findUnique({
-        where: { id: id },
+        where: { id: productId },
         include: {
           images: true,
           user: true,

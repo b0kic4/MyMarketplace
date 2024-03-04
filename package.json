@@ -26,5 +26,8 @@
     "@trpc/server": "^10.45.0",
     "faker": "^6.6.6",
     "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/react-modal": "^3.16.3"
   }
 }
