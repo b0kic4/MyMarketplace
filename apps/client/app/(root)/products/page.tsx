@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Product, ProductImage } from "./cart-products-interface";
 import Navbuttons from "./components/Navbuttons";
 import { useUser } from "@clerk/nextjs";
-import ProductsSkeletonLoader from "../components/ProductsSkeletonLoader";
+import ProductsSkeletonLoader from "../../components/ProductsSkeletonLoader";
 import { FaRegBookmark } from "react-icons/fa";
 import { FaBookmark } from "react-icons/fa";
 import { saveProduct } from "@client/lib/actions/actions";

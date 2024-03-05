@@ -1,7 +1,7 @@
 // StripeCheckout.tsx
 import { useStripe } from "@stripe/react-stripe-js";
 import { Button } from "@/components/ui/button";
-import { Cart } from "../products/cart-products-interface";
+import { Cart } from "../(root)/products/cart-products-interface";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "react-toastify";
 interface Props {

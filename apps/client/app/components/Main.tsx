@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { FaSearch } from "react-icons/fa";
 import Image from "next/image";
-import { ProductImage } from "../products/new/interfaces";
+import { ProductImage } from "../(root)/products/cart-products-interface";
 import Link from "next/link";
 import SkeletonLoader from "./MainProductsSkeletonLoader";
 import useSWR from "swr";
@@ -43,7 +43,7 @@ export default function Main() {
         </section>
         <div className="flex flex-1 min-h-screen min-w-full">
           <div className="flex-1 flex w-full flex-col min-h-screen">
-            <section className="grid gap-6 md:gap-8 p-4 md:p-6 lg: p-1">
+            <section className="grid gap-6 md:gap-8 p-4 md:p-6 lg:p-4">
               <div className="mx-auto max-w-4xl grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2">
                 {Array.from({ length: 4 }, (_, index) => (
                   <SkeletonLoader key={index} />

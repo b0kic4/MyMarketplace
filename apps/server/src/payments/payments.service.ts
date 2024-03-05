@@ -4,7 +4,6 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { OrderStatus, PurchaseStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
@@ -59,9 +58,11 @@ export class PaymentsService {
           cart: true,
         },
       });
+
       if (!cartProducts) {
         throw new ConflictException('No products found in cart');
       }
+
       const productsNotFound = productIds.filter(
         (productId: any) =>
           !cartProducts.some((cp) => cp.product.id === productId),
@@ -69,44 +70,45 @@ export class PaymentsService {
       if (productsNotFound.length > 0) {
         throw new ConflictException('Some products are not found in the cart');
       }
+
       // All products in productIds are found in the cartProducts
-      const uniqueCartProductsHolder = await this.prisma.cartProduct.findFirst({
+
+      await this.prisma.cartProduct.updateMany({
         where: {
           cartId: cart.id,
-        },
-      });
-      const updatedCartProducts = await this.prisma.cartProduct.update({
-        where: {
-          id: uniqueCartProductsHolder!.id,
+          productId: { in: productIds }, // Assuming these are the IDs of products being purchased
+          purchaseStatus: 'NotPurchased', // Only update those that haven't been purchased yet
         },
         data: {
-          purchaseStatus: PurchaseStatus.Purchased,
+          purchaseStatus: 'Purchased',
         },
       });
+
       const order = await this.prisma.order.create({
         data: {
-          orderStatus: OrderStatus.Succeed,
+          orderStatus: 'Succeed',
           totalPrice: amountTotalInDollars.toString(),
           userId: user.id,
           cartId: cart.id,
-          purchasedProducts: {
-            create: cartProducts.map((cartProduct) => ({
-              cartId: cartProduct.cart.id,
-              productId: cartProduct.product.id,
-              quantity: cartProduct.quantity,
-              purchaseStatus: updatedCartProducts.purchaseStatus,
-            })),
-          },
         },
       });
-      await this.prisma.cart.update({
+
+      await this.prisma.cartProduct.updateMany({
         where: {
-          id: cart.id,
+          cartId: cart.id,
+          productId: { in: productIds },
+          purchaseStatus: 'NotPurchased',
         },
         data: {
-          isPurchased: true
-        }
-      })
+          purchaseStatus: 'Purchased',
+          orderId: order.id, // Associate with the newly created order
+        },
+      });
+
+      await this.prisma.cart.update({
+        where: { id: cart.id },
+        data: { isPurchased: true },
+      });
 
       return order;
     } catch (error) {
@@ -142,8 +144,6 @@ export class PaymentsService {
         'Internal Server Error',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
-
     }
-
   }
 }
