@@ -1,6 +1,6 @@
 "use server";
 
-import { Product } from "@client/app/products/cart-products-interface";
+import { Product } from "@client/app/(root)/products/cart-products-interface";
 
 // functionality for saving products
 export async function saveProduct(product: Product, userId: string) {
