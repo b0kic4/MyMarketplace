@@ -1,6 +1,6 @@
 import React from 'react';
 import Image from 'next/image';
-import { ProductImage } from '../products/cart-products-interface';
+import { ProductImage } from '../(root)/products/cart-products-interface';
 
 interface GalleryModalProps {
   isOpen: boolean;
