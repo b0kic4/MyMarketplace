@@ -61,7 +61,7 @@ model Product {
 model Cart {
   id          Int           @id @default(autoincrement())
   userId      Int           @unique
-  productId   Int
+  productId   Int?
   user        User?         @relation("userCart", fields: [userId], references: [id])
   products    CartProduct[] @relation
   order       Order?        @relation("order")

@@ -103,10 +103,13 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
 
   useEffect(() => {
-    const productIds = cart?.products.map(
-      (product: any) => product.product.id
-    ) as number[] | undefined;
-    setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+    if (cart?.products) {
+      const productIds = cart?.products.map(
+        (product: any) => product.product.id
+      ) as number[] | undefined;
+      setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+    }
+
   }, [cart]);
 
   const currentProductId = product?.id;
