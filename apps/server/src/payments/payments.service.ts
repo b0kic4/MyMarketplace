@@ -82,24 +82,31 @@ export class PaymentsService {
           totalPrice: amountTotalInDollars.toString(),
           userId: user.id,
           cartId: cart.id,
-          purchasedProducts: {
-            create: cartProducts.map((cartProduct) => ({
-              cartId: cartProduct.cart.id,
-              productId: cartProduct.product.id,
-              quantity: cartProduct.quantity,
-            })),
-          },
         },
       });
 
+      await Promise.all(
+        cartProducts.map((cartProduct) =>
+          this.prisma.cartProduct.update({
+            where: {
+              id: cartProduct.id,
+            },
+            data: {
+              orderId: order.id, // Linking cart product to the newly created order
+            },
+          })
+        )
+      );
+
+      // Mark the cart as purchased
       await this.prisma.cart.update({
         where: {
           id: cart.id,
         },
         data: {
-          isPurchased: true
-        }
-      })
+          isPurchased: true,
+        },
+      });
 
       return order;
     } catch (error) {
