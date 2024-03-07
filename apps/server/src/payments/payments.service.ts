@@ -114,26 +114,31 @@ export class PaymentsService {
           },
         }),
 
-        this.prisma.cart.update({
-          where: {
-            id: cart.id,
-          },
-          data: {
-            isPurchased: true
-          }
-        })
+
       ]);
+
       const foundCartProductsAfterOrderCreation = await this.prisma.cartProduct.findMany({
         where: {
           cartId: cart.id,
           orderId: null,
         }
       })
+
       console.log("finding cart products: ", foundCartProductsAfterOrderCreation)
+
       const order = result[0]
       const cartProductsAfterOrder = result[1]
-      console.log("cart products after order: ", cartProductsAfterOrder)
-      console.log("order: ", order)
+      console.log("cart products from transaction: ", cartProductsAfterOrder)
+      console.log("transaction order: ", order)
+
+      this.prisma.cart.update({
+        where: {
+          id: cart.id,
+        },
+        data: {
+          isPurchased: true
+        }
+      })
 
       return order;
     } catch (error) {
