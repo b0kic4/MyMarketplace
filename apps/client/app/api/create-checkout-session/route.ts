@@ -18,8 +18,6 @@ export async function POST(req: NextRequest) {
       (cartProduct: any) => cartProduct.product
     );
 
-    // Now 'products' is an array of prodinteruct objects
-    console.log("products: ", products);
 
     // Iterate through 'products' and perform the Stripe API operations
     const stripeProducts = await Promise.all(
@@ -41,15 +39,12 @@ export async function POST(req: NextRequest) {
       })
     );
 
-    // 'stripeProducts' is an array containing the Stripe product and price information
-    console.log("stripeProducts: ", stripeProducts);
 
     // Create lineItems using 'stripeProducts'
     const lineItems = cart.products.map((cartProduct: any, index: number) => ({
       price: stripeProducts[index].price,
       quantity: cartProduct.quantity,
     }));
-    console.log("lineItems: ", lineItems);
     const productIds = products.map((product: any) => {
       return product.id;
     });
