@@ -60,54 +60,80 @@ export class PaymentsService {
           cart: true,
         },
       });
+
       if (!cartProducts) {
         throw new ConflictException('No products found in cart');
       }
+
       const productsNotFound = productIds.filter(
         (productId: any) =>
           !cartProducts.some((cp) => cp.product.id === productId),
       );
+
       if (productsNotFound.length > 0) {
         throw new ConflictException('Some products are not found in the cart');
       }
+
       // All products in productIds are found in the cartProducts
-      const uniqueCartProductsHolder = await this.prisma.cartProduct.findFirst({
-        where: {
-          cartId: cart.id,
-        },
-      });
       const updatedCartProducts = await this.prisma.cartProduct.update({
-        where: {
-          id: uniqueCartProductsHolder!.id,
-        },
-        data: {
-          purchaseStatus: PurchaseStatus.Purchased,
-        },
-      });
-      const order = await this.prisma.order.create({
-        data: {
-          orderStatus: OrderStatus.Succeed,
-          totalPrice: amountTotalInDollars.toString(),
-          userId: user.id,
-          cartId: cart.id,
-          purchasedProducts: {
-            create: cartProducts.map((cartProduct) => ({
-              cartId: cartProduct.cart.id,
-              productId: cartProduct.product.id,
-              quantity: cartProduct.quantity,
-              purchaseStatus: updatedCartProducts.purchaseStatus,
-            })),
-          },
-        },
-      });
-      await this.prisma.cart.update({
         where: {
           id: cart.id,
         },
         data: {
-          isPurchased: true
+          purchaseStatus: PurchaseStatus.Purchased,
+        },
+        include: {
+          product: true,
+          cart: true,
+        },
+      });
+
+      const result = await this.prisma.$transaction([
+        this.prisma.order.create({
+          data: {
+            orderStatus: OrderStatus.Succeed,
+            totalPrice: amountTotalInDollars.toString(),
+            userId: user.id,
+            cartId: cart.id,
+            purchasedProducts: {
+              create: {
+                cartId: updatedCartProducts.cartId,
+                productId: updatedCartProducts.productId,
+                quantity: updatedCartProducts.quantity,
+                purchaseStatus: updatedCartProducts.purchaseStatus,
+              }
+            },
+          },
+        }),
+
+        this.prisma.cartProduct.delete({
+          where: {
+            id: updatedCartProducts.id,
+            cartId: cart.id,
+            orderId: null,
+          },
+        }),
+
+        this.prisma.cart.update({
+          where: {
+            id: cart.id,
+          },
+          data: {
+            isPurchased: true
+          }
+        })
+      ]);
+      const foundCartProductsAfterOrderCreation = await this.prisma.cartProduct.findMany({
+        where: {
+          cartId: cart.id,
+          orderId: null,
         }
       })
+      console.log("finding cart products: ", foundCartProductsAfterOrderCreation)
+      const order = result[0]
+      const cartProductsAfterOrder = result[1]
+      console.log("cart products after order: ", cartProductsAfterOrder)
+      console.log("order: ", order)
 
       return order;
     } catch (error) {
