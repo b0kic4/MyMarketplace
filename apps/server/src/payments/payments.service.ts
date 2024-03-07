@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { OrderStatus, PurchaseStatus } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
@@ -75,63 +75,24 @@ export class PaymentsService {
       }
 
       // All products in productIds are found in the cartProducts
-      const updatedCartProducts = await this.prisma.cartProduct.update({
-        where: {
-          id: cart.id,
-        },
+
+      const order = await this.prisma.order.create({
         data: {
-          purchaseStatus: PurchaseStatus.Purchased,
-        },
-        include: {
-          product: true,
-          cart: true,
+          orderStatus: OrderStatus.Succeed,
+          totalPrice: amountTotalInDollars.toString(),
+          userId: user.id,
+          cartId: cart.id,
+          purchasedProducts: {
+            create: cartProducts.map((cartProduct) => ({
+              cartId: cartProduct.cart.id,
+              productId: cartProduct.product.id,
+              quantity: cartProduct.quantity,
+            })),
+          },
         },
       });
 
-      const result = await this.prisma.$transaction([
-        this.prisma.order.create({
-          data: {
-            orderStatus: OrderStatus.Succeed,
-            totalPrice: amountTotalInDollars.toString(),
-            userId: user.id,
-            cartId: cart.id,
-            purchasedProducts: {
-              create: {
-                cartId: updatedCartProducts.cartId,
-                productId: updatedCartProducts.productId,
-                quantity: updatedCartProducts.quantity,
-                purchaseStatus: updatedCartProducts.purchaseStatus,
-              }
-            },
-          },
-        }),
-
-        this.prisma.cartProduct.delete({
-          where: {
-            id: updatedCartProducts.id,
-            cartId: cart.id,
-            orderId: null,
-          },
-        }),
-
-
-      ]);
-
-      const foundCartProductsAfterOrderCreation = await this.prisma.cartProduct.findMany({
-        where: {
-          cartId: cart.id,
-          orderId: null,
-        }
-      })
-
-      console.log("finding cart products: ", foundCartProductsAfterOrderCreation)
-
-      const order = result[0]
-      const cartProductsAfterOrder = result[1]
-      console.log("cart products from transaction: ", cartProductsAfterOrder)
-      console.log("transaction order: ", order)
-
-      this.prisma.cart.update({
+      await this.prisma.cart.update({
         where: {
           id: cart.id,
         },

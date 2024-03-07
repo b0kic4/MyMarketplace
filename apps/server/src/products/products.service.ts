@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 import { CreateProductDto } from './dto/create-product.dto';
-import { Cart, Product, PurchaseStatus } from '@prisma/client';
+import { Cart, Product } from '@prisma/client';
 import { SaveProductDto } from './dto/save-product-dto';
 import { AddProductToCartDto } from './dto/add-to-cart-product.dto';
 import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
@@ -300,6 +300,7 @@ export class ProductService {
       const cart = await this.prisma.cart.findFirst({
         where: {
           userId: Number(user.id),
+          isPurchased: false
         },
       });
 
@@ -311,6 +312,7 @@ export class ProductService {
           data: {
             productId: prodcut.id,
             userId: Number(user?.id),
+            isPurchased: false
           },
         });
 
@@ -342,7 +344,6 @@ export class ProductService {
           data: {
             cartId: existingCart.id,
             productId: prodcut.id,
-            purchaseStatus: PurchaseStatus.NotPurchased,
           },
         });
         existingCartPorduct = createNewCartProduct;
@@ -391,7 +392,6 @@ export class ProductService {
             cartId: foundCart.id,
           },
           data: {
-            purchaseStatus: 'NotPurchased',
             quantity: {
               increment: quantityValue,
             },

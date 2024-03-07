@@ -73,17 +73,16 @@ model Cart {
 }
 
 model CartProduct {
-  id             Int            @id @default(autoincrement())
-  cartId         Int
-  productId      Int
-  quantity       Int            @default(1)
-  purchaseStatus PurchaseStatus
-  cart           Cart           @relation(fields: [cartId], references: [id])
-  orderId        Int?
-  order          Order?         @relation("purchasedProducts", fields: [orderId], references: [id])
-  product        Product        @relation(fields: [productId], references: [id])
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id        Int      @id @default(autoincrement())
+  cartId    Int
+  productId Int
+  quantity  Int      @default(1)
+  cart      Cart     @relation(fields: [cartId], references: [id])
+  orderId   Int?
+  order     Order?   @relation("purchasedProducts", fields: [orderId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([cartId, productId], name: "idx_cart_product")
 }
@@ -107,13 +106,6 @@ model Order {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   user              User          @relation(fields: [userId], references: [id], name: "userOrder")
-}
-
-enum PurchaseStatus {
-  NotPurchased
-  Purchased
-  Delivering
-  Delivered
 }
 
 enum OrderStatus {
