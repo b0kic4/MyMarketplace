@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { OrderStatus } from '@prisma/client';
+import { Order, OrderStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
@@ -125,9 +125,13 @@ export class PaymentsService {
         }
       })
       if (!user) throw new ConflictException("User not found")
+
       const orders = await this.prisma.order.findMany(({
         where: {
           userId: user.id
+        },
+        include: {
+          purchasedProducts: true
         }
       }))
       console.log("orders: ", orders)
@@ -135,6 +139,8 @@ export class PaymentsService {
       if (!orders) {
         throw new ConflictException("No Orders")
       }
+
+      return orders
 
     } catch (error) {
       console.log(error);
