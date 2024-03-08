@@ -303,7 +303,6 @@ export class ProductService {
           isPurchased: false
         },
       });
-
       let existingCart;
       if (cart) {
         existingCart = cart;
@@ -311,7 +310,7 @@ export class ProductService {
         const newCart = await this.prisma.cart.create({
           data: {
             productId: prodcut.id,
-            userId: Number(user?.id),
+            userId: user.id,
             isPurchased: false
           },
         });
@@ -434,13 +433,11 @@ export class ProductService {
           clerkUserId: removeFromCart.userID,
         },
         include: {
-          cart: true,
+          Cart: true,
         },
       });
       if (!user) throw new ConflictException('user not found');
 
-      // remove product id from cart add id of the cart product
-      // remove purchased at etc...
       const product = await this.prisma.product.findUnique({
         where: {
           id: removeFromCart.foundProduct.id,
@@ -449,11 +446,13 @@ export class ProductService {
       if (!product) {
         throw new ConflictException('Product not found in db');
       }
+
       const cart = await this.prisma.cart.findUnique({
         where: {
-          id: user.cart?.id,
+          id: user.Cart?.id,
         },
       });
+
       if (!cart) {
         throw new ConflictException('Cart not found for user');
       }

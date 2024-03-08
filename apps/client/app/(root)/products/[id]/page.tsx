@@ -160,23 +160,20 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
             <h1 className="font-bold text-3xl tracking-tight">
               {product?.title}
             </h1>
-
-
             <div className="relative cursor-pointer" onClick={handleMainImageClick}>
               {selectedImage && (
                 <Image
                   src={selectedImage.imageUrl}
                   alt="Selected product image"
-                  width={400} // Adjust width as needed
-                  height={400} // Adjust height as needed
+                  width={200} // Adjust width as needed
+                  height={200} // Adjust height as needed
                   layout="responsive"
                   loading="lazy"
                   objectFit="cover"
-                  className="rounded-md"
+                  className="rounded-md w-50 h-50"
                 />
               )}
             </div>
-
             <div className="flex flex-wrap gap-2 mt-4">
               {product?.images.map((image: ProductImage, index: number) => (
                 <Image
