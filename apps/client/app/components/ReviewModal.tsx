@@ -9,17 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { StarIcon } from '@radix-ui/react-icons';
 import { Label } from '@/components/ui/label';
+import { DialogTrigger } from '@radix-ui/react-dialog';
 
-const ReviewModal = ({ isOpen, onClose, onSubmit, productId, orderId, initialRating }: any) => {
+const ReviewModal = ({ isOpen, onClose, onSubmit, productId, orderId }: any) => {
   const [rating, setRating] = useState<number>(0);
   const [review, setReview] = useState<string>('');
-
-  useEffect(() => {
-    if (initialRating > 0) {
-      setRating(initialRating);
-    }
-  }, [initialRating]);
-
 
   const submitReview = () => {
     onSubmit({ productId, orderId, rating, review });
@@ -28,7 +22,12 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, productId, orderId, initialRat
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogTitle>Submit Your Review</DialogTitle>
+      <DialogTrigger>
+        <Button>
+          Submit your Review
+        </Button>
+      </DialogTrigger>
+      <DialogTitle>Review the product</DialogTitle>
       <DialogContent className="space-y-4">
         <div className="text-center">How would you rate this product?</div>
         <div className="flex justify-center">
