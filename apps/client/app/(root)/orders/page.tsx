@@ -6,6 +6,10 @@ import { ChevronDownIcon, StarIcon } from '@radix-ui/react-icons';
 import { Order } from '@client/lib/types';
 import { ProductImage } from '../products/cart-products-interface';
 import Image from 'next/image';
+import OrdersSkeletonLoader from '@client/app/components/OrdersSkeleton';
+import ReviewModal from '@client/app/components/ReviewModal';
+
+import NoOrders from '@client/app/components/NoOrdersComponent';
 const Orders = () => {
   const user = useUser();
   const userId = user.user?.id;
@@ -22,8 +26,9 @@ const Orders = () => {
 
   const { data: orders, error: orderError } = useSWR(orderApiUrl, fetcher);
 
-  if (orderError) return <div>Failed to load orders</div>;
-  if (!orders) return <div>Loading...</div>;
+  if (orderError) return <div>Error loading orders</div>;
+  if (!orders) return <div className='p-10'><NoOrders /></div>;
+  if (!orders && !orderError) <div><OrdersSkeletonLoader /></div>
 
   return (
     <main className="flex flex-col gap-4 p-4">
@@ -41,7 +46,7 @@ const OrderCard = ({ order }: any) => {
   const toggleOpen = () => setIsOpen(!isOpen);
 
   return (
-    <div className="card bg-white shadow-sm rounded-lg p-4">
+    <div className="card bg-white shadow-sm rounded-lg px-20">
       <div className="flex justify-between items-center" onClick={toggleOpen}>
         <div>
           <h2 className="font-bold text-lg">Order #{order.id}</h2>
@@ -61,12 +66,21 @@ const OrderCard = ({ order }: any) => {
 };
 
 const ProductReview = ({ product, orderId }: { product: any, orderId: number }) => {
-  // Finds the main logo image based on the isLogo property being "true"
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedRating, setSelectedRating] = useState(0);
+
   const mainLogoImage = product.product.images.find((image: ProductImage) => image.isLogo === "true")?.imageUrl || 'default-image-url';
 
-  const handleReview = (productId: number, stars: any) => {
-    console.log(`Review for order ${orderId}, product ${productId}: ${stars} stars`);
-    // Implementation for submitting the review goes here
+  const handleReviewClick = (rating: number) => {
+    setSelectedRating(rating);
+    setModalOpen(true); // Open the modal on star click
+  };
+
+  // Define what happens when a review is submitted
+  const handleReviewSubmit = ({ productId, orderId, rating, review }: any) => {
+    console.log(`Review submitted for order ${orderId}, product ${productId}: ${rating} stars, review: ${review}`);
+    // Here you should implement the logic to actually submit the review to your backend
+    setModalOpen(false); // Close the modal after submission
   };
 
   return (
@@ -84,11 +98,21 @@ const ProductReview = ({ product, orderId }: { product: any, orderId: number }) 
         {[1, 2, 3, 4, 5].map((star) => (
           <StarIcon
             key={star}
-            onClick={() => handleReview(product.productId, star)}
+            onClick={() => handleReviewClick(star)}
             className="h-5 w-5 cursor-pointer text-gray-300 hover:text-yellow-500"
           />
         ))}
       </div>
+      {selectedRating &&
+        <ReviewModal
+          isOpen={modalOpen}
+          onClose={() => setModalOpen(false)}
+          onSubmit={handleReviewSubmit}
+          productId={product.productId}
+          orderId={orderId}
+          initialRating={selectedRating}
+        />}
+
     </div>
   );
 };

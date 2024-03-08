@@ -20,6 +20,7 @@ export class PaymentsController {
 
   @Post('createReviewForProduct')
   async create(@Body() data: any) {
+    console.log(data)
     return await this.paymentService.createReview()
   }
 }
