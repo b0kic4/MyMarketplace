@@ -34,9 +34,7 @@ export class PaymentsService {
       }
       const cart = await this.prisma.cart.findFirst({
         where: {
-          user: {
-            id: user.id,
-          },
+          userId: user.id
         },
         include: {
           products: {

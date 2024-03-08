@@ -36,7 +36,7 @@ export class CartService {
               },
             },
           },
-          user: true,
+          User: true
         },
       });
       if (!cart) throw new ConflictException('Cart not found');

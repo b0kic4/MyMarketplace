@@ -23,9 +23,9 @@ model User {
   savedProducts Product[] @relation("savedProducts")
   orders        Order[]   @relation("userOrder")
   cartId        Int?
-  cart          Cart?     @relation("userCart")
   reviewId      Int?
   Review        Review[]
+  Cart          Cart?     @relation(fields: [cartId], references: [id])
 }
 
 model Image {
@@ -62,14 +62,14 @@ model Product {
 
 model Cart {
   id          Int           @id @default(autoincrement())
-  userId      Int           @unique
+  userId      Int
   productId   Int?
-  user        User?         @relation("userCart", fields: [userId], references: [id])
   products    CartProduct[] @relation
   order       Order?        @relation("order")
   isPurchased Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  User        User[]
 
   @@index([userId, productId], name: "idx_user_product")
 }
