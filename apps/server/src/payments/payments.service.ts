@@ -4,7 +4,7 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { Order, OrderStatus } from '@prisma/client';
+import { OrderStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
 
 @Injectable()
@@ -19,7 +19,6 @@ export class PaymentsService {
       if (!metadata) {
         throw new Error('No products found in metadata');
       }
-      const paymentStatus = session.payment_status;
       const amountTotalInPennies = session.amount_total;
       const amountTotalInDollars = amountTotalInPennies / 100;
       const productIds = JSON.parse(metadata.productIds);
@@ -117,6 +116,7 @@ export class PaymentsService {
       );
     }
   }
+
   async getOrderByUserId(userId: string) {
     try {
       const user = await this.prisma.user.findFirst({
@@ -131,10 +131,17 @@ export class PaymentsService {
           userId: user.id
         },
         include: {
-          purchasedProducts: true
+          purchasedProducts: {
+            include: {
+              product: {
+                include: {
+                  images: true,
+                }
+              }
+            }
+          }
         }
       }))
-      console.log("orders: ", orders)
 
       if (!orders) {
         throw new ConflictException("No Orders")
@@ -150,6 +157,8 @@ export class PaymentsService {
       );
 
     }
+  }
+  async createReview() {
 
   }
 }
