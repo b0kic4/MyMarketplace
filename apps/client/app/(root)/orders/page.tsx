@@ -7,6 +7,9 @@ import { Order } from '@client/lib/types';
 import { ProductImage } from '../products/cart-products-interface';
 import Image from 'next/image';
 import OrdersSkeletonLoader from '@client/app/components/OrdersSkeleton';
+import { Button } from '@/components/ui/button';
+import { Input } from "@/components/ui/input"
+import { Label } from '@/components/ui/label';
 import ReviewModal from '@client/app/components/ReviewModal';
 
 import NoOrders from '@client/app/components/NoOrdersComponent';
@@ -67,20 +70,15 @@ const OrderCard = ({ order }: any) => {
 
 const ProductReview = ({ product, orderId }: { product: any, orderId: number }) => {
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedRating, setSelectedRating] = useState(0);
 
   const mainLogoImage = product.product.images.find((image: ProductImage) => image.isLogo === "true")?.imageUrl || 'default-image-url';
 
-  const handleReviewClick = (rating: number) => {
-    setSelectedRating(rating);
-    setModalOpen(true); // Open the modal on star click
-  };
 
   // Define what happens when a review is submitted
   const handleReviewSubmit = ({ productId, orderId, rating, review }: any) => {
+    console.log("called")
     console.log(`Review submitted for order ${orderId}, product ${productId}: ${rating} stars, review: ${review}`);
     // Here you should implement the logic to actually submit the review to your backend
-    setModalOpen(false); // Close the modal after submission
   };
 
   return (

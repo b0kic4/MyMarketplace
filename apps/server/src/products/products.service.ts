@@ -368,6 +368,7 @@ export class ProductService {
       const foundCart = await this.prisma.cart.findFirst({
         where: {
           userId: user?.id,
+          isPurchased: false,
         },
       });
       if (!foundCart) {
@@ -447,10 +448,10 @@ export class ProductService {
         throw new ConflictException('Product not found in db');
       }
 
-      const cart = await this.prisma.cart.findUnique({
+      const cart = await this.prisma.cart.findFirst({
         where: {
-          id: user.Cart?.id,
-          isPurchased: false,
+          userId: Number(user.id),
+          isPurchased: false
         },
       });
 
