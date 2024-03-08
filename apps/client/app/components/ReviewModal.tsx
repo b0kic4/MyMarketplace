@@ -36,7 +36,7 @@ const ReviewModal = ({ isOpen, onClose, onSubmit, productId, orderId }: any) => 
         <DialogHeader>
           <DialogTitle>Add Review For Product</DialogTitle>
           <DialogDescription>
-            Add review for product here. Click save when you're done.
+            Add review for product here. Click save when youre done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
