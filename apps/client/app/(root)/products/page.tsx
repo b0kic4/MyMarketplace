@@ -162,6 +162,7 @@ const Productpage = () => {
                             <Image
                               key={index}
                               alt={product.title}
+                              loading="lazy"
                               className="mx-auto rounded-lg aspect-[1/1] overflow-hidden object-cover object-center"
                               height={500}
                               src={image.imageUrl || "/placeholder.svg"}

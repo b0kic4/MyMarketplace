@@ -24,6 +24,8 @@ model User {
   orders        Order[]   @relation("userOrder")
   cartId        Int?
   cart          Cart?     @relation("userCart")
+  reviewId      Int?
+  Review        Review[]
 }
 
 model Image {
@@ -88,11 +90,15 @@ model CartProduct {
 }
 
 model Review {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   content   String
+  userId    Int
   rating    Int
   productId Int
-  product   Product @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User     @relation(fields: [userId], references: [id])
 }
 
 model Order {
@@ -102,7 +108,7 @@ model Order {
   cartId            Int?          @unique
   Cart              Cart?         @relation(fields: [cartId], references: [id], name: "order")
   purchasedProducts CartProduct[] @relation("purchasedProducts")
-  orderStatus       OrderStatus // Rename to follow the convention (camelCase)
+  orderStatus       OrderStatus
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   user              User          @relation(fields: [userId], references: [id], name: "userOrder")

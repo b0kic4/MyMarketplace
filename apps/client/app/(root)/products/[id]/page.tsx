@@ -170,6 +170,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
                   width={400} // Adjust width as needed
                   height={400} // Adjust height as needed
                   layout="responsive"
+                  loading="lazy"
                   objectFit="cover"
                   className="rounded-md"
                 />
@@ -178,7 +179,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
 
             <div className="flex flex-wrap gap-2 mt-4">
               {product?.images.map((image: ProductImage, index: number) => (
-                <img
+                <Image
                   key={image.id}
                   src={image.imageUrl}
                   alt={`Thumbnail ${index + 1}`}
