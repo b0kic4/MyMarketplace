@@ -7,12 +7,9 @@ import { Order } from '@client/lib/types';
 import { ProductImage } from '../products/cart-products-interface';
 import Image from 'next/image';
 import OrdersSkeletonLoader from '@client/app/components/OrdersSkeleton';
-import { Button } from '@/components/ui/button';
-import { Input } from "@/components/ui/input"
-import { Label } from '@/components/ui/label';
 import ReviewModal from '@client/app/components/ReviewModal';
-
 import NoOrders from '@client/app/components/NoOrdersComponent';
+
 const Orders = () => {
   const user = useUser();
   const userId = user.user?.id;
@@ -29,9 +26,8 @@ const Orders = () => {
 
   const { data: orders, error: orderError } = useSWR(orderApiUrl, fetcher);
 
-  if (orderError) return <div>Error loading orders</div>;
-  if (!orders) return <div className='p-10'><NoOrders /></div>;
-  if (!orders && !orderError) <div><OrdersSkeletonLoader /></div>
+  if (!orders && !orderError) return <div className='p-10'><OrdersSkeletonLoader /></div>;
+  if (orderError && !orders) <div><NoOrders /></div>
 
   return (
     <main className="flex flex-col gap-4 p-4">
