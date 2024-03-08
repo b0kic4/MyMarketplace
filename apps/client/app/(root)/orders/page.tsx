@@ -84,37 +84,28 @@ const ProductReview = ({ product, orderId }: { product: any, orderId: number }) 
   };
 
   return (
-    <div className="flex justify-between items-center my-4">
-      <div className="flex items-start">
-        <Image src={mainLogoImage} loading='lazy' alt={product.product.title} width={100} height={100} className="w-20 h-20 object-cover mr-4" />
-        <div>
-          <h3 className="text-lg font-semibold">{product.product.title}</h3>
-          <p className="text-sm">{product.product.description}</p>
-          <p>Price: ${product.product.price}</p>
-          <p>Quantity: {product.quantity}</p>
+
+    <div className="flex justify-between items-center my-6">
+      <div className="flex space-x-4">
+        <Image src={mainLogoImage} alt={product.product.title} width={100} height={100} className="rounded-lg shadow-sm" />
+        <div className="flex flex-col justify-between">
+          <h3 className="text-lg font-semibold text-gray-800">{product.product.title}</h3>
+          <p className="text-sm text-gray-500">{product.product.description}</p>
+          <div className="text-gray-800">Price: ${product.product.price}</div>
+          <div className="text-gray-800">Quantity: {product.quantity}</div>
         </div>
       </div>
-      <div className="flex">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <StarIcon
-            key={star}
-            onClick={() => handleReviewClick(star)}
-            className="h-5 w-5 cursor-pointer text-gray-300 hover:text-yellow-500"
-          />
-        ))}
-      </div>
-      {selectedRating &&
+      <div>
         <ReviewModal
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}
           onSubmit={handleReviewSubmit}
           productId={product.productId}
           orderId={orderId}
-          initialRating={selectedRating}
-        />}
-
-    </div>
-  );
+        />
+      </div >
+    </div >
+  )
 };
 
 export default Orders;

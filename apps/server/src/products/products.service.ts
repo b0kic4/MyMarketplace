@@ -450,6 +450,7 @@ export class ProductService {
       const cart = await this.prisma.cart.findUnique({
         where: {
           id: user.Cart?.id,
+          isPurchased: false,
         },
       });
 
@@ -463,6 +464,7 @@ export class ProductService {
           cartId: cart.id,
         },
       });
+
       if (!foundCartProduct) throw new ConflictException("Product not in cart")
 
       const removedCartProduct = await this.prisma.cartProduct.delete({
@@ -472,6 +474,7 @@ export class ProductService {
           id: foundCartProduct?.id,
         },
       });
+
       return removedCartProduct
     } catch (error) {
       console.log(error);
