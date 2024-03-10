@@ -1,7 +1,6 @@
 // Import necessary modules
 import {
   BadRequestException,
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -246,7 +245,7 @@ export class ProductService {
         },
       });
       if (!product) {
-        throw new ConflictException('Product not found');
+        throw new Error('Product not found');
       }
       return product;
     } catch (error) {
@@ -269,7 +268,7 @@ export class ProductService {
         },
       });
       if (!product) {
-        throw new ConflictException('Product not found');
+        throw new Error('Product not found');
       }
       return product;
     } catch (error) {
@@ -289,13 +288,14 @@ export class ProductService {
           id: Number(addProdcutToCart.foundProduct.id),
         },
       });
-      if (!prodcut) throw new ConflictException('Product does not exists');
+
+      if (!prodcut) throw new Error('Product does not exists');
       const user = await this.prisma.user.findFirst({
         where: {
           clerkUserId: addProdcutToCart.userID,
         },
       });
-      if (!user) throw new ConflictException("User not found")
+      if (!user) throw new Error("User not found")
 
       const cart = await this.prisma.cart.findFirst({
         where: {
@@ -372,7 +372,7 @@ export class ProductService {
         },
       });
       if (!foundCart) {
-        throw new ConflictException('Cart does not exist');
+        throw new Error('Cart does not exist');
       }
       const findProdcut = await this.prisma.cartProduct.findUnique({
         where: {
@@ -437,7 +437,7 @@ export class ProductService {
           Cart: true,
         },
       });
-      if (!user) throw new ConflictException('user not found');
+      if (!user) throw new Error('user not found');
 
       const product = await this.prisma.product.findUnique({
         where: {
@@ -445,7 +445,7 @@ export class ProductService {
         },
       });
       if (!product) {
-        throw new ConflictException('Product not found in db');
+        throw new Error('Product not found in db');
       }
 
       const cart = await this.prisma.cart.findFirst({
@@ -456,7 +456,7 @@ export class ProductService {
       });
 
       if (!cart) {
-        throw new ConflictException('Cart not found for user');
+        throw new Error('Cart not found for user');
       }
 
       const foundCartProduct = await this.prisma.cartProduct.findFirst({
@@ -466,7 +466,7 @@ export class ProductService {
         },
       });
 
-      if (!foundCartProduct) throw new ConflictException("Product not in cart")
+      if (!foundCartProduct) throw new Error("Product not in cart")
 
       const removedCartProduct = await this.prisma.cartProduct.delete({
         where: {
@@ -494,7 +494,7 @@ export class ProductService {
   ) {
     try {
       if (!username && !categoryType && !colors && !material) {
-        throw new ConflictException('There is no product');
+        throw new Error('There is no product');
       }
       const product = await this.prisma.product.findMany({
         where: {
@@ -512,7 +512,7 @@ export class ProductService {
         },
       });
       if (!product) {
-        throw new ConflictException('There is no products');
+        throw new Error('There is no products');
       }
       return product;
     } catch (error) {

@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -30,7 +29,7 @@ export class PaymentsService {
         },
       });
       if (!user) {
-        throw new ConflictException('User not found');
+        throw new Error('User not found');
       }
       const cart = await this.prisma.cart.findFirst({
         where: {
@@ -46,7 +45,7 @@ export class PaymentsService {
       });
 
       if (!cart) {
-        throw new ConflictException('No Cart associated with provieded user');
+        throw new Error('No Cart associated with provieded user');
       }
       const cartProducts = await this.prisma.cartProduct.findMany({
         where: {
@@ -59,7 +58,7 @@ export class PaymentsService {
       });
 
       if (!cartProducts) {
-        throw new ConflictException('No products found in cart');
+        throw new Error('No products found in cart');
       }
 
       const productsNotFound = productIds.filter(
@@ -68,7 +67,7 @@ export class PaymentsService {
       );
 
       if (productsNotFound.length > 0) {
-        throw new ConflictException('Some products are not found in the cart');
+        throw new Error('Some products are not found in the cart');
       }
 
       // All products in productIds are found in the cartProducts
@@ -122,7 +121,7 @@ export class PaymentsService {
           clerkUserId: userId
         }
       })
-      if (!user) throw new ConflictException("User not found")
+      if (!user) throw new Error("User not found")
 
       const orders = await this.prisma.order.findMany(({
         where: {
@@ -142,7 +141,7 @@ export class PaymentsService {
       }))
 
       if (!orders) {
-        throw new ConflictException("No Orders")
+        throw new Error("No Orders")
       }
 
       return orders
