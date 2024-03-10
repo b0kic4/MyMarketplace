@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import useSWR from 'swr';
-import { ChevronDownIcon, StarIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { Order } from '@client/lib/types';
 import { ProductImage } from '../products/cart-products-interface';
 import Image from 'next/image';
@@ -27,7 +27,7 @@ const Orders = () => {
   const { data: orders, error: orderError } = useSWR(orderApiUrl, fetcher);
 
   if (!orders && !orderError) return <div className='p-10'><OrdersSkeletonLoader /></div>;
-  if (orderError && !orders) <div><NoOrders /></div>
+  if (orderError || (orders && orders.length === 0)) return <NoOrders />;
 
   return (
     <main className="flex flex-col gap-4 p-4">

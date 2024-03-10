@@ -1,5 +1,4 @@
 import {
-  ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -39,7 +38,7 @@ export class CartService {
           User: true
         },
       });
-      if (!cart) throw new ConflictException('Cart not found');
+      if (!cart) throw new Error('Cart not found');
       if (cart.isPurchased === false) {
         return cart;
       }
