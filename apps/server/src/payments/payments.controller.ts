@@ -23,8 +23,9 @@ export class PaymentsController {
   async create(@Body() createReviewProductDto: CreateProductReviewDto) {
     return await this.paymentService.createReview(createReviewProductDto)
   }
-  @Get('getReviewsForOrder')
-  async getReviews() {
-    return await this.paymentService.getReviews()
+
+  @Post('removeReviewFromProduct')
+  async removeReview() {
+    return await this.paymentService.removeReviewFromProduct()
   }
 }

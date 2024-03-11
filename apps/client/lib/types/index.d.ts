@@ -71,6 +71,17 @@ export interface Review {
   content: string;
   rating: number;
   productId: number;
+  orderId: number;
+  userId?: number; // Include this if you need to know which user left the review
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Review {
+  id: number;
+  content: string;
+  rating: number;
+  productId: number;
   product: Product | null;
 }
 

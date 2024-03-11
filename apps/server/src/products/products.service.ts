@@ -265,6 +265,11 @@ export class ProductService {
         include: {
           images: true,
           user: true,
+          reviews: {
+            include: {
+              User: true
+            }
+          }
         },
       });
       if (!product) {

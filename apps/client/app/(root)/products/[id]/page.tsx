@@ -7,7 +7,7 @@ import useSWR, { mutate } from "swr";
 import { StarIcon } from "@radix-ui/react-icons";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { Product, ProductImage } from "../cart-products-interface";
+import { Product, ProductImage, Review } from "../cart-products-interface";
 import { removeFromCart, addToCart } from "@client/lib/actions/actions";
 import GalleryModal from "@client/app/components/GalleryModal";
 import { useUser } from "@clerk/nextjs";
@@ -54,7 +54,6 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   // similar products setting params
   useEffect(() => {
     if (product) {
-      console.log(product)
       const queryParams = new URLSearchParams({
         categoryType: product.categoryType,
         colors: product.colors,
@@ -249,65 +248,29 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
           {/* customer reviews */}
           <div className="grid gap-4">
             <h2 className="font-semibold text-lg">Customer Reviews</h2>
-            <div className="grid gap-4">
-              <div className="flex items-start gap-4">
-                <div className="flex items-center gap-0.5">
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm">
-                    Average rating: 3.0/5.0
-                  </h3>
-                  <p className="text-sm">
-                    The watch is great, but the battery life could be better. I
-                    love the design and the features, but I wish it lasted
-                    longer between charges.
-                  </p>
-                </div>
+            {product.reviews && product.reviews.length > 0 ? (
+              <div className="grid gap-4">
+                {product.reviews.map((review: Review) => (
+                  <div key={review.id} className="flex items-start gap-4">
+                    <div className="flex items-center gap-0.5">
+                      {/* Iterating from 0 to 4 (for 5 stars). If the current index is less than the review rating, show a filled star */}
+                      {[...Array(5)].map((_, index) => (
+                        <StarIcon
+                          key={index}
+                          className={`w-5 h-5 ${index < review.rating ? 'text-yellow-500' : 'text-gray-300'}`}
+                        />
+                      ))}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-sm">Rating: {review.rating}/5.0</h3>
+                      <p className="text-sm">{review.content}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center gap-0.5">
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm">
-                    Average rating: 3.0/5.0
-                  </h3>
-                  <p className="text-sm">
-                    The watch is great, but the battery life could be better. I
-                    love the design and the features, but I wish it lasted
-                    longer between charges.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <div className="flex items-center gap-0.5">
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-primary" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                  <StarIcon className="w-5 h-5 fill-muted stroke-muted-foreground" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-sm">
-                    Average rating: 3.0/5.0
-                  </h3>
-                  <p className="text-sm">
-                    The watch is great, but the battery life could be better. I
-                    love the design and the features, but I wish it lasted
-                    longer between charges.
-                  </p>
-                </div>
-              </div>
-            </div>
+            ) : (
+              <p>No reviews yet.</p>
+            )}
           </div>
           <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-8">
             {productIdsInCart.includes(product.id) ? (
