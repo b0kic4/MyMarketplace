@@ -11,6 +11,7 @@ import { Product, ProductImage } from "../cart-products-interface";
 import { removeFromCart, addToCart } from "@client/lib/actions/actions";
 import GalleryModal from "@client/app/components/GalleryModal";
 import { useUser } from "@clerk/nextjs";
+import UniqueProductSkeletonLoader from "@client/app/components/UniqueProductPageSkeletonLoader";
 interface ServierSideProps {
   params: any;
 }
@@ -49,6 +50,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
   const { data: product, error: productError } = useSWR(productApiUrl, fetcher);
   const { data: cart } = useSWR(apiCartUrl, fetcher)
 
+
   // similar products setting params
   useEffect(() => {
     if (product) {
@@ -62,6 +64,7 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
       setSimilarProductsApiUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getSimilarProducts?${queryParams}`);
     }
   }, [product]);
+
 
 
   // images
@@ -143,6 +146,8 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
     }
   };
 
+  const isLoading = !product && !productError;
+  if (isLoading) return <div><UniqueProductSkeletonLoader /></div>
   return (
     <div className="grid gap-6 lg:gap-12 items-start max-w-6xl px-4 mx-auto py-6">
       <div className="flex flex-col gap-2 items-start">
@@ -161,18 +166,20 @@ const UniqueProductPage: React.FC<ServierSideProps> = ({ params }) => {
               {product?.title}
             </h1>
             <div className="relative cursor-pointer" onClick={handleMainImageClick}>
+
               {selectedImage && (
                 <Image
                   src={selectedImage.imageUrl}
                   alt="Selected product image"
-                  width={200} // Adjust width as needed
-                  height={200} // Adjust height as needed
-                  layout="responsive"
+                  width={500} // Set a consistent smaller width
+                  height={500} // Set a consistent smaller height to maintain aspect ratio
+                  layout="fixed"
                   loading="lazy"
                   objectFit="cover"
-                  className="rounded-md w-50 h-50"
+                  className="rounded-md"
                 />
               )}
+
             </div>
             <div className="flex flex-wrap gap-2 mt-4">
               {product?.images.map((image: ProductImage, index: number) => (

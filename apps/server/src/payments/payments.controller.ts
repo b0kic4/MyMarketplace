@@ -1,3 +1,4 @@
+import { CreateProductReviewDto } from './dto/createReviewDto.dto';
 import { PaymentsService } from './payments.service';
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 
@@ -19,8 +20,11 @@ export class PaymentsController {
   }
 
   @Post('createReviewForProduct')
-  async create(@Body() data: any) {
-    console.log(data)
-    return await this.paymentService.createReview()
+  async create(@Body() createReviewProductDto: CreateProductReviewDto) {
+    return await this.paymentService.createReview(createReviewProductDto)
+  }
+  @Get('getReviewsForOrder')
+  async getReviews() {
+    return await this.paymentService.getReviews()
   }
 }
