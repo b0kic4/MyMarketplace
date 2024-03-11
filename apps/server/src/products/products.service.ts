@@ -296,7 +296,7 @@ export class ProductService {
         },
       });
       if (!user) throw new Error("User not found")
-
+      console.log("user: ", user)
       const cart = await this.prisma.cart.findFirst({
         where: {
           userId: Number(user.id),
@@ -325,6 +325,7 @@ export class ProductService {
           productId: prodcut.id,
         },
       });
+      console.log("cart: ", existingCart)
       if (cartProduct) {
         await this.prisma.cartProduct.update({
           where: {
