@@ -19,7 +19,6 @@ import { addToCart } from "@client/lib/actions/actions";
 import { removeFromCart } from "@client/lib/actions/actions";
 import { toast } from "react-toastify";
 
-
 const Productpage = () => {
   const searchParams = useSearchParams();
   const user = useUser()
@@ -75,6 +74,14 @@ const Productpage = () => {
 
 
   const handleAddToCartOptimistically = async (product: Product) => {
+
+    if (!user.isSignedIn) return toast.error("Please login to use cart", {
+      position: "top-left",
+      theme: "dark"
+    })
+    console.log("is logged in: ", user.isSignedIn)
+    console.log("user: ", user.user)
+
     // Optimistically update UI
     setProductIdsInCart((currentIds) => [...currentIds, product.id]);
     try {
@@ -88,6 +95,13 @@ const Productpage = () => {
   };
 
   const handleRemoveFromCartOptimistically = async (product: Product) => {
+
+    if (!user.isSignedIn) return toast.error("Please login to use cart", {
+      position: "top-left",
+      theme: "dark"
+    })
+    console.log("user: ", user.user)
+
     // Optimistically update UI
     setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
     try {
@@ -101,6 +115,11 @@ const Productpage = () => {
   };
 
   const handleSaveProductOptimistically = async (product: Product) => {
+
+    if (!user.isSignedIn) return toast.error("Please login to save product", {
+      position: "top-left",
+      theme: "dark"
+    })
     // Optimistically update UI
     setSavedProductIds((currentIds) => [...currentIds, product.id]);
     try {
@@ -113,6 +132,12 @@ const Productpage = () => {
   };
 
   const handleRemoveSavedProductOptimistically = async (product: Product) => {
+
+    if (!user.isSignedIn) return toast.error("Please login to remove saved product", {
+      position: "top-left",
+      theme: "dark"
+    })
+
     // Optimistically update UI
     setSavedProductIds((currentIds) => currentIds.filter(id => id !== product.id));
     try {
@@ -124,6 +149,7 @@ const Productpage = () => {
       toast.error("Error occured while removing saved product", { position: "top-left", theme: "dark" })
     }
   };
+
   if (!products && !error) {
     return (
       <div className="flex flex-1 min-h-screen min-w-full">

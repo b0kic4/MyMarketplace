@@ -53,11 +53,14 @@ const StripeCheckout: React.FC<Props> = ({ cart, totalPrice }) => {
     }
   };
 
+  const isCartEmpty = !cart || (cart.products && cart.products.length === 0);
+
   return (
     <Button
       className="w-full"
       size="lg"
       variant="outline"
+      disabled={isCartEmpty}
       onClick={handleCheckout}
     >
       Proceed to Checkout

@@ -10,7 +10,7 @@ import { IoMenu } from "react-icons/io5";
 import { FaMountain, FaShoppingCart, FaHome, FaShoppingBasket } from "react-icons/fa";
 import { FaTruckFast } from "react-icons/fa6";
 
-import { SignedIn, UserButton, useUser } from "@clerk/nextjs";
+import { SignedIn, UserButton, useUser, SignInButton, SignedOut } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
@@ -76,6 +76,9 @@ export default function Navbar() {
             {user && user.user?.username}
             <UserButton afterSignOutUrl="/" />
           </SignedIn>
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
         </div>
       </div>
     </header>
