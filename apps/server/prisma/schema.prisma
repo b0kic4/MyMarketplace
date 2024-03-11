@@ -23,7 +23,6 @@ model User {
   savedProducts Product[] @relation("savedProducts")
   orders        Order[]   @relation("userOrder")
   cartId        Int?
-  reviewId      Int?
   Review        Review[]  @relation("userReviews")
   Cart          Cart?     @relation(fields: [cartId], references: [id])
 }
