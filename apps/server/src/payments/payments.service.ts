@@ -137,7 +137,8 @@ export class PaymentsService {
                 }
               },
             }
-          }
+          },
+          reviews: true
         }
       }))
 
@@ -157,7 +158,6 @@ export class PaymentsService {
     }
   }
   async createReview(createReviewProductDto: CreateProductReviewDto) {
-    console.log("dto: ", createReviewProductDto)
     const productId = createReviewProductDto.productId
     const cartProductId = createReviewProductDto.cartProductId
     const orderId = createReviewProductDto.orderId
@@ -194,6 +194,6 @@ export class PaymentsService {
       );
     }
   }
-  async getReviews() {
+  async removeReviewFromProduct() {
   }
 }

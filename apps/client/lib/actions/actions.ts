@@ -115,3 +115,6 @@ export async function handleCartProductQuantityChange(productId: number, quantit
 
   return response.json();
 }
+export async function deleteReview(reviewId: number) {
+
+}
