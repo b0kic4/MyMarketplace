@@ -9,11 +9,13 @@ import Image from 'next/image';
 import OrdersSkeletonLoader from '@client/app/components/OrdersSkeleton';
 import ReviewModal from '@client/app/components/ReviewModal';
 import NoOrders from '@client/app/components/NoOrdersComponent';
+import { toast } from 'react-toastify';
 
 const Orders = () => {
   const user = useUser();
   const userId = user.user?.id;
-  const [orderApiUrl, setOrderApiUrl] = useState('');
+  const [orderApiUrl, setOrderApiUrl] = useState<string>('');
+  const [reviewApiUrl, setReviewApiUrl] = useState<string>('');
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -28,6 +30,14 @@ const Orders = () => {
 
   if (!orders && !orderError) return <div className='p-10'><OrdersSkeletonLoader /></div>;
   if (orderError || (orders && orders.length === 0)) return <NoOrders />;
+
+  // React.useEffect(() => {
+  //   if (orders) {
+  //     orders.map((order: Order) => {
+  //       // const url = new URLSearchParams({ orderId });
+  //     })
+  //   }
+  // }, [orders])
 
   return (
     <main className="flex flex-col gap-4 p-4">
@@ -65,16 +75,42 @@ const OrderCard = ({ order }: any) => {
 };
 
 const ProductReview = ({ product, orderId }: { product: any, orderId: number }) => {
-  const [modalOpen, setModalOpen] = useState(false);
-
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
   const mainLogoImage = product.product.images.find((image: ProductImage) => image.isLogo === "true")?.imageUrl || 'default-image-url';
 
 
+  const url = process.env.NEXT_PUBLIC_NESTJS_URL
   // Define what happens when a review is submitted
-  const handleReviewSubmit = ({ productId, orderId, rating, review }: any) => {
-    console.log("called")
-    console.log(`Review submitted for order ${orderId}, product ${productId}: ${rating} stars, review: ${review}`);
-    // Here you should implement the logic to actually submit the review to your backend
+  const handleReviewSubmit = async ({ productId, orderId, rating, review }: any) => {
+
+    const data = {
+      orderId: orderId,
+      productId: productId,
+      cartProductId: product.id,
+      rating: rating,
+      reviewContent: review
+    }
+
+    const response = await fetch(`${url}/payments/createReviewForProduct`, {
+      method: "POST",
+      headers: {
+        'Content-Type': 'application/json' // Indicate that the request body format is JSON
+      },
+      body: JSON.stringify(data)
+    });
+
+
+    if (!response.ok) {
+      return toast.error("Error occured when trying to create review for product", {
+        position: "top-left",
+        theme: "dark"
+      })
+    }
+
+    toast.success("Successfully created review", {
+      position: "top-right",
+      theme: "dark"
+    })
   };
 
   return (
@@ -89,7 +125,7 @@ const ProductReview = ({ product, orderId }: { product: any, orderId: number }) 
           <div className="text-gray-800">Quantity: {product.quantity}</div>
         </div>
       </div>
-      <div>
+      <div className='flex justify-center content-center'>
         <ReviewModal
           isOpen={modalOpen}
           onClose={() => setModalOpen(false)}

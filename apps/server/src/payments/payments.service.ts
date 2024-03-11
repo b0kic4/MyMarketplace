@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { OrderStatus } from '@prisma/client';
 import { PrismaService } from '@server/prisma-service/prisma.service';
+import { CreateProductReviewDto } from './dto/createReviewDto.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -134,7 +135,7 @@ export class PaymentsService {
                 include: {
                   images: true,
                 }
-              }
+              },
             }
           }
         }
@@ -155,7 +156,44 @@ export class PaymentsService {
 
     }
   }
-  async createReview() {
+  async createReview(createReviewProductDto: CreateProductReviewDto) {
+    console.log("dto: ", createReviewProductDto)
+    const productId = createReviewProductDto.productId
+    const cartProductId = createReviewProductDto.cartProductId
+    const orderId = createReviewProductDto.orderId
+    const reviewContent = createReviewProductDto.reviewContent
+    const rating = createReviewProductDto.rating
 
+    const order = await this.prisma.order.findUnique({
+      where: {
+        id: orderId
+      }
+    })
+
+    const userId = order?.userId
+    if (!userId) {
+      throw new Error("userId is missing")
+    }
+
+    try {
+      const review = await this.prisma.review.create({
+        data: {
+          productId: productId,
+          userId: userId,
+          rating: rating,
+          content: reviewContent,
+          orderId: orderId
+        }
+      })
+
+      return review
+    } catch (error) {
+      throw new HttpException(
+        'Internal Server Error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async getReviews() {
   }
 }

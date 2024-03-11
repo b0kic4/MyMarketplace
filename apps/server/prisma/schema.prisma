@@ -24,7 +24,7 @@ model User {
   orders        Order[]   @relation("userOrder")
   cartId        Int?
   reviewId      Int?
-  Review        Review[]
+  Review        Review[]  @relation("userReviews")
   Cart          Cart?     @relation(fields: [cartId], references: [id])
 }
 
@@ -57,7 +57,7 @@ model Product {
   user                User?         @relation(fields: [userId], references: [id], name: "userProducts")
   savedByUsers        User[]        @relation("savedProducts")
   cart                CartProduct[]
-  reviews             Review[]
+  reviews             Review[]      @relation("productReviews")
 }
 
 model Cart {
@@ -95,10 +95,12 @@ model Review {
   userId    Int
   rating    Int
   productId Int
-  product   Product  @relation(fields: [productId], references: [id])
+  orderId   Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User     @relation(fields: [userId], references: [id])
+  User      User     @relation(fields: [userId], references: [id], name: "userReviews")
+  product   Product  @relation(fields: [productId], references: [id], name: "productReviews")
+  Order     Order    @relation(fields: [orderId], references: [id], name: "orderReviews")
 }
 
 model Order {
@@ -112,6 +114,7 @@ model Order {
   createdAt         DateTime      @default(now())
   updatedAt         DateTime      @updatedAt
   user              User          @relation(fields: [userId], references: [id], name: "userOrder")
+  reviews           Review[]      @relation(name: "orderReviews")
 }
 
 enum OrderStatus {
