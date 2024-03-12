@@ -17,20 +17,20 @@ const Headerbar: React.FC<Props> = ({ setSearchQuery }) => {
           <div className="flex items-center">
             <div className="flex items-center">
               <Input
-                className="w-full h-10 rounded-l-lg"
+                className="w-full h-10 rounded-l-lg shadow-md"
                 placeholder="Search for products..."
                 type="search"
                 onChange={(e: any) => setSearchQuery(e.target.value)}
               />
               <span className="flex items-center justify-center rounded-r-lg p-2">
-                <FaSearch className="text-gray-500" />
+                <FaSearch className="text-gray-500 shadow-sm" />
               </span>
             </div>
           </div>
         </form>
       </div>
       <div className="flex items-center gap-4 justify-center">
-        <Button>
+        <Button className="shadow-md" variant="outline">
           <Link className="flex items-center gap-2" href={"/products/new"}>
             <FiPlus className="h-4 w-4" />
             New Product
