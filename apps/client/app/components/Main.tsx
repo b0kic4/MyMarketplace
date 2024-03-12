@@ -1,4 +1,5 @@
 "use client"
+import React, { useState, useEffect } from "react"
 import { CardContent, CardFooter, Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,12 +9,31 @@ import { ProductImage } from "../(root)/products/cart-products-interface";
 import Link from "next/link";
 import SkeletonLoader from "./MainProductsSkeletonLoader";
 import useSWR from "swr";
+
 export default function Main() {
 
   const apiUrl = `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getAll`;
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: products, error } = useSWR(apiUrl, fetcher);
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+
+  useEffect(() => {
+    if (products) {
+      const filteredProducts = products.filter((product: any) => {
+        return product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      setDisplayedProducts(filteredProducts);
+    }
+  }, [products, searchQuery]);
+
+  if (!displayedProducts && !error) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) return <div>Failed to load products.</div>;
   if (!products && !error) {
     return (
       <main className="flex-1">
@@ -77,6 +97,7 @@ export default function Main() {
                 className="w-full h-10 rounded-l-lg"
                 placeholder="Search for products..."
                 type="search"
+                onChange={(e) => setSearchQuery(e.target.value)} // Update searchQuery on input change
               />
               <span className="flex items-center justify-center rounded-r-lg p-2">
                 <FaSearch className="text-gray-500" />
@@ -89,7 +110,7 @@ export default function Main() {
         <div className="container grid items-center justify-center gap-4 px-4 md:px-6">
           <div className="mx-auto w-full max-w-6xl space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:gap-6">
-              {products.slice(0, 4).map((product: any) => (
+              {displayedProducts.slice(0, 4).map((product: any) => (
                 <Card key={product.id}>
                   <Link href={`/products/${product.id}`}>
                     <CardContent className="p-4">

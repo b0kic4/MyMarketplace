@@ -16,12 +16,17 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const user = useUser();
   const pathName = usePathname();
+
   const links = [
     { label: "Home", href: "/", Icon: FaHome },
     { label: "Products", href: "/products", Icon: FaShoppingBasket },
+  ];
+
+  const userLinks = [
     { label: "My Cart", href: "/products/cart", Icon: FaShoppingCart },
     { label: "My Orders", href: "/orders", Icon: FaTruckFast },
   ];
+
 
   return (
     <header className="flex items-center h-16 px-4 md:px-6 w-full border-b">
@@ -71,8 +76,13 @@ export default function Navbar() {
         </nav>
       </div>
       <div className="ml-auto flex items-center gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-4">
           <SignedIn>
+            {userLinks.map(({ Icon, label, href }) => (
+              <Link className={`flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium dark:bg-gray-800/50 ${pathName === href ? "active" : ""}`} key={href} href={href} passHref>
+                <Icon className="mr-2 h-5 w-5" />{label}
+              </Link>
+            ))}
             {user && user.user?.username}
             <UserButton afterSignOutUrl="/" />
           </SignedIn>

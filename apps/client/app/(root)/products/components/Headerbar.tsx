@@ -5,20 +5,27 @@ import React from "react";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { FiPackage, FiPlus } from "react-icons/fi";
 
-const Headerbar = () => {
+interface Props {
+  setSearchQuery: (e: any) => void
+}
+
+const Headerbar: React.FC<Props> = ({ setSearchQuery }) => {
   return (
     <header className="flex h-14 items-center gap-4 border-b bg-gray-100/40 px-6 dark:bg-gray-800/40">
       <div className="w-full flex-1">
         <form>
           <div className="flex items-center">
-            <Input
-              className="w-1/2 h-10 rounded-l-lg"
-              placeholder="Search for products..."
-              type="search"
-            />
-            <span className="flex items-center justify-center rounded-r-lg p-2">
-              <FaSearch className="text-gray-500" />
-            </span>
+            <div className="flex items-center">
+              <Input
+                className="w-full h-10 rounded-l-lg"
+                placeholder="Search for products..."
+                type="search"
+                onChange={(e: any) => setSearchQuery(e.target.value)}
+              />
+              <span className="flex items-center justify-center rounded-r-lg p-2">
+                <FaSearch className="text-gray-500" />
+              </span>
+            </div>
           </div>
         </form>
       </div>

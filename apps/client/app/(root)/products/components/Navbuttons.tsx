@@ -82,7 +82,7 @@ const Navbuttons = () => {
         </div>
         <div className="flex flex-col gap-4 lg:flex-row lg:space-x-4">
           <Button
-            className="border-gray-200 gap-2 dark:border-gray-800"
+            className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("savedProducts") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
             onClick={() => handleFilterChange("savedProducts")}
           >
@@ -92,19 +92,7 @@ const Navbuttons = () => {
             {/* {props.countSavedProducts} */}
             {/* </Badge> */}
           </Button>
-          <Link href={"/products/cart"}>
-            <Button
-              className="border-gray-200 gap-2 dark:border-gray-800"
-              variant="outline"
-              onClick={() => router.push("/cart")}
-            >
-              <FaShoppingCart />
-              Cart
-              {/* <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full"> */}
-              {/* {props.countCartProducts} */}
-              {/* </Badge> */}
-            </Button>
-          </Link>
+
         </div>
       </div>
     </div>
