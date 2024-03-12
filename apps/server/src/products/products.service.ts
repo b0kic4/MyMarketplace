@@ -94,11 +94,13 @@ export class ProductService {
   }
 
   async findWithFiltering(filter: string, userId?: string): Promise<Product[]> {
+
     const user = await this.prisma.user.findFirst({
       where: {
         clerkUserId: userId,
       },
     });
+
     switch (filter) {
       case 'all' || null:
         // Assuming you want to fetch all products without a specific filter
@@ -112,9 +114,12 @@ export class ProductService {
           },
         });
         return allProducts;
+
       case 'newArrivals':
+
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
         const products = await this.prisma.product.findMany({
           where: {
             createdAt: oneWeekAgo,
@@ -128,6 +133,7 @@ export class ProductService {
           },
         });
         return products;
+
       case 'usedItems':
         const product = await this.prisma.product.findMany({
           where: {
@@ -142,6 +148,7 @@ export class ProductService {
           },
         });
         return product;
+
       case 'myProducts':
         // Optionally check if user exists in the database for additional validation
         const usersProducts = await this.prisma.product.findMany({
@@ -159,9 +166,29 @@ export class ProductService {
           },
         });
         return usersProducts;
+
+      case "savedProducts":
+        const savedProducts = await this.prisma.product.findMany({
+          where: {
+            savedByUsers: {
+              some: {
+                id: user?.id
+              },
+            },
+          },
+          include: {
+            images: true,
+            user: true,
+            savedByUsers: true,
+            cart: true,
+            reviews: true,
+          },
+        });
+        return savedProducts
     }
     throw new Error('Invalid parameters');
   }
+
   // bookmarking product
   async saveProduct(saveProductDto: SaveProductDto) {
     try {

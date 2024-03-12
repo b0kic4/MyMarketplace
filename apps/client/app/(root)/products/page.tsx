@@ -79,8 +79,6 @@ const Productpage = () => {
       position: "top-left",
       theme: "dark"
     })
-    console.log("is logged in: ", user.isSignedIn)
-    console.log("user: ", user.user)
 
     // Optimistically update UI
     setProductIdsInCart((currentIds) => [...currentIds, product.id]);
@@ -100,7 +98,6 @@ const Productpage = () => {
       position: "top-left",
       theme: "dark"
     })
-    console.log("user: ", user.user)
 
     // Optimistically update UI
     setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
