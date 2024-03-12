@@ -62,17 +62,7 @@ export class PaymentsService {
         throw new Error('No products found in cart');
       }
 
-      const productsNotFound = productIds.filter(
-        (productId: any) =>
-          !cartProducts.some((cp) => cp.product.id === productId),
-      );
-
-      if (productsNotFound.length > 0) {
-        throw new Error('Some products are not found in the cart');
-      }
-
-      console.log("cart products:", cartProducts)
-
+      console.log(cartProducts)
       // All products in productIds are found in the cartProducts
 
       const order = await this.prisma.order.create({
