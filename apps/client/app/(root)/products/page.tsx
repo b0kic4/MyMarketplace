@@ -32,6 +32,10 @@ const Productpage = () => {
   const [apiProdUrl, setApiProdUrl] = useState<string>('');
   const [apiCartUrl, setApiCartUrl] = useState<string>('');
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [displayedProducts, setDisplayedProducts] = useState([]);
+
+
   // fetching products
 
   useEffect(() => {
@@ -49,6 +53,18 @@ const Productpage = () => {
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
   const { data: products, error: error } = useSWR(apiProdUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
   const { data: cart, error: cartError } = useSWR(apiCartUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+
+  useEffect(() => {
+    if (products) {
+      const filteredProducts = products.filter((product: Product) => {
+        return product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+      setDisplayedProducts(filteredProducts);
+    }
+  }, [products, searchQuery]);
+
+
 
   // getting products that are in cart
   useEffect(() => {
@@ -151,7 +167,7 @@ const Productpage = () => {
     return (
       <div className="flex flex-1 min-h-screen min-w-full">
         <div className="flex-1 flex w-full flex-col min-h-screen">
-          <Headerbar />
+          <Headerbar setSearchQuery={setSearchQuery} />
           <section className="grid gap-6 md:gap-8 p-4 md:p-6">
             <Navbuttons />
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
@@ -165,17 +181,18 @@ const Productpage = () => {
     );
   } if (error) return <div>Failed to load products.</div>;
 
+
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
       <div className="flex-1 flex w-full flex-col min-h-screen">
         {/* Headerbar */}
-        <Headerbar />
+        <Headerbar setSearchQuery={setSearchQuery} />
         <section className="grid gap-6 md:gap-8 p-4 md:p-6">
           {/* nav buttons */}
           <Navbuttons />
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-4 md:p-6">
-            {products.length > 0 ? (
-              products.map((product: Product) => (
+            {displayedProducts.length > 0 ? (
+              displayedProducts.map((product: Product) => (
                 <Card className="p-1" key={product.id}>
                   <CardContent className="p-4">
                     <Link href={`/products/${product.id}`}>
