@@ -58,7 +58,7 @@ const ProductPreview: React.FC<Props> = (props) => {
         props.images.forEach((image, index) => {
           formData.append(
             `isLogo_${index}`,
-            index === props.logoIndex ? "true" : "false"
+            index === props.logoIndex ? "true" : "false",
           );
         });
 
@@ -109,7 +109,7 @@ const ProductPreview: React.FC<Props> = (props) => {
           setIsLoading(true);
           const response = await axios.post(
             `${url}/products/createProduct`,
-            finalProductData
+            finalProductData,
           );
           console.log("response status: ", response.status);
           if (response.status === 201) {

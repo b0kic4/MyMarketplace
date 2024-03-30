@@ -63,7 +63,6 @@ export class PaymentsService {
         throw new Error('No products found in cart');
       }
 
-      console.log(cartProducts)
       // All products in productIds are found in the cartProducts
 
       const order = await this.prisma.order.create({
@@ -74,8 +73,6 @@ export class PaymentsService {
           cartId: cart.id,
         },
       });
-
-      console.log("order: ", order)
 
       await Promise.all(
         cartProducts.map((cartProduct) =>

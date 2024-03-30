@@ -11,6 +11,7 @@ import {
 import { FiGrid, FiPackage } from "react-icons/fi";
 // import { Badge } from "@/components/ui/badge";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 const Navbuttons = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -23,7 +24,7 @@ const Navbuttons = () => {
       const newPath = `${window.location.pathname}?filter=${filterName}`;
       router.push(newPath);
     },
-    [router]
+    [router],
   );
 
   return (
@@ -68,9 +69,11 @@ const Navbuttons = () => {
             {/* {props.countUsedItems} */}
             {/* </Badge> */}
           </Button>
+
           <Button
             className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("myProducts") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
+            disabled={!useUser().user?.id}
             onClick={() => handleFilterChange("myProducts")}
           >
             <FiPackage className="h-4 w-4 mr-2" />
@@ -84,6 +87,7 @@ const Navbuttons = () => {
           <Button
             className={`border-gray-200 gap-2 dark:border-gray-800 ${isActive("savedProducts") ? "bg-blue-500 text-white" : ""}`}
             variant="outline"
+            disabled={!useUser().user?.id}
             onClick={() => handleFilterChange("savedProducts")}
           >
             <FaBookmark className="h-4 w-4 mr-2" />
@@ -92,7 +96,6 @@ const Navbuttons = () => {
             {/* {props.countSavedProducts} */}
             {/* </Badge> */}
           </Button>
-
         </div>
       </div>
     </div>

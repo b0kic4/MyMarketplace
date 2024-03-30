@@ -56,7 +56,7 @@ export default function Component() {
             file: compressedFile,
             isLogo: logoIndex === null && index === 0,
           };
-        })
+        }),
       );
 
       setImages([...images, ...compressedImages]);
@@ -74,7 +74,7 @@ export default function Component() {
       prevImages.map((image, i) => ({
         ...image,
         isLogo: i === index,
-      }))
+      })),
     );
     setLogoIndex(index);
   };
@@ -166,7 +166,7 @@ export default function Component() {
     setHasErrors(!!stockError);
   };
   const handleShippingInformationChange = (
-    e: ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const shippingInformation = e.target.value;
     let shippingInformationError = "";
@@ -199,7 +199,7 @@ export default function Component() {
     setHasErrors(!!titleError);
   };
   const handleCategoryTypeChange = (
-    newCategoryType: string | ChangeEvent<HTMLInputElement>
+    newCategoryType: string | ChangeEvent<HTMLInputElement>,
   ) => {
     let categoryTypeError = "";
 
@@ -248,12 +248,12 @@ export default function Component() {
     setHasErrors(!!priceErrorProvided);
   };
   const handleSwitchChange = (
-    newCheckedState: boolean | ((prevState: boolean) => boolean)
+    newCheckedState: boolean | ((prevState: boolean) => boolean),
   ) => {
     setIsChecked(newCheckedState);
   };
   const handleConditionChange = (
-    newCheckedState: boolean | ((prevState: boolean) => boolean)
+    newCheckedState: boolean | ((prevState: boolean) => boolean),
   ) => {
     setIsUsed(newCheckedState);
   };

@@ -21,7 +21,7 @@ import { toast } from "react-toastify";
 
 const Productpage = () => {
   const searchParams = useSearchParams();
-  const user = useUser()
+  const user = useUser();
 
   const filter = searchParams.get("filter") || "all";
   const userId = user.user?.id as string;
@@ -29,12 +29,11 @@ const Productpage = () => {
   const [productIdsInCart, setProductIdsInCart] = useState<number[]>([]);
   const [savedProductIds, setSavedProductIds] = useState<number[]>([]);
 
-  const [apiProdUrl, setApiProdUrl] = useState<string>('');
-  const [apiCartUrl, setApiCartUrl] = useState<string>('');
+  const [apiProdUrl, setApiProdUrl] = useState<string>("");
+  const [apiCartUrl, setApiCartUrl] = useState<string>("");
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [displayedProducts, setDisplayedProducts] = useState([]);
-
 
   // fetching products
 
@@ -42,34 +41,50 @@ const Productpage = () => {
     if (userId) {
       const queryParams = new URLSearchParams({ filter, userId });
       const cartQueryParams = new URLSearchParams({ userId });
-      setApiProdUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`);
-      setApiCartUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`);
+
+      setApiProdUrl(
+        `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`,
+      );
+      setApiCartUrl(
+        `${process.env.NEXT_PUBLIC_NESTJS_URL}/cart/getCartByUserId?${cartQueryParams}`,
+      );
     } else {
-      const queryParams = new URLSearchParams({ filter })
-      setApiProdUrl(`${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`);
+      const queryParams = new URLSearchParams({ filter });
+      setApiProdUrl(
+        `${process.env.NEXT_PUBLIC_NESTJS_URL}/products/getProductsWithFilter?${queryParams}`,
+      );
     }
   }, [userId, filter]);
 
   const fetcher = (url: string) => fetch(url).then((res) => res.json());
-  const { data: products, error: error } = useSWR(apiProdUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
-  const { data: cart, error: cartError } = useSWR(apiCartUrl, fetcher, { shouldRetryOnError: false, revalidateOnFocus: false });
+  const { data: products, error: error } = useSWR(apiProdUrl, fetcher, {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+  });
+  const { data: cart, error: cartError } = useSWR(apiCartUrl, fetcher, {
+    shouldRetryOnError: false,
+    revalidateOnFocus: false,
+  });
 
   useEffect(() => {
     if (products) {
       const filteredProducts = products.filter((product: Product) => {
-        return product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          product.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return (
+          product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          product.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
       });
       setDisplayedProducts(filteredProducts);
     }
   }, [products, searchQuery]);
 
-
-
   // getting products that are in cart
   useEffect(() => {
-    if (cart && cart.products) { // Ensuring both cart and cart.products are not undefined
-      const productIds = cart.products.map((product: any) => product.product.id) as number[] | undefined;
+    if (cart && cart.products) {
+      // Ensuring both cart and cart.products are not undefined
+      const productIds = cart.products.map(
+        (product: any) => product.product.id,
+      ) as number[] | undefined;
       setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
     } else {
       setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
@@ -81,20 +96,21 @@ const Productpage = () => {
     if (products) {
       // Assuming products is an array of product objects
       const savedIds = products
-        .filter((product: Product) => product.savedByUsers.some(user => user.clerkUserId === userId))
+        .filter((product: Product) =>
+          product.savedByUsers.some((user) => user.clerkUserId === userId),
+        )
         .map((product: Product) => product.id);
 
       setSavedProductIds(savedIds);
     }
   }, [products, userId]);
 
-
   const handleAddToCartOptimistically = async (product: Product) => {
-
-    if (!user.isSignedIn) return toast.error("Please login to use cart", {
-      position: "top-left",
-      theme: "dark"
-    })
+    if (!user.isSignedIn)
+      return toast.error("Please login to use cart", {
+        position: "top-left",
+        theme: "dark",
+      });
 
     // Optimistically update UI
     setProductIdsInCart((currentIds) => [...currentIds, product.id]);
@@ -103,20 +119,24 @@ const Productpage = () => {
       mutate(apiCartUrl); // Revalidate cache if necessary
     } catch (error) {
       // Revert UI on error
-      setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
+      setProductIdsInCart((currentIds) =>
+        currentIds.filter((id) => id !== product.id),
+      );
       // Handle error (e.g., show a notification)
     }
   };
 
   const handleRemoveFromCartOptimistically = async (product: Product) => {
-
-    if (!user.isSignedIn) return toast.error("Please login to use cart", {
-      position: "top-left",
-      theme: "dark"
-    })
+    if (!user.isSignedIn)
+      return toast.error("Please login to use cart", {
+        position: "top-left",
+        theme: "dark",
+      });
 
     // Optimistically update UI
-    setProductIdsInCart((currentIds) => currentIds.filter(id => id !== product.id));
+    setProductIdsInCart((currentIds) =>
+      currentIds.filter((id) => id !== product.id),
+    );
     try {
       await removeFromCart(product, userId);
       mutate(apiCartUrl); // Revalidate cache if necessary
@@ -128,38 +148,48 @@ const Productpage = () => {
   };
 
   const handleSaveProductOptimistically = async (product: Product) => {
-
-    if (!user.isSignedIn) return toast.error("Please login to save product", {
-      position: "top-left",
-      theme: "dark"
-    })
+    if (!user.isSignedIn)
+      return toast.error("Please login to save product", {
+        position: "top-left",
+        theme: "dark",
+      });
     // Optimistically update UI
     setSavedProductIds((currentIds) => [...currentIds, product.id]);
     try {
       await saveProduct(product, userId);
       mutate(apiProdUrl); // Revalidate if necessary
     } catch (error) {
-      setSavedProductIds((currentIds) => currentIds.filter(id => id !== product.id));
-      toast.error("Error occured while saving product", { position: "top-left", theme: "dark" })
+      setSavedProductIds((currentIds) =>
+        currentIds.filter((id) => id !== product.id),
+      );
+      toast.error("Error occured while saving product", {
+        position: "top-left",
+        theme: "dark",
+      });
     }
   };
 
   const handleRemoveSavedProductOptimistically = async (product: Product) => {
-
-    if (!user.isSignedIn) return toast.error("Please login to remove saved product", {
-      position: "top-left",
-      theme: "dark"
-    })
+    if (!user.isSignedIn)
+      return toast.error("Please login to remove saved product", {
+        position: "top-left",
+        theme: "dark",
+      });
 
     // Optimistically update UI
-    setSavedProductIds((currentIds) => currentIds.filter(id => id !== product.id));
+    setSavedProductIds((currentIds) =>
+      currentIds.filter((id) => id !== product.id),
+    );
     try {
       await removeSavedProduct(product, userId);
       mutate(apiProdUrl); // Revalidate if necessary
     } catch (error) {
       // Revert UI on error
       setSavedProductIds((currentIds) => [...currentIds, product.id]);
-      toast.error("Error occured while removing saved product", { position: "top-left", theme: "dark" })
+      toast.error("Error occured while removing saved product", {
+        position: "top-left",
+        theme: "dark",
+      });
     }
   };
 
@@ -179,8 +209,8 @@ const Productpage = () => {
         </div>
       </div>
     );
-  } if (error) return <div>Failed to load products.</div>;
-
+  }
+  if (error) return <div>Failed to load products.</div>;
 
   return (
     <div className="flex flex-1 min-h-screen min-w-full">
@@ -208,7 +238,7 @@ const Productpage = () => {
                               src={image.imageUrl || "/placeholder.svg"}
                               width={500}
                             />
-                          ) : null
+                          ) : null,
                       )}
                     </Link>
                     <div className="flex flex-col space-y-2">
@@ -239,30 +269,33 @@ const Productpage = () => {
                   <CardFooter className="flex items-center justify-between p-4">
                     <span className="text-xl font-bold">${product.price}</span>
                     <div className="items-center text-center flex gap-2">
-                      {productIdsInCart.includes(product.id)
-                        ? (
-                          <Button
-                            key={product.id}
-                            onClick={() => handleRemoveFromCartOptimistically(product)}
-                            size="sm"
-                            variant="outline"
-                          >
-                            Remove from Cart
-                          </Button>
-                        ) : (
-                          <Button
-                            key={product.id}
-                            onClick={() => handleAddToCartOptimistically(product)}
-                            size="sm"
-                            variant="outline"
-                          >
-                            Add to Cart
-                          </Button>
-                        )}
+                      {productIdsInCart.includes(product.id) ? (
+                        <Button
+                          key={product.id}
+                          onClick={() =>
+                            handleRemoveFromCartOptimistically(product)
+                          }
+                          size="sm"
+                          variant="outline"
+                        >
+                          Remove from Cart
+                        </Button>
+                      ) : (
+                        <Button
+                          key={product.id}
+                          onClick={() => handleAddToCartOptimistically(product)}
+                          size="sm"
+                          variant="outline"
+                        >
+                          Add to Cart
+                        </Button>
+                      )}
                       {savedProductIds.includes(product.id) ? (
                         <>
                           <Button
-                            onClick={() => handleRemoveSavedProductOptimistically(product)}
+                            onClick={() =>
+                              handleRemoveSavedProductOptimistically(product)
+                            }
                             size="sm"
                             variant="outline"
                           >
@@ -271,7 +304,9 @@ const Productpage = () => {
                         </>
                       ) : (
                         <Button
-                          onClick={() => handleSaveProductOptimistically(product)}
+                          onClick={() =>
+                            handleSaveProductOptimistically(product)
+                          }
                           size="sm"
                           variant="outline"
                         >

@@ -16,7 +16,7 @@ import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 export class ProductService {
   private readonly logger = new Logger(ProductService.name);
 
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   // creating product
   async create(createProductDto: CreateProductDto): Promise<Product> {
@@ -94,7 +94,6 @@ export class ProductService {
   }
 
   async findWithFiltering(filter: string, userId?: string): Promise<Product[]> {
-
     const user = await this.prisma.user.findFirst({
       where: {
         clerkUserId: userId,
@@ -116,13 +115,13 @@ export class ProductService {
         return allProducts;
 
       case 'newArrivals':
-
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
-
         const products = await this.prisma.product.findMany({
           where: {
-            createdAt: oneWeekAgo,
+            createdAt: {
+              gt: oneWeekAgo,
+            },
           },
           include: {
             images: true,
@@ -167,12 +166,12 @@ export class ProductService {
         });
         return usersProducts;
 
-      case "savedProducts":
+      case 'savedProducts':
         const savedProducts = await this.prisma.product.findMany({
           where: {
             savedByUsers: {
               some: {
-                id: user?.id
+                id: user?.id,
               },
             },
           },
@@ -184,7 +183,7 @@ export class ProductService {
             reviews: true,
           },
         });
-        return savedProducts
+        return savedProducts;
     }
     throw new Error('Invalid parameters');
   }
@@ -294,9 +293,9 @@ export class ProductService {
           user: true,
           reviews: {
             include: {
-              User: true
-            }
-          }
+              User: true,
+            },
+          },
         },
       });
       if (!product) {
@@ -327,12 +326,12 @@ export class ProductService {
           clerkUserId: addProdcutToCart.userID,
         },
       });
-      if (!user) throw new Error("User not found")
-      console.log("user: ", user)
+      if (!user) throw new Error('User not found');
+      console.log('user: ', user);
       const cart = await this.prisma.cart.findFirst({
         where: {
           userId: Number(user.id),
-          isPurchased: false
+          isPurchased: false,
         },
       });
       let existingCart;
@@ -343,7 +342,7 @@ export class ProductService {
           data: {
             productId: prodcut.id,
             userId: user.id,
-            isPurchased: false
+            isPurchased: false,
           },
         });
 
@@ -357,7 +356,7 @@ export class ProductService {
           productId: prodcut.id,
         },
       });
-      console.log("cart: ", existingCart)
+      console.log('cart: ', existingCart);
       if (cartProduct) {
         await this.prisma.cartProduct.update({
           where: {
@@ -484,7 +483,7 @@ export class ProductService {
       const cart = await this.prisma.cart.findFirst({
         where: {
           userId: Number(user.id),
-          isPurchased: false
+          isPurchased: false,
         },
       });
 
@@ -499,7 +498,7 @@ export class ProductService {
         },
       });
 
-      if (!foundCartProduct) throw new Error("Product not in cart")
+      if (!foundCartProduct) throw new Error('Product not in cart');
 
       const removedCartProduct = await this.prisma.cartProduct.delete({
         where: {
@@ -509,7 +508,7 @@ export class ProductService {
         },
       });
 
-      return removedCartProduct
+      return removedCartProduct;
     } catch (error) {
       console.log(error);
       throw new HttpException(

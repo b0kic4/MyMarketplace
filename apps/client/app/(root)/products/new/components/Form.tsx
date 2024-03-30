@@ -33,18 +33,18 @@ interface Props {
   handleTextureChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleStockChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleShippingInformationChange: (
-    e: ChangeEvent<HTMLTextAreaElement>
+    e: ChangeEvent<HTMLTextAreaElement>,
   ) => void;
   handleTitleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleCategoryTypeChange: (e: ChangeEvent<HTMLInputElement> | string) => void;
   handleDescriptionChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
   handlePriceChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSwitchChange: (
-    newCheckedState: boolean | ((prevState: boolean) => boolean)
+    newCheckedState: boolean | ((prevState: boolean) => boolean),
   ) => void;
   handleImageSelect: (e: ChangeEvent<HTMLInputElement>) => void;
   handleConditionChange: (
-    newCheckedState: boolean | ((prevState: boolean) => boolean)
+    newCheckedState: boolean | ((prevState: boolean) => boolean),
   ) => void;
   sizeError: string;
   colorError: string;

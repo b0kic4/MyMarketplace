@@ -22,7 +22,7 @@ import { RemoveProductFromCartDto } from './dto/remove-from-cart.dto';
 @ApiTags('products')
 @Controller('products')
 export class ProductController {
-  constructor(private readonly productService: ProductService) { }
+  constructor(private readonly productService: ProductService) {}
 
   @Post('createProduct')
   @ApiResponse({
