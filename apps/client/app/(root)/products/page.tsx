@@ -35,8 +35,6 @@ const Productpage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [displayedProducts, setDisplayedProducts] = useState([]);
 
-  // fetching products
-
   useEffect(() => {
     if (userId) {
       const queryParams = new URLSearchParams({ filter, userId });
@@ -81,20 +79,17 @@ const Productpage = () => {
   // getting products that are in cart
   useEffect(() => {
     if (cart && cart.products) {
-      // Ensuring both cart and cart.products are not undefined
       const productIds = cart.products.map(
         (product: any) => product.product.id,
       ) as number[] | undefined;
-      setProductIdsInCart(productIds || []); // Use an empty array if productIds is undefined
+      setProductIdsInCart(productIds || []);
     } else {
-      setProductIdsInCart([]); // Ensuring productIdsInCart is reset/empty if cart or cart.products are undefined
+      setProductIdsInCart([]);
     }
   }, [cart]);
 
-  // getting saved products
   useEffect(() => {
     if (products) {
-      // Assuming products is an array of product objects
       const savedIds = products
         .filter((product: Product) =>
           product.savedByUsers.some((user) => user.clerkUserId === userId),
